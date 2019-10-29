@@ -88,7 +88,7 @@ function! CrystallineSpacesOrTabSize() abort
 endfunction
 
 function! CrystallineCustomMode() abort
-    let filetype = getbufvar(bufnr(), '&filetype')
+    let filetype = getbufvar(bufnr('%'), '&filetype')
     if has_key(s:filetype_modes, filetype)
         let new_mode = s:filetype_modes[filetype]
     else
@@ -99,7 +99,7 @@ function! CrystallineCustomMode() abort
 endfunction
 
 function! s:IsCustomMode() abort
-    let filetype = getbufvar(bufnr(), '&filetype')
+    let filetype = getbufvar(bufnr('%'), '&filetype')
     let fname = fnamemodify(bufname('%'), ':t')
     return has_key(s:filetype_modes, filetype) || has_key(s:filename_modes, fname)
 endfunction
