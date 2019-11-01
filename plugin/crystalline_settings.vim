@@ -142,7 +142,7 @@ endfunction
 
 function! TabLine()
     let l:vimlabel = has('nvim') ?  ' NVIM ' : ' VIM '
-    return crystalline#bufferline(2, len(l:vimlabel), 1) . '%=%#CrystallineTab# ' . l:vimlabel
+    return crystalline#bufferline(2, len(l:vimlabel), 1) . '%=%#CrystallineTab#' . l:vimlabel
 endfunction
 
 let g:crystalline_enable_sep    = get(g:, 'crystalline_powerline', 0)
