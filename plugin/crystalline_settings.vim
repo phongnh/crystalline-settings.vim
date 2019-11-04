@@ -95,7 +95,7 @@ function! CrystallineCustomMode() abort
         let fname = fnamemodify(bufname('%'), ':t')
         let new_mode = s:filename_modes[fname]
     endif
-    return printf(' %s ', new_mode)
+    return printf('%%#CrystallineNormalMode# %s ', new_mode)
 endfunction
 
 function! s:IsCustomMode() abort
