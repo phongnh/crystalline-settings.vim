@@ -104,6 +104,14 @@ function! s:IsCustomMode() abort
     return has_key(s:filetype_modes, filetype) || has_key(s:filename_modes, fname)
 endfunction
 
+function! s:BranchOrCWD() abort
+    if exists('*fugitive#head')
+        return '%{fugitive#head()}'
+    else
+        return '%{fnamemodify(getcwd(), ":t")}'
+    endif
+endfunction
+
 function! StatusLine(current, width)
     let l:s = ''
 
@@ -120,7 +128,7 @@ function! StatusLine(current, width)
     let l:s .= ' %f%h%w%m%r '
 
     if a:current
-        let l:s .= crystalline#right_sep('', 'Fill') . ' %{fugitive#head()}'
+        let l:s .= crystalline#right_sep('', 'Fill') . ' ' . s:BranchOrCWD()
     endif
 
     let l:s .= '%='
