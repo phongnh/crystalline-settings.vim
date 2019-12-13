@@ -104,11 +104,13 @@ function! s:IsCustomMode() abort
     return has_key(s:filetype_modes, filetype) || has_key(s:filename_modes, fname)
 endfunction
 
-function! s:BranchOrCWD() abort
+function! CrystallineBranch() abort
     if exists('*fugitive#head')
-        return '%{fugitive#head()}'
+        return fugitive#head()
+    elseif exists(':Gina') == 2
+        return gina#component#repo#branch()
     else
-        return '%{fnamemodify(getcwd(), ":t")}'
+        return fnamemodify(getcwd(), ':t')
     endif
 endfunction
 
@@ -128,7 +130,7 @@ function! StatusLine(current, width)
     let l:s .= ' %f%h%w%m%r '
 
     if a:current
-        let l:s .= crystalline#right_sep('', 'Fill') . ' ' . s:BranchOrCWD()
+        let l:s .= crystalline#right_sep('', 'Fill') . ' %{CrystallineBranch()}'
     endif
 
     let l:s .= '%='
