@@ -116,26 +116,30 @@ function! s:IsNormalWindow(winnum) abort
     return winwidth(a:winnum) >= s:normal_window_width
 endfunction
 
+function! s:BranchShorten(branch, length)
+    let branch = a:branch
+
+    if strlen(branch) > a:length
+        let branch = pathshorten(branch)
+    endif
+
+    if strlen(branch) > a:length
+        let branch = fnamemodify(branch, ':t')
+    endif
+
+    return branch
+endfunction
+
 function! s:FormatBranch(branch) abort
     if s:IsSmallWindow(0)
         return ''
     endif
 
-    let branch = a:branch
-
     if s:IsNormalWindow(0)
-        return branch
+        return s:BranchShorten(a:branch, 50)
     endif
 
-    if strlen(branch) > 30
-        let branch = pathshorten(branch)
-    endif
-
-    if strlen(branch) > 30
-        let branch = fnamemodify(branch, ':t')
-    endif
-
-    return branch
+    return s:BranchShorten(a:branch, 30)
 endfunction
 
 function! CrystallineBranch() abort
