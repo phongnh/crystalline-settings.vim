@@ -74,6 +74,13 @@ function! CrystallinePasteAndSpell() abort
     return ''
 endfunction
 
+function! CrystallineFileType() abort
+    if exists('*WebDevIconsGetFileTypeSymbol')
+        return WebDevIconsGetFileTypeSymbol() . ' '
+    endif
+    return &ft
+endfunction
+
 function! CrystallineFileEncoding() abort
     let encoding = &fenc !=# '' ? &fenc : &enc
     if encoding !=? 'utf-8'
@@ -83,6 +90,9 @@ function! CrystallineFileEncoding() abort
 endfunction
 
 function! CrystallineFileFormat() abort
+    if exists('*WebDevIconsGetFileFormatSymbol')
+        return WebDevIconsGetFileFormatSymbol() . ' '
+    endif
     return &ff !=? 'unix' ? '[' . &ff . ']' : ''
 endfunction
 
@@ -180,7 +190,7 @@ function! StatusLine(current, width)
     endif
 
     if a:width > 80
-        let l:s .= ' %{&ft}%{CrystallineFileEncoding()}%{CrystallineFileFormat()} '
+        let l:s .= ' %{CrystallineFileType()}%{CrystallineFileEncoding()}%{CrystallineFileFormat()} '
     else
         let l:s .= ' '
     endif
