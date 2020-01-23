@@ -6,6 +6,10 @@ let g:loaded_vim_crystalline_settings = 1
 let s:save_cpo = &cpo
 set cpo&vim
 
+" Window width
+let s:small_window_width  = 80
+let s:normal_window_width = 100
+
 let s:filename_modes = {
             \ 'ControlP':             'CtrlP',
             \ '__Tagbar__':           'Tagbar',
@@ -104,18 +108,41 @@ function! s:IsCustomMode() abort
     return has_key(s:filetype_modes, filetype) || has_key(s:filename_modes, fname)
 endfunction
 
-function! s:CustomizeBranch(branch) abort
-    if strlen(a:branch) > 51 || strlen(a:branch) >= winwidth(0)
-        return split(a:branch, '/')[-1]
+function! s:IsSmallWindow(winnum) abort
+    return winwidth(a:winnum) < s:small_window_width
+endfunction
+
+function! s:IsNormalWindow(winnum) abort
+    return winwidth(a:winnum) >= s:normal_window_width
+endfunction
+
+function! s:FormatBranch(branch) abort
+    if s:IsSmallWindow(0)
+        return ''
     endif
-    return a:branch
+
+    let branch = a:branch
+
+    if s:IsNormalWindow(0)
+        return branch
+    endif
+
+    if strlen(branch) > 30
+        let branch = pathshorten(branch)
+    endif
+
+    if strlen(branch) > 30
+        let branch = fnamemodify(branch, ':t')
+    endif
+
+    return branch
 endfunction
 
 function! CrystallineBranch() abort
     if exists('*fugitive#head')
-        return s:CustomizeBranch(fugitive#head())
+        return s:FormatBranch(fugitive#head())
     elseif exists(':Gina') == 2
-        return s:CustomizeBranch(gina#component#repo#branch())
+        return s:FormatBranch(gina#component#repo#branch())
     else
         return fnamemodify(getcwd(), ':t')
     endif
