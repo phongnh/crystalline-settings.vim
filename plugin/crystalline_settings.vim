@@ -104,11 +104,18 @@ function! s:IsCustomMode() abort
     return has_key(s:filetype_modes, filetype) || has_key(s:filename_modes, fname)
 endfunction
 
+function! s:CustomizeBranch(branch) abort
+    if strlen(a:branch) > 51
+        return split(a:branch, '/')[-1]
+    endif
+    return a:branch
+endfunction
+
 function! CrystallineBranch() abort
     if exists('*fugitive#head')
-        return fugitive#head()
+        return s:CustomizeBranch(fugitive#head())
     elseif exists(':Gina') == 2
-        return gina#component#repo#branch()
+        return s:CustomizeBranch(gina#component#repo#branch())
     else
         return fnamemodify(getcwd(), ':t')
     endif
