@@ -105,7 +105,7 @@ function! s:IsCustomMode() abort
 endfunction
 
 function! s:CustomizeBranch(branch) abort
-    if strlen(a:branch) > 51
+    if strlen(a:branch) > 51 || strlen(a:branch) >= winwidth(0)
         return split(a:branch, '/')[-1]
     endif
     return a:branch
