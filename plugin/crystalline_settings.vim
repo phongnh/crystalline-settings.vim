@@ -56,24 +56,6 @@ let s:short_modes = {
             \ 'TERMINAL': 'T',
             \ }
 
-function! CrystallinePasteAndSpell() abort
-    let ary = []
-
-    if &paste
-        call add(ary, '[PASTE]')
-    endif
-
-    if &spell
-        call add(ary, '[SPELL]')
-    endif
-
-    if len(ary)
-        return ' ' . join(ary, ' ') . ' '
-    endif
-
-    return ''
-endfunction
-
 function! CrystallineFileType() abort
     if exists('*WebDevIconsGetFileTypeSymbol')
         return WebDevIconsGetFileTypeSymbol() . ' '
@@ -96,12 +78,55 @@ function! CrystallineFileFormat() abort
     return &ff !=? 'unix' ? '[' . &ff . ']' : ''
 endfunction
 
-function! CrystallineSpacesOrTabSize() abort
+function! s:CrystallinePasteAndSpell() abort
+    let ary = []
+
+    if &paste
+        call add(ary, '[PASTE]')
+    endif
+
+    if &spell
+        call add(ary, '[SPELL]')
+    endif
+
+    if len(ary)
+        return ' ' . join(ary, ' ') . ' '
+    endif
+
+    return ''
+endfunction
+
+function! s:CrystallineSpacesOrTabSize() abort
     let shiftwidth = exists('*shiftwidth') ? shiftwidth() : &shiftwidth
     return printf(' %s: %d ', (&expandtab ? 'Spaces' : 'Tab Size'), shiftwidth)
 endfunction
 
-function! CrystallineCustomMode() abort
+function! s:CrystallinePasteAndSpell() abort
+    let ary = []
+
+    if &paste
+        call add(ary, '[PASTE]')
+    endif
+
+    if &spell
+        call add(ary, '[SPELL]')
+    endif
+
+    if len(ary)
+        return ' ' . join(ary, ' ') . ' '
+    endif
+
+    return ''
+endfunction
+
+function! s:GetClipboardStatus() abort
+    if match(&clipboard, 'unnamed') > -1
+        return '@ '
+    endif
+    return ''
+endfunction
+
+function! s:CrystallineCustomMode() abort
     let filetype = getbufvar(bufnr('%'), '&filetype')
     if has_key(s:filetype_modes, filetype)
         let new_mode = s:filetype_modes[filetype]
@@ -166,12 +191,12 @@ function! StatusLine(current, width)
     let l:s = ''
 
     if a:current && s:IsCustomMode()
-        let l:s .= CrystallineCustomMode() . crystalline#right_mode_sep('')
+        let l:s .= s:CrystallineCustomMode() . s:GetClipboardStatus() . crystalline#right_mode_sep('')
         return l:s
     endif
 
     if a:current
-        let l:s .= crystalline#mode() . crystalline#right_mode_sep('')
+        let l:s .= crystalline#mode() . s:GetClipboardStatus() . crystalline#right_mode_sep('')
     else
         let l:s .= '%#CrystallineInactive#'
     endif
@@ -183,9 +208,9 @@ function! StatusLine(current, width)
 
     let l:s .= '%='
     if a:current
-        let l:s .= CrystallinePasteAndSpell()
+        let l:s .= s:CrystallinePasteAndSpell()
         let l:s .= crystalline#left_sep('', 'Fill')
-        let l:s .= CrystallineSpacesOrTabSize()
+        let l:s .= s:CrystallineSpacesOrTabSize()
         let l:s .= crystalline#left_mode_sep('')
     endif
 
