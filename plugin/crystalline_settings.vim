@@ -43,6 +43,17 @@ let s:filetype_modes = {
             \ 'agit_stat':         'Agit Stat',
             \ }
 
+function! s:hi(group)
+    return printf('%%#%s#', a:group)
+endfunction
+
+function! s:GetCurrentDir() abort
+    let dir = fnamemodify(getcwd(), ':~:.')
+    if empty(dir)
+        let dir = getcwd()
+    endif
+    return dir
+endfunction
 
 function! CrystallineFileType() abort
     if exists('*WebDevIconsGetFileTypeSymbol')
@@ -104,7 +115,7 @@ function! s:CrystallineCustomMode() abort
         let fname = fnamemodify(bufname('%'), ':t')
         let new_mode = s:filename_modes[fname]
     endif
-    return printf('%%#CrystallineNormalMode# %s ', new_mode)
+    return crystalline#mode_color() . printf(' %s ', new_mode)
 endfunction
 
 function! s:IsCustomMode() abort
@@ -170,7 +181,7 @@ function! StatusLine(current, width)
     if a:current
         let l:s .= crystalline#mode() . s:GetClipboardStatus() . crystalline#right_mode_sep('')
     else
-        let l:s .= '%#CrystallineInactive#'
+        let l:s .= s:hi('CrystallineInactive')
     endif
     let l:s .= ' %f%h%w%m%r '
 
@@ -197,10 +208,85 @@ endfunction
 
 function! TabLine()
     let l:vimlabel = has('nvim') ?  ' NVIM ' : ' VIM '
-    return crystalline#bufferline(2, len(l:vimlabel), 1) . '%=%#CrystallineTab#' . l:vimlabel
+    return crystalline#bufferline(2, len(l:vimlabel), 1) . '%=' . s:hi('CrystallineTab') . l:vimlabel
 endfunction
 
 let g:crystalline_enable_sep    = get(g:, 'crystalline_powerline', 0)
 let g:crystalline_statusline_fn = 'StatusLine'
 let g:crystalline_tabline_fn    = 'TabLine'
 let g:crystalline_theme         = 'solarized'
+
+" CtrlP Integration
+let g:ctrlp_status_func = {
+            \ 'main': 'CtrlPMainStatusLine',
+            \ 'prog': 'CtrlPProgressStatusLine',
+            \ }
+
+function! CtrlPMainStatusLine(focus, byfname, regex, prev, item, next, marked) abort
+    let item = s:hi('CrystallineNormalModeToLine') . 
+                \ s:hi('Character') . ' ' . a:item . ' %*' .
+                \ s:hi('Crystalline')
+    let dir  = s:GetCurrentDir()
+    return printf('%s CtrlP %s %s %s %s %s %s %%=%%<%s %s %s %s %s ',
+                \ crystalline#mode_color(),
+                \ crystalline#right_mode_sep(''),
+                \ a:prev,
+                \ item,
+                \ a:next,
+                \ crystalline#right_sep('', 'Fill'),
+                \ a:marked,
+                \ a:focus,
+                \ crystalline#left_sep('', 'Fill'),
+                \ a:byfname,
+                \ crystalline#left_mode_sep(''),
+                \ dir)
+endfunction
+
+function! CtrlPProgressStatusLine(len) abort
+    return printf(' %s %%=%%< %s ', a:len, s:GetCurrentDir())
+endfunction
+
+" Tagbar Integration
+let g:tagbar_status_func = 'TagbarStatusFunc'
+
+function! TagbarStatusFunc(current, sort, fname, flags, ...) abort
+    if empty(a:flags)
+        return printf('%s [%s] %s %s %s',
+                    \ crystalline#mode_color(),
+                    \ a:sort,
+                    \ crystalline#right_mode_sep(''),
+                    \ a:fname,
+                    \ crystalline#right_sep('', 'Fill')
+                    \ )
+    else
+        return printf('%s [%s] %s [%s] %s %s',
+                    \ crystalline#mode_color(),
+                    \ a:sort,
+                    \ crystalline#right_mode_sep(''),
+                    \ join(a:flags, ''),
+                    \ crystalline#right_sep('', 'Fill'),
+                    \ a:fname
+                    \ )
+    endif
+endfunction
+
+" ZoomWin Integration
+let s:ZoomWin_funcref = []
+
+if exists('g:ZoomWin_funcref')
+    if type(g:ZoomWin_funcref) == 2
+        let s:ZoomWin_funcref = [g:ZoomWin_funcref]
+    elseif type(g:ZoomWin_funcref) == 3
+        let s:ZoomWin_funcref = g:ZoomWin_funcref
+    endif
+endif
+
+function! ZoomWinStatusLine(zoomstate) abort
+    for f in s:ZoomWin_funcref
+        if type(f) == 2
+            call f(a:zoomstate)
+        endif
+    endfor
+endfunction
+
+let g:ZoomWin_funcref= function('ZoomWinStatusLine')
