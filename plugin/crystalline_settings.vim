@@ -66,24 +66,6 @@ function! CrystallineFileFormat() abort
     return &ff !=? 'unix' ? '[' . &ff . ']' : ''
 endfunction
 
-function! s:CrystallinePasteAndSpell() abort
-    let ary = []
-
-    if &paste
-        call add(ary, '[PASTE]')
-    endif
-
-    if &spell
-        call add(ary, '[SPELL]')
-    endif
-
-    if len(ary)
-        return ' ' . join(ary, ' ') . ' '
-    endif
-
-    return ''
-endfunction
-
 function! s:CrystallineSpacesOrTabSize() abort
     let shiftwidth = exists('*shiftwidth') ? shiftwidth() : &shiftwidth
     return printf(' %s: %d ', (&expandtab ? 'Spaces' : 'Tab Size'), shiftwidth)
