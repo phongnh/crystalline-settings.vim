@@ -195,13 +195,13 @@ function! StatusLine(current, width)
         let l:s .= crystalline#left_sep('', 'Fill')
         let l:s .= s:CrystallineSpacesOrTabSize()
         let l:s .= crystalline#left_mode_sep('')
+
+        if a:width > s:small_window_width
+            let l:s .= ' %{CrystallineFileType()}%{CrystallineFileEncoding()}%{CrystallineFileFormat()} '
+        endif
     endif
 
-    if a:width > 80
-        let l:s .= ' %{CrystallineFileType()}%{CrystallineFileEncoding()}%{CrystallineFileFormat()} '
-    else
-        let l:s .= ' '
-    endif
+    let l:s .= ' '
 
     return l:s
 endfunction
