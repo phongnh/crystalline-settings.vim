@@ -109,7 +109,7 @@ function! s:CrystallinePasteAndSpell() abort
     endif
 
     if &spell
-        call add(ary, '[SPELL]')
+        call add(ary, printf('[SPELL %s]', toupper(substitute(&spelllang, ',', '/', 'g'))))
     endif
 
     if len(ary)
