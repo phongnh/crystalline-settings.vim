@@ -43,18 +43,6 @@ let s:filetype_modes = {
             \ 'agit_stat':         'Agit Stat',
             \ }
 
-let s:short_modes = {
-            \ 'NORMAL':   'N',
-            \ 'INSERT':   'I',
-            \ 'VISUAL':   'V',
-            \ 'V-LINE':   'L',
-            \ 'V-BLOCK':  'B',
-            \ 'COMMAND':  'C',
-            \ 'SELECT':   'S',
-            \ 'S-LINE':   'S-L',
-            \ 'S-BLOCK':  'S-B',
-            \ 'TERMINAL': 'T',
-            \ }
 
 function! CrystallineFileType() abort
     if exists('*WebDevIconsGetFileTypeSymbol')
