@@ -178,7 +178,9 @@ function! s:FormatBranch(branch) abort
 endfunction
 
 function! CrystallineBranch() abort
-    if exists('*fugitive#head')
+    if exists('*FugitiveHead')
+        return s:FormatBranch(FugitiveHead())
+    elseif exists('*fugitive#head')
         return s:FormatBranch(fugitive#head())
     elseif exists(':Gina') == 2
         return s:FormatBranch(gina#component#repo#branch())
