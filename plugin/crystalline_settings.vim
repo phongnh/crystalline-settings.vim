@@ -224,7 +224,7 @@ let g:ctrlp_status_func = {
 
 function! CtrlPMainStatusLine(focus, byfname, regex, prev, item, next, marked) abort
     let item = s:hi('CrystallineNormalModeToLine') . 
-                \ s:hi('Character') . ' ' . a:item . ' %*' .
+                \ s:hi('Character') . ' « ' . a:item . ' » %*' .
                 \ s:hi('Crystalline')
     let dir  = s:GetCurrentDir()
     return printf('%s CtrlP %s %s %s %s %s %s %%=%%<%s %s %s %s %s ',
