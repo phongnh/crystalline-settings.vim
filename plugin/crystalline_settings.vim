@@ -82,6 +82,31 @@ function! s:CrystallineSpacesOrTabSize() abort
     return printf(' %s: %d ', (&expandtab ? 'Spaces' : 'Tab Size'), shiftwidth)
 endfunction
 
+" Copied from https://github.com/ahmedelgabri/dotfiles/blob/master/files/vim/.vim/autoload/statusline.vim
+function! s:FileSize() abort
+    let l:size = getfsize(expand('%'))
+    if l:size == 0 || l:size == -1 || l:size == -2
+        return ''
+    endif
+    if l:size < 1024
+        return l:size . ' bytes'
+    elseif l:size < 1024 * 1024
+        return printf('%.1f', l:size / 1024.0) . 'k'
+    elseif l:size < 1024 * 1024 * 1024
+        return printf('%.1f', l:size / 1024.0 / 1024.0) . 'm'
+    else
+        return printf('%.1f', l:size / 1024.0 / 1024.0 / 1024.0) . 'g'
+    endif
+endfunction
+
+function! s:CrystallineFileSize() abort
+    let l:file_size = s:FileSize()
+    if strlen(l:file_size)
+        return ' ' . l:file_size . ' '
+    endif
+    return ''
+endfunction
+
 function! s:CrystallinePasteAndSpell() abort
     let ary = []
 
@@ -191,6 +216,10 @@ function! StatusLine(current, width)
 
     let l:s .= '%='
     if a:current
+        if a:width > s:small_window_width
+            let l:s .= s:CrystallineFileSize()
+        endif
+
         let l:s .= s:CrystallinePasteAndSpell()
         let l:s .= crystalline#left_sep('', 'Fill')
         let l:s .= s:CrystallineSpacesOrTabSize()
