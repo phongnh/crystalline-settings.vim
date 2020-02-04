@@ -11,6 +11,8 @@ let s:small_window_width  = 80
 let s:normal_window_width = 100
 
 let s:filename_modes = {
+            \ '__CtrlSF__':           'CtrlSF',
+            \ '__CtrlSFPreview__':    'CtrlSFPreview',
             \ '__Tagbar__':           'Tagbar',
             \ '__Gundo__':            'Gundo',
             \ '__Gundo_Preview__':    'Gundo Preview',
@@ -23,6 +25,7 @@ let s:filename_modes = {
 
 let s:filetype_modes = {
             \ 'ctrlp':             'CtrlP',
+            \ 'ctrlsf':            'CtrlSF',
             \ 'leaderf':           'LeaderF',
             \ 'netrw':             'NetrwTree',
             \ 'nerdtree':          'NERDTree',
@@ -132,6 +135,50 @@ function! s:GetClipboardStatus() abort
     return ''
 endfunction
 
+function! CtrlPMainStatusLine(focus, byfname, regex, prev, item, next, marked) abort
+    let item = s:hi('CrystallineNormalModeToLine') . 
+                \ s:hi('Character') . ' « ' . a:item . ' » %*' .
+                \ s:hi('Crystalline')
+    let dir  = s:GetCurrentDir()
+    return printf('%s CtrlP %s %s %s %s %s %s %%=%%<%s %s %s %s %s ',
+                \ crystalline#mode_color(),
+                \ crystalline#right_mode_sep(''),
+                \ a:prev,
+                \ item,
+                \ a:next,
+                \ crystalline#right_sep('', 'Fill'),
+                \ a:marked,
+                \ a:focus,
+                \ crystalline#left_sep('', 'Fill'),
+                \ a:byfname,
+                \ crystalline#left_mode_sep(''),
+                \ dir)
+endfunction
+
+function! s:CrystallineCtrlSFStatusLine(...) abort
+    " main window
+    if bufname('%') == '__CtrlSF__'
+        return printf('%s CtrlSF %s %s %s %s %%=%%< %s ',
+                    \ crystalline#mode_color(),
+                    \ crystalline#right_mode_sep(''),
+                    \ substitute(ctrlsf#utils#SectionB(), 'Pattern: ', '', ''),
+                    \ crystalline#right_sep('', 'Fill'),
+                    \ ctrlsf#utils#SectionC(),
+                    \ ctrlsf#utils#SectionX())
+    endif
+
+    " preview window
+    if bufname('%') == '__CtrlSFPreview__'
+        return printf('%s Preview %s %s %%= ',
+                    \ crystalline#mode_color(),
+                    \ crystalline#right_mode_sep(''),
+                    \ ctrlsf#utils#PreviewSectionC()
+                    \ )
+    endif
+
+    return ''
+endfunction
+
 function! s:CrystallineCustomMode() abort
     let filetype = getbufvar(bufnr('%'), '&filetype')
     if has_key(s:filetype_modes, filetype)
@@ -199,6 +246,9 @@ function! StatusLine(current, width)
     let l:s = ''
 
     if a:current && s:IsCustomMode()
+        if s:CrystallineCustomMode() =~# 'CtrlSF'
+            return s:CrystallineCtrlSFStatusLine()
+        endif
         let l:s .= s:CrystallineCustomMode() . s:GetClipboardStatus() . crystalline#right_mode_sep('')
         return l:s
     endif
