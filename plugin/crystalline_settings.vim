@@ -34,8 +34,9 @@ let s:filetype_modes = {
             \ 'unite':             'Unite',
             \ 'vimfiler':          'VimFiler',
             \ 'vimshell':          'VimShell',
-            \ 'help':              'Help',
-            \ 'qf':                '%q %{get(w:, "quickfix_title", "")}',
+            \ 'terminal':          'Terminal',
+            \ 'help':              'HELP',
+            \ 'qf':                '%q',
             \ 'godoc':             'GoDoc',
             \ 'gedoc':             'GeDoc',
             \ 'gitcommit':         'Commit Message',
@@ -45,6 +46,16 @@ let s:filetype_modes = {
             \ 'agit_diff':         'Agit Diff',
             \ 'agit_stat':         'Agit Stat',
             \ }
+
+if exists('*trim')
+    function! s:strip(str) abort
+        return trim(a:str)
+    endfunction
+else
+    function! s:strip(str) abort
+        return substitute(a:str, '^\s*\(.\{-}\)\s*$', '\1', '')
+    endfunction
+endif
 
 function! s:hi(group)
     return printf('%%#%s#', a:group)
@@ -58,26 +69,52 @@ function! s:GetCurrentDir() abort
     return dir
 endfunction
 
-function! CrystallineFileType() abort
-    if exists('*WebDevIconsGetFileTypeSymbol')
-        return WebDevIconsGetFileTypeSymbol() . ' '
+function! s:CrystallineFileFormat() abort
+    if &fileformat ==# 'unix'
+        return ''
     endif
-    return &ft
+    return &fileformat
 endfunction
 
-function! CrystallineFileEncoding() abort
-    let encoding = &fenc !=# '' ? &fenc : &enc
-    if encoding !=? 'utf-8'
-        return '[' . encoding . ']'
+function! s:CrystallineFileEncoding(...) abort
+    let l:encoding = &fileencoding !=# '' ? &fileencoding : &encoding
+    if l:encoding ==? 'utf-8'
+        return ''
     endif
-    return ''
+    return printf(get(a:, 1, 0) ? '[%s]' : '%s', l:encoding)
 endfunction
 
-function! CrystallineFileFormat() abort
-    if exists('*WebDevIconsGetFileFormatSymbol')
-        return WebDevIconsGetFileFormatSymbol() . ' '
+function! CrystallineFileInfo() abort
+    let has_devicons = exists('*WebDevIconsGetFileTypeSymbol') && exists('*WebDevIconsGetFileFormatSymbol')
+
+    if has_devicons
+        let parts = s:RemoveEmptyElement([
+                    \ s:CrystallineFileSize(),
+                    \ s:CrystallineFileEncoding(1),
+                    \ WebDevIconsGetFileFormatSymbol() . ' ',
+                    \ &filetype,
+                    \ WebDevIconsGetFileTypeSymbol() . ' ',
+                    \ ])
+        return join(parts, ' ')
+    else
+        let parts = s:RemoveEmptyElement([
+                    \ s:CrystallineFileEncoding(),
+                    \ s:CrystallineFileFormat(),
+                    \ &filetype,
+                    \ ])
+
+        if empty(parts)
+            return ''
+        endif
+
+        if len(parts) == 1
+            return s:strip('' . s:CrystallineFileSize() . ' ' . parts[0])
+        endif
+
+        call insert(parts, s:CrystallineFileSize(), 0)
+
+        return s:strip(join(parts, ' | '))
     endif
-    return &ff !=? 'unix' ? '[' . &ff . ']' : ''
 endfunction
 
 function! s:CrystallineSpacesOrTabSize() abort
@@ -103,26 +140,25 @@ function! s:FileSize() abort
 endfunction
 
 function! s:CrystallineFileSize() abort
-    let l:file_size = s:FileSize()
-    if strlen(l:file_size)
-        return ' ' . l:file_size . ' '
+    if g:crystalline_enable_file_size
+        return s:FileSize()
     endif
     return ''
 endfunction
 
-function! s:CrystallinePasteAndSpell() abort
-    let ary = []
+function! s:CrystallinePasteOrSpell() abort
+    let l:parts = []
 
     if &paste
-        call add(ary, '[PASTE]')
+        call add(l:parts, '[PASTE]')
     endif
 
     if &spell
-        call add(ary, printf('[SPELL %s]', toupper(substitute(&spelllang, ',', '/', 'g'))))
+        call add(l:parts, printf('[SPELL %s]', toupper(substitute(&spelllang, ',', '/', 'g'))))
     endif
 
-    if len(ary)
-        return ' ' . join(ary, ' ') . ' '
+    if len(l:parts)
+        return ' ' . join(l:parts, ' ') . ' '
     endif
 
     return ''
@@ -130,7 +166,7 @@ endfunction
 
 function! s:GetClipboardStatus() abort
     if match(&clipboard, 'unnamed') > -1
-        return '@ '
+        return '@'
     endif
     return ''
 endfunction
@@ -179,21 +215,83 @@ function! s:CrystallineCtrlSFStatusLine(...) abort
     return ''
 endfunction
 
-function! s:CrystallineCustomMode() abort
-    let filetype = getbufvar(bufnr('%'), '&filetype')
-    if has_key(s:filetype_modes, filetype)
-        let new_mode = s:filetype_modes[filetype]
-    else
-        let fname = fnamemodify(bufname('%'), ':t')
-        let new_mode = s:filename_modes[fname]
+function! s:RemoveEmptyElement(list) abort
+    return filter(copy(a:list), '!empty(v:val)')
+endfunction
+
+function! s:GetBufferType(bufnum) abort
+    let ft = getbufvar(a:bufnum, '&filetype')
+
+    if empty(ft)
+        let ft = getbufvar(a:bufnum, '&buftype')
     endif
-    return crystalline#mode_color() . printf(' %s ', new_mode)
+
+    return ft
+endfunction
+
+function! s:BuildCustomMode(...) abort
+    let l:mode = add(copy(a:000), s:GetClipboardStatus())
+    let l:mode = join(s:RemoveEmptyElement(l:mode), ' ')
+    return crystalline#mode_color() . ' ' . l:mode . ' ' . crystalline#right_mode_sep('')
+endfunction
+
+function! s:BuildCustomStatus(mode, ...) abort
+    let stl = s:BuildCustomMode(a:mode)
+
+    let parts = s:RemoveEmptyElement(a:000)
+    if empty(parts)
+        return stl
+    endif
+
+    let stl .= ' ' . parts[0] . ' ' . crystalline#right_sep('', 'Fill')
+
+    if len(parts) >= 2
+        let stl .= join(parts[1:], ' ')
+    endif
+
+    return stl
+endfunction
+
+function! s:CrystallineCustomMode() abort
+    let ft = s:GetBufferType('%')
+    let l:bufname = bufname('%')
+
+    if has_key(s:filetype_modes, ft)
+        let l:mode = s:filetype_modes[ft]
+
+        if ft ==# 'terminal'
+            return s:BuildCustomStatus(l:mode, '%f')
+        endif
+
+        if ft ==# 'help'
+            return s:BuildCustomStatus(l:mode, fnamemodify(l:bufname, ':p:~:.'))
+        endif
+
+        if ft ==# 'qf'
+            let l:qf_title = get(w:, 'quickfix_title', '')
+            return s:BuildCustomStatus(l:mode, l:qf_title)
+        endif
+
+        if ft ==# 'ctrlsf'
+            return s:CrystallineCtrlSFStatusLine()
+        endif
+    else
+        let fname = fnamemodify(l:bufname, ':t')
+
+        if fname ==# '__CtrlSF__' || fname ==# '__CtrlSFPreview__'
+            return s:CrystallineCtrlSFStatusLine()
+        endif
+
+        let l:mode = s:filename_modes[fname]
+    endif
+
+    return s:BuildCustomMode(l:mode)
 endfunction
 
 function! s:IsCustomMode() abort
-    let filetype = getbufvar(bufnr('%'), '&filetype')
+    let ft = s:GetBufferType('%')
     let fname = fnamemodify(bufname('%'), ':t')
-    return has_key(s:filetype_modes, filetype) || has_key(s:filename_modes, fname)
+    return has_key(s:filetype_modes, ft) || has_key(s:filename_modes, fname)
 endfunction
 
 function! s:IsSmallWindow(winnum) abort
@@ -246,11 +344,7 @@ function! StatusLine(current, width)
     let l:s = ''
 
     if a:current && s:IsCustomMode()
-        if s:CrystallineCustomMode() =~# 'CtrlSF'
-            return s:CrystallineCtrlSFStatusLine()
-        endif
-        let l:s .= s:CrystallineCustomMode() . s:GetClipboardStatus() . crystalline#right_mode_sep('')
-        return l:s
+        return s:CrystallineCustomMode()
     endif
 
     if a:current
@@ -266,17 +360,14 @@ function! StatusLine(current, width)
 
     let l:s .= '%='
     if a:current
-        if a:width > s:small_window_width
-            let l:s .= s:CrystallineFileSize()
-        endif
 
-        let l:s .= s:CrystallinePasteAndSpell()
+        let l:s .= s:CrystallinePasteOrSpell()
         let l:s .= crystalline#left_sep('', 'Fill')
         let l:s .= s:CrystallineSpacesOrTabSize()
         let l:s .= crystalline#left_mode_sep('')
 
         if a:width > s:small_window_width
-            let l:s .= ' %{CrystallineFileType()}%{CrystallineFileEncoding()}%{CrystallineFileFormat()} '
+            let l:s .= ' %{CrystallineFileInfo()}'
         endif
     endif
 
@@ -290,10 +381,11 @@ function! TabLine()
     return crystalline#bufferline(2, len(l:vimlabel), 1) . '%=' . s:hi('CrystallineTab') . l:vimlabel
 endfunction
 
-let g:crystalline_enable_sep    = get(g:, 'crystalline_powerline', 0)
-let g:crystalline_statusline_fn = 'StatusLine'
-let g:crystalline_tabline_fn    = 'TabLine'
-let g:crystalline_theme         = 'solarized'
+let g:crystalline_enable_sep       = get(g:, 'crystalline_powerline', 0)
+let g:crystalline_enable_file_size = get(g:, 'crystalline_enable_file_size', 1)
+let g:crystalline_statusline_fn    = 'StatusLine'
+let g:crystalline_tabline_fn       = 'TabLine'
+let g:crystalline_theme            = 'solarized'
 
 " CtrlP Integration
 let g:ctrlp_status_func = {
