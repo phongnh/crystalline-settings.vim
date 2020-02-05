@@ -12,7 +12,7 @@ let s:normal_window_width = 100
 
 let s:filename_modes = {
             \ '__CtrlSF__':           'CtrlSF',
-            \ '__CtrlSFPreview__':    'CtrlSFPreview',
+            \ '__CtrlSFPreview__':    'Preview',
             \ '__Tagbar__':           'Tagbar',
             \ '__Gundo__':            'Gundo',
             \ '__Gundo_Preview__':    'Gundo Preview',
@@ -171,50 +171,6 @@ function! s:GetClipboardStatus() abort
     return ''
 endfunction
 
-function! CtrlPMainStatusLine(focus, byfname, regex, prev, item, next, marked) abort
-    let item = s:hi('CrystallineNormalModeToLine') . 
-                \ s:hi('Character') . ' « ' . a:item . ' » %*' .
-                \ s:hi('Crystalline')
-    let dir  = s:GetCurrentDir()
-    return printf('%s CtrlP %s %s %s %s %s %s %%=%%<%s %s %s %s %s ',
-                \ crystalline#mode_color(),
-                \ crystalline#right_mode_sep(''),
-                \ a:prev,
-                \ item,
-                \ a:next,
-                \ crystalline#right_sep('', 'Fill'),
-                \ a:marked,
-                \ a:focus,
-                \ crystalline#left_sep('', 'Fill'),
-                \ a:byfname,
-                \ crystalline#left_mode_sep(''),
-                \ dir)
-endfunction
-
-function! s:CrystallineCtrlSFStatusLine(...) abort
-    " main window
-    if bufname('%') == '__CtrlSF__'
-        return printf('%s CtrlSF %s %s %s %s %%=%%< %s ',
-                    \ crystalline#mode_color(),
-                    \ crystalline#right_mode_sep(''),
-                    \ substitute(ctrlsf#utils#SectionB(), 'Pattern: ', '', ''),
-                    \ crystalline#right_sep('', 'Fill'),
-                    \ ctrlsf#utils#SectionC(),
-                    \ ctrlsf#utils#SectionX())
-    endif
-
-    " preview window
-    if bufname('%') == '__CtrlSFPreview__'
-        return printf('%s Preview %s %s %%= ',
-                    \ crystalline#mode_color(),
-                    \ crystalline#right_mode_sep(''),
-                    \ ctrlsf#utils#PreviewSectionC()
-                    \ )
-    endif
-
-    return ''
-endfunction
-
 function! s:RemoveEmptyElement(list) abort
     return filter(copy(a:list), '!empty(v:val)')
 endfunction
@@ -245,8 +201,11 @@ function! s:BuildCustomStatus(mode, ...) abort
 
     let stl .= ' ' . parts[0] . ' ' . crystalline#right_sep('', 'Fill')
 
-    if len(parts) >= 2
-        let stl .= join(parts[1:], ' ')
+    if len(parts) == 2
+        let stl .= ' ' . parts[1]
+    elseif len(parts) > 2
+        let stl .= '%=%<'
+        let stl .= ' ' . join(parts[2:], ' ') . ' '
     endif
 
     return stl
@@ -273,13 +232,20 @@ function! s:CrystallineCustomMode() abort
         endif
 
         if ft ==# 'ctrlsf'
-            return s:CrystallineCtrlSFStatusLine()
+            return s:BuildCustomStatus(l:mode,
+                        \ substitute(ctrlsf#utils#SectionB(), 'Pattern: ', '', ''),
+                        \ ctrlsf#utils#SectionC(),
+                        \ ctrlsf#utils#SectionX()
+                        \ )
         endif
     else
         let fname = fnamemodify(l:bufname, ':t')
 
-        if fname ==# '__CtrlSF__' || fname ==# '__CtrlSFPreview__'
-            return s:CrystallineCtrlSFStatusLine()
+        if fname ==# '__CtrlSFPreview__'
+            return s:BuildCustomStatus(l:mode,
+                        \ ctrlsf#utils#PreviewSectionC(),
+                        \ ctrlsf#utils#SectionX()
+                        \ )
         endif
 
         let l:mode = s:filename_modes[fname]
@@ -398,14 +364,7 @@ function! CtrlPMainStatusLine(focus, byfname, regex, prev, item, next, marked) a
                 \ s:hi('Character') . ' « ' . a:item . ' » %*' .
                 \ s:hi('Crystalline')
     let dir  = s:GetCurrentDir()
-    return printf('%s CtrlP %s %s %s %s %s %s %%=%%<%s %s %s %s %s ',
-                \ crystalline#mode_color(),
-                \ crystalline#right_mode_sep(''),
-                \ a:prev,
-                \ item,
-                \ a:next,
-                \ crystalline#right_sep('', 'Fill'),
-                \ a:marked,
+    return s:BuildCustomStatus('CtrlP', join([a:prev, item, a:next]), s:strip(a:marked)) . printf(' %%=%%<%s %s %s %s %s ',
                 \ a:focus,
                 \ crystalline#left_sep('', 'Fill'),
                 \ a:byfname,
@@ -422,22 +381,9 @@ let g:tagbar_status_func = 'TagbarStatusFunc'
 
 function! TagbarStatusFunc(current, sort, fname, flags, ...) abort
     if empty(a:flags)
-        return printf('%s [%s] %s %s %s',
-                    \ crystalline#mode_color(),
-                    \ a:sort,
-                    \ crystalline#right_mode_sep(''),
-                    \ a:fname,
-                    \ crystalline#right_sep('', 'Fill')
-                    \ )
+        return s:BuildCustomStatus(a:sort, a:fname)
     else
-        return printf('%s [%s] %s [%s] %s %s',
-                    \ crystalline#mode_color(),
-                    \ a:sort,
-                    \ crystalline#right_mode_sep(''),
-                    \ join(a:flags, ''),
-                    \ crystalline#right_sep('', 'Fill'),
-                    \ a:fname
-                    \ )
+        return s:BuildCustomStatus(a:sort, a:fname, printf('[%s]', join(a:flags, '')))
     endif
 endfunction
 
