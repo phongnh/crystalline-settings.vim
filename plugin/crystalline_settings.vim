@@ -10,6 +10,41 @@ set cpo&vim
 let s:small_window_width  = 80
 let s:normal_window_width = 100
 
+" Symbols
+let s:symbols = {
+            \ 'clipboard': 'ⓒ  ',
+            \ 'paste':     'Ⓟ  ',
+            \ 'left':      '»',
+            \ 'right':     '«',
+            \ 'readonly':  '',
+            \ 'ellipsis':  '…',
+            \ 'mode_sep':  ' ',
+            \ 'fill_sep':  ' ',
+            \ }
+
+" Alternative Symbols
+" ©: Clipboard
+"Ⓒ  : Clipboard
+"ⓒ  : Clipboard
+"ⓒ  : Clipboard
+"ⓒ  : Clipboard
+"ⓟ  : Paste
+"Ⓟ  : Paste
+"℗  : Paste
+"℗  : Paste
+" Ρ: Paste
+" ρ: Paste
+"Ⓡ  : Readonly
+"ⓡ  : Readonly
+" ® : Readonly
+
+let s:powerline = {
+            \ 'left':      '',
+            \ 'left_alt':  '',
+            \ 'right':     '',
+            \ 'right_alt': '',
+            \ }
+
 let s:filename_modes = {
             \ 'ControlP':             'CtrlP',
             \ '__CtrlSF__':           'CtrlSF',
