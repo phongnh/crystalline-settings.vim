@@ -11,6 +11,7 @@ let s:small_window_width  = 80
 let s:normal_window_width = 100
 
 let s:filename_modes = {
+            \ 'ControlP':             'CtrlP',
             \ '__CtrlSF__':           'CtrlSF',
             \ '__CtrlSFPreview__':    'Preview',
             \ '__Tagbar__':           'Tagbar',
@@ -25,15 +26,11 @@ let s:filename_modes = {
 
 let s:filetype_modes = {
             \ 'ctrlp':             'CtrlP',
-            \ 'ctrlsf':            'CtrlSF',
             \ 'leaderf':           'LeaderF',
             \ 'netrw':             'NetrwTree',
             \ 'nerdtree':          'NERDTree',
             \ 'startify':          'Startify',
-            \ 'vim-plug':          'Plug',
-            \ 'unite':             'Unite',
-            \ 'vimfiler':          'VimFiler',
-            \ 'vimshell':          'VimShell',
+            \ 'vim-plug':          'Plugin',
             \ 'terminal':          'Terminal',
             \ 'help':              'HELP',
             \ 'qf':                '%q',
@@ -230,16 +227,17 @@ function! s:CrystallineCustomMode() abort
             let l:qf_title = get(w:, 'quickfix_title', '')
             return s:BuildCustomStatus(l:mode, l:qf_title)
         endif
+    else
+        let fname = fnamemodify(l:bufname, ':t')
+        let l:mode = s:filename_modes[fname]
 
-        if ft ==# 'ctrlsf'
+        if fname ==# '__CtrlSF__'
             return s:BuildCustomStatus(l:mode,
                         \ substitute(ctrlsf#utils#SectionB(), 'Pattern: ', '', ''),
                         \ ctrlsf#utils#SectionC(),
                         \ ctrlsf#utils#SectionX()
                         \ )
         endif
-    else
-        let fname = fnamemodify(l:bufname, ':t')
 
         if fname ==# '__CtrlSFPreview__'
             return s:BuildCustomStatus(l:mode,
@@ -247,8 +245,6 @@ function! s:CrystallineCustomMode() abort
                         \ ctrlsf#utils#SectionX()
                         \ )
         endif
-
-        let l:mode = s:filename_modes[fname]
     endif
 
     return s:BuildCustomMode(l:mode)
