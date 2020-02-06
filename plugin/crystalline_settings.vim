@@ -79,15 +79,17 @@ let s:filetype_modes = {
             \ 'agit_stat':         'Agit Stat',
             \ }
 
-if exists('*trim')
-    function! s:strip(str) abort
+let g:crystalline_enable_sep       = get(g:, 'crystalline_powerline', 0)
+let g:crystalline_enable_file_size = get(g:, 'crystalline_enable_file_size', 1)
+let g:crystalline_theme            = 'solarized'
+
+function! s:Strip(str) abort
+    if exists('*trim')
         return trim(a:str)
-    endfunction
-else
-    function! s:strip(str) abort
+    else
         return substitute(a:str, '^\s*\(.\{-}\)\s*$', '\1', '')
-    endfunction
-endif
+    endif
+endfunction
 
 function! s:hi(group)
     return printf('%%#%s#', a:group)
@@ -378,11 +380,8 @@ function! TabLine()
     return crystalline#bufferline(2, len(l:vimlabel), 1) . '%=' . s:hi('CrystallineTab') . l:vimlabel
 endfunction
 
-let g:crystalline_enable_sep       = get(g:, 'crystalline_powerline', 0)
-let g:crystalline_enable_file_size = get(g:, 'crystalline_enable_file_size', 1)
 let g:crystalline_statusline_fn    = 'StatusLine'
 let g:crystalline_tabline_fn       = 'TabLine'
-let g:crystalline_theme            = 'solarized'
 
 " CtrlP Integration
 let g:ctrlp_status_func = {
