@@ -490,7 +490,7 @@ function! s:CustomStatus(bufnum) abort
     endif
 
     let fname = fnamemodify(bufname(a:bufnum), ':t')
-    if has_key(s:filetype_modes, fname)
+    if has_key(s:filename_modes, fname)
         let l:mode = s:filename_modes[fname]
 
         if fname ==# '__CtrlSF__'
