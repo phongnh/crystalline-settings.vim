@@ -6,14 +6,15 @@ let g:loaded_vim_crystalline_settings = 1
 let s:save_cpo = &cpo
 set cpo&vim
 
+" Crystalline Settings
+let g:crystalline_enable_sep     = get(g:, 'crystalline_powerline', 0)
+let g:crystalline_theme          = get(g:, 'crystalline_theme', 'solarized')
+let g:crystalline_show_file_size = get(g:, 'crystalline_show_file_size', 1)
+let g:crystalline_show_devicons  = get(g:, 'crystalline_show_devicons', 1)
+
 " Window width
 let s:small_window_width  = 80
 let s:normal_window_width = 100
-
-" Crystalline Settings
-let g:crystalline_enable_sep       = get(g:, 'crystalline_powerline', 0)
-let g:crystalline_enable_file_size = get(g:, 'crystalline_enable_file_size', 1)
-let g:crystalline_theme            = 'solarized'
 
 " Symbols
 let s:symbols = {
@@ -75,7 +76,7 @@ let s:filetype_modes = {
             \ 'netrw':             'NetrwTree',
             \ 'nerdtree':          'NERDTree',
             \ 'startify':          'Startify',
-            \ 'vim-plug':          'Plugin',
+            \ 'vim-plug':          'Plugins',
             \ 'terminal':          'Terminal',
             \ 'help':              'HELP',
             \ 'qf':                '%q',
@@ -284,7 +285,7 @@ function! s:FileSize() abort
 endfunction
 
 function! s:FileSizeStatus(...) abort
-    if g:crystalline_enable_file_size
+    if g:crystalline_show_file_size
         return s:FileSize()
     endif
     return ''
@@ -336,7 +337,7 @@ function! s:FileInfoStatus(bufnum) abort
 
     let s:has_devicons = exists('*WebDevIconsGetFileTypeSymbol') && exists('*WebDevIconsGetFileFormatSymbol')
 
-    if s:has_devicons
+    if g:crystalline_show_devicons && s:has_devicons
         let parts = s:RemoveEmptyElement([
                     \ s:FileEncodingStatus(a:bufnum),
                     \ WebDevIconsGetFileFormatSymbol() . ' ',
