@@ -652,14 +652,10 @@ let g:ctrlp_status_func = {
             \ }
 
 function! CtrlPMainStatusLine(focus, byfname, regex, prev, item, next, marked) abort
-    let item = s:Hi('CrystallineNormalModeToLine') .
-                \ s:Hi('Character') . ' « ' . a:item . ' » %*' .
-                \ s:Hi('Crystalline')
     return s:BuildStatus(
                 \ [
                 \   s:filetype_modes['ctrlp'],
-                \   join([ a:prev, item, a:next], ' '),
-                \   a:marked,
+                \   [ a:prev, printf(' « %s » ', a:item), a:next],
                 \ ],
                 \ [
                 \   s:GetCurrentDir(),
