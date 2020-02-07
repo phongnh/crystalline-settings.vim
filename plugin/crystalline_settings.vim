@@ -1,6 +1,7 @@
 if exists('g:loaded_vim_crystalline_settings') || v:version < 700
     finish
 endif
+
 let g:loaded_vim_crystalline_settings = 1
 
 let s:save_cpo = &cpo
@@ -139,14 +140,6 @@ function! s:Hi(group) abort
     return printf('%%#%s#', a:group)
 endfunction
 
-function! s:IsSmallWindow(winnum) abort
-    return winwidth(a:winnum) < s:small_window_width
-endfunction
-
-function! s:IsNormalWindow(winnum) abort
-    return winwidth(a:winnum) >= s:normal_window_width
-endfunction
-
 function! s:GetCurrentDir() abort
     let dir = fnamemodify(getcwd(), ':~:.')
     if empty(dir)
@@ -258,14 +251,12 @@ function! s:ShortenBranch(branch, length) abort
     return branch
 endfunction
 
-function! s:FormatBranch(branch) abort
-    let winnum = winnr()
-
-    if s:IsSmallWindow(winnum)
+function! s:FormatBranch(branch, winwidth) abort
+    if a:winwidth < s:small_window_width
         return ''
     endif
 
-    if s:IsNormalWindow(winnum)
+    if a:winwidth > s:normal_window_width
         return s:ShortenBranch(a:branch, 50)
     endif
 
@@ -364,8 +355,9 @@ function! s:FileInfoStatus(bufnum) abort
 endfunction
 
 
-function! s:GitBranchStatus() abort
-    return s:FormatBranch(s:GetGitBranch())
+function! s:GitBranchStatus(...) abort
+    let winwidth = get(a:, 1, 100)
+    return s:FormatBranch(s:GetGitBranch(), winwidth)
 endfunction
 
 function! s:ClipboardStatus() abort
@@ -566,7 +558,7 @@ function! StatusLine(current, width) abort
                     \ [
                     \   s:Strip(crystalline#mode_label()),
                     \   s:FileNameStatus(l:bufnum, a:width - 2),
-                    \   s:GitBranchStatus(),
+                    \   s:GitBranchStatus(a:width),
                     \ ],
                     \ [
                     \   s:FileInfoStatus(l:bufnum),
