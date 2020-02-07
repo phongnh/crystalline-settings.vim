@@ -1,5 +1,5 @@
 if exists('g:loaded_vim_crystalline_settings') || v:version < 700
-    " finish
+    finish
 endif
 let g:loaded_vim_crystalline_settings = 1
 
@@ -10,17 +10,34 @@ set cpo&vim
 let s:small_window_width  = 80
 let s:normal_window_width = 100
 
+" Crystalline Settings
+let g:crystalline_enable_sep       = get(g:, 'crystalline_powerline', 0)
+let g:crystalline_enable_file_size = get(g:, 'crystalline_enable_file_size', 1)
+let g:crystalline_theme            = 'solarized'
+
 " Symbols
 let s:symbols = {
             \ 'clipboard': 'ⓒ  ',
             \ 'paste':     'Ⓟ  ',
-            \ 'left':      '»',
-            \ 'right':     '«',
+            \ 'left':      '',
+            \ 'right':     '',
             \ 'readonly':  '',
             \ 'ellipsis':  '…',
             \ 'mode_sep':  ' ',
             \ 'fill_sep':  ' ',
             \ }
+
+if !g:crystalline_powerline
+    call extend(s:symbols, {
+            \ 'left':  '»',
+            \ 'right': '«',
+            \ })
+endif
+
+call extend(s:symbols, {
+            \ 'left_sep':  ' ' . s:symbols.left . ' ',
+            \ 'right_sep': ' ' . s:symbols.right . ' ',
+            \ })
 
 " Alternative Symbols
 " ©: Clipboard
@@ -37,13 +54,6 @@ let s:symbols = {
 "Ⓡ  : Readonly
 "ⓡ  : Readonly
 " ® : Readonly
-
-let s:powerline = {
-            \ 'left':      '',
-            \ 'left_alt':  '',
-            \ 'right':     '',
-            \ 'right_alt': '',
-            \ }
 
 let s:filename_modes = {
             \ 'ControlP':             'CtrlP',
@@ -78,10 +88,6 @@ let s:filetype_modes = {
             \ 'agit_diff':         'Agit Diff',
             \ 'agit_stat':         'Agit Stat',
             \ }
-
-let g:crystalline_enable_sep       = get(g:, 'crystalline_powerline', 0)
-let g:crystalline_enable_file_size = get(g:, 'crystalline_enable_file_size', 1)
-let g:crystalline_theme            = 'solarized'
 
 function! s:Strip(str) abort
     if exists('*trim')
@@ -123,7 +129,7 @@ function! s:ParseFillList(list, sep) abort
     return s:RemoveEmptyElement(l:list)
 endfunction
 
-function! s:Hi(group)
+function! s:Hi(group) abort
     return printf('%%#%s#', a:group)
 endfunction
 
@@ -236,7 +242,7 @@ function! s:GetGitBranch() abort
     return branch
 endfunction
 
-function! s:ShortenBranch(branch, length)
+function! s:ShortenBranch(branch, length) abort
     let branch = a:branch
 
     if strlen(branch) > a:length
@@ -288,7 +294,7 @@ endfunction
 
 function! s:IndentationStatus() abort
     let shiftwidth = exists('*shiftwidth') ? shiftwidth() : &shiftwidth
-    return printf(' %s: %d ', (&expandtab ? 'Spaces' : 'Tab Size'), shiftwidth)
+    return printf('%s: %d', (&expandtab ? 'Spaces' : 'Tab Size'), shiftwidth)
 endfunction
 
 function! s:FileEncodingStatus(bufnum) abort
@@ -334,7 +340,6 @@ function! s:FileInfoStatus() abort
 
     if s:has_devicons
         let parts = s:RemoveEmptyElement([
-                    \ s:FileSizeStatus() . printf(' %s', s:powerline.right_alt),
                     \ s:FileEncodingStatus('%'),
                     \ WebDevIconsGetFileFormatSymbol() . ' ',
                     \ ft,
@@ -347,7 +352,7 @@ function! s:FileInfoStatus() abort
                     \ ])
     endif
 
-    return join(parts, ' ') . ' '
+    return join(parts, ' ')
 endfunction
 
 function! CrystallineFileInfoStatus() abort
@@ -396,45 +401,79 @@ function! s:StatusSeparator() abort
     return '%='
 endfunction
 
-function! s:BuildStatus(left_parts, right_parts) abort
-    let left_parts  = s:ParseList(a:left_parts)
-    let right_parts = s:ParseList(a:right_parts)
+function! s:ParseMode(mode, sep) abort
+    let l:mode = join(s:RemoveEmptyElement(s:EnsureList(a:mode)), a:sep)
+    let l:mode = s:Strip(l:mode)
+    let l:mode = strlen(l:mode) ? printf(' %s ', l:mode) : ' '
+    return l:mode
+endfunction
 
-    let stl = ''
+function! s:BuildMode(...) abort
+    let l:mode = s:ParseMode(a:000, s:symbols.left_sep)
+    return crystalline#mode_color() . l:mode . crystalline#right_mode_sep('')
+endfunction
 
-    let stl = crystalline#mode_color() . get(left_parts, 0, '') . crystalline#right_mode_sep('')
-    let stl .= join(left_parts[1:1], s:symbols.fill_sep) . crystalline#right_sep('', 'Fill')
-    let stl .= join(s:ParseFillList(left_parts[2:], printf(' %s ', s:powerline.left_alt)), printf(' %s ', s:powerline.left_alt))
+function! s:BuildLeftStatus(parts) abort
+    let l:parts = s:ParseList(a:parts)
 
-    let stl .= s:StatusSeparator()
+    let stl = s:BuildMode(get(l:parts, 0, []))
 
-    let stl .= join(s:ParseFillList(right_parts[2:], printf(' %s ', s:powerline.right_alt)), printf(' %s ', s:powerline.right_alt))
-    let stl .= ' ' . crystalline#left_sep('', 'Fill') . join(right_parts[1:1], s:symbols.fill_sep)
-    let stl .= crystalline#left_mode_sep('') . get(right_parts, 0, '')
+    let l:fill_parts = s:ParseFillList(l:parts[1:1], s:symbols.left_sep)
+    if len(l:fill_parts) > 0
+        let l:fill = ' ' . join(l:fill_parts, s:symbols.left_sep) . ' '
+    else
+        let l:fill = ''
+    endif
+    let stl .= l:fill . crystalline#right_sep('', 'Fill')
+
+    let l:extra_parts = s:ParseFillList(l:parts[2:], s:symbols.left_sep)
+    if len(l:extra_parts) > 0
+        let l:extra = ' ' . join(l:extra_parts, s:symbols.left_sep) . ' '
+    else
+        let l:extra = ''
+    endif
+    let stl .= l:extra
 
     return stl
 endfunction
 
-function! s:BuildCustomMode(...) abort
-    let l:mode = join(s:RemoveEmptyElement(a:000), ' ')
-    return crystalline#mode_color() . ' ' . l:mode . ' ' . crystalline#right_mode_sep('')
+function! s:BuildRightStatus(parts) abort
+    let l:parts = s:ParseList(a:parts)
+
+    let result = []
+
+    let l:mode = s:ParseMode(get(l:parts, 0, ''), s:symbols.right_sep)
+    call insert(result, crystalline#left_mode_sep('') . l:mode, 0)
+
+    let l:fill_parts = s:ParseFillList(l:parts[1:1], s:symbols.right_sep)
+    if len(l:fill_parts) > 0
+        let l:fill = ' ' . join(l:fill_parts, s:symbols.right_sep) . ' '
+    else
+        let l:fill = ''
+    endif
+    call insert(result, crystalline#left_sep('', 'Fill') . l:fill, 0)
+
+    let l:extra_parts = s:ParseFillList(l:parts[2:], s:symbols.right_sep)
+    if len(l:extra_parts) > 0
+        let l:extra = ' ' . join(l:extra_parts, s:symbols.right_sep) . ' '
+    else
+        let l:extra = ''
+    endif
+    call insert(result, l:extra, 0)
+
+    return join(result, '')
 endfunction
 
-function! s:BuildCustomStatus(mode, ...) abort
-    let stl = s:BuildCustomMode(a:mode)
+function! s:BuildStatus(left_parts, ...) abort
+    let left_parts  = s:ParseList(a:left_parts)
+    let right_parts = s:ParseList(get(a:, 1, []))
 
-    let parts = s:RemoveEmptyElement(a:000)
-    if empty(parts)
-        return stl
-    endif
+    let stl = '%<' . s:BuildLeftStatus(left_parts)
 
-    let stl .= ' ' . parts[0] . ' ' . crystalline#right_sep('', 'Fill')
+    let stl .= s:StatusSeparator()
 
-    if len(parts) == 2
-        let stl .= ' ' . parts[1]
-    elseif len(parts) > 2
-        let stl .= '%=%<'
-        let stl .= ' ' . join(parts[2:], ' ') . ' '
+    if len(right_parts) > 0
+        let stl .= '%<' . s:BuildRightStatus(right_parts)
     endif
 
     return stl
@@ -454,60 +493,78 @@ function! s:CustomStatus() abort
         let l:mode = s:filetype_modes[ft]
 
         if ft ==# 'terminal'
-            return s:BuildCustomStatus(l:mode, '%f')
+            return s:BuildStatus([ l:mode, '%f' ])
         endif
 
         if ft ==# 'help'
-            return s:BuildCustomStatus(l:mode, fnamemodify(l:bufname, ':p:~:.'))
+            return s:BuildStatus([ l:mode, fnamemodify(l:bufname, ':p') ])
         endif
 
         if ft ==# 'qf'
-            let l:qf_title = get(w:, 'quickfix_title', '')
-            return s:BuildCustomStatus(l:mode, l:qf_title)
+            let l:qf_title = s:Strip(get(w:, 'quickfix_title', ''))
+            return s:BuildStatus([ l:mode, l:qf_title ])
         endif
     else
         let fname = fnamemodify(l:bufname, ':t')
         let l:mode = s:filename_modes[fname]
 
         if fname ==# '__CtrlSF__'
-            return s:BuildCustomStatus(l:mode,
-                        \ substitute(ctrlsf#utils#SectionB(), 'Pattern: ', '', ''),
-                        \ ctrlsf#utils#SectionC(),
-                        \ ctrlsf#utils#SectionX()
+            return s:BuildStatus([
+                        \   l:mode,
+                        \   substitute(ctrlsf#utils#SectionB(), 'Pattern: ', '', ''),
+                        \   ctrlsf#utils#SectionC(),
+                        \ ],
+                        \ [
+                        \   ctrlsf#utils#SectionX()
+                        \ ]
                         \ )
         endif
 
         if fname ==# '__CtrlSFPreview__'
-            return s:BuildCustomStatus(l:mode,
-                        \ ctrlsf#utils#PreviewSectionC(),
-                        \ ctrlsf#utils#SectionX()
+            return s:BuildStatus(
+                        \ [
+                        \   l:mode,
+                        \   ctrlsf#utils#PreviewSectionC(),
+                        \ ]
                         \ )
         endif
     endif
 
-    return s:BuildCustomMode(l:mode)
+    return s:BuildMode(l:mode)
 endfunction
 
-function! StatusLine(current, width)
+function! StatusLine(current, width) abort
     if a:current
         if s:IsCustomMode()
             return s:CustomStatus()
         endif
 
+        let l:fill_parts = []
+        let l:extra_parts = []
+
+        if a:width > s:small_window_width
+            let l:fill_parts = [
+                        \ s:IndentationStatus(),
+                        \ s:FileSizeStatus(),
+                        \ ]
+
+            let l:extra_parts = [
+                        \ s:ClipboardStatus(),
+                        \ s:PasteStatus(),
+                        \ s:SpellStatus(),
+                        \ ]
+        endif
+
         return s:BuildStatus(
                     \ [
                     \   crystalline#mode_label(),
-                    \   ' %{CrystallineFileNameStatus()} ',
-                    \   ' %{CrystallineBranchStatus()}',
+                    \   '%{CrystallineFileNameStatus()}',
+                    \   '%{CrystallineBranchStatus()}',
                     \ ],
                     \ [
-                    \   a:width > s:small_window_width  ? ' %{CrystallineFileInfoStatus()}' : ' ',
-                    \   s:IndentationStatus(),
-                    \   [
-                    \       s:ClipboardStatus(),
-                    \       s:PasteStatus(),
-                    \       s:SpellStatus(),
-                    \   ],
+                    \   '%{CrystallineFileInfoStatus()}',
+                    \   l:fill_parts,
+                    \   l:extra_parts,
                     \ ]
                     \ )
     else
@@ -518,7 +575,7 @@ function! StatusLine(current, width)
     return stl
 endfunction
 
-function! TabLine()
+function! TabLine() abort
     let l:vimlabel = has('nvim') ?  ' NVIM ' : ' VIM '
     return crystalline#bufferline(2, len(l:vimlabel), 1) . '%=' . s:Hi('CrystallineTab') . l:vimlabel
 endfunction
@@ -538,14 +595,14 @@ function! CtrlPMainStatusLine(focus, byfname, regex, prev, item, next, marked) a
                 \ s:Hi('Crystalline')
     return s:BuildStatus(
                 \ [
-                \   ' ' . s:filetype_modes['ctrlp'] . ' ',
-                \   join([ ' '. a:prev, item, a:next . ' ' ], ' '),
-                \   ' ' . a:marked,
+                \   s:filetype_modes['ctrlp'],
+                \   join([ a:prev, item, a:next], ' '),
+                \   a:marked,
                 \ ],
                 \ [
-                \   ' ' . s:GetCurrentDir() . ' ',
-                \   ' ' . a:byfname . ' ',
-                \   ' ' . a:focus,
+                \   s:GetCurrentDir(),
+                \   a:byfname,
+                \   a:focus,
                 \ ])
 endfunction
 
@@ -558,9 +615,9 @@ let g:tagbar_status_func = 'TagbarStatusFunc'
 
 function! TagbarStatusFunc(current, sort, fname, flags, ...) abort
     if empty(a:flags)
-        return s:BuildCustomStatus(a:sort, a:fname)
+        return s:BuildStatus([a:sort, a:fname])
     else
-        return s:BuildCustomStatus(a:sort, a:fname, printf('[%s]', join(a:flags, '')))
+        return s:BuildStatus([a:sort, a:fname, printf('[%s]', join(a:flags, ''))])
     endif
 endfunction
 
