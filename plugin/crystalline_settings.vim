@@ -536,13 +536,17 @@ function! CtrlPMainStatusLine(focus, byfname, regex, prev, item, next, marked) a
     let item = s:Hi('CrystallineNormalModeToLine') .
                 \ s:Hi('Character') . ' « ' . a:item . ' » %*' .
                 \ s:Hi('Crystalline')
-    let dir  = s:GetCurrentDir()
-    return s:BuildCustomStatus('CtrlP', join([a:prev, item, a:next]), s:Strip(a:marked)) . printf(' %%=%%<%s %s %s %s %s ',
-                \ a:focus,
-                \ crystalline#left_sep('', 'Fill'),
-                \ a:byfname,
-                \ crystalline#left_mode_sep(''),
-                \ dir)
+    return s:BuildStatus(
+                \ [
+                \   ' ' . s:filetype_modes['ctrlp'] . ' ',
+                \   join([ ' '. a:prev, item, a:next . ' ' ], ' '),
+                \   ' ' . a:marked,
+                \ ],
+                \ [
+                \   ' ' . s:GetCurrentDir() . ' ',
+                \   ' ' . a:byfname . ' ',
+                \   ' ' . a:focus,
+                \ ])
 endfunction
 
 function! CtrlPProgressStatusLine(len) abort
