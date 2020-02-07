@@ -165,34 +165,34 @@ function! s:GetBufferType(bufnum) abort
     return ft
 endfunction
 
-function! s:GetFileName(winnum, bufnum) abort
+function! s:GetFileName(bufnum) abort
     let fname = bufname(a:bufnum)
 
     if empty(fname)
         return '[No Name]'
     endif
 
-    let fname = fnamemodify(fname, ':~:.')
+    return fnamemodify(fname, ':~:.')
+endfunction
 
-    if s:IsSmallWindow(a:winnum)
+function! s:FormatFileName(fname, winwidth, max_width) abort
+    let fname = a:fname
+
+    if a:winwidth < s:small_window_width
         return fnamemodify(fname, ':t')
     endif
 
-    let winwidth = winwidth(a:winnum) - 2
+    if strlen(fname) > a:winwidth && (fname[0] =~ '\~\|/')
+        let fname = s:ShortenPath(fname)
+    endif
+    
+    let max_width = min([a:winwidth, a:max_width])
 
-    if strlen(fname) > winwidth && (fname[0] =~ '\~\|/')
+    if strlen(fname) > max_width
         let fname = s:ShortenPath(fname)
     endif
 
-    if strlen(fname) > winwidth
-        let fname = fnamemodify(fname, ':t')
-    endif
-
-    if strlen(fname) > 50
-        let fname = s:ShortenPath(fname)
-    endif
-
-    if strlen(fname) > 50
+    if strlen(fname) > max_width
         let fname = fnamemodify(fname, ':t')
     endif
 
@@ -270,6 +270,12 @@ function! s:FormatBranch(branch) abort
     endif
 
     return s:ShortenBranch(a:branch, 30)
+endfunction
+
+function! s:FileNameStatus(bufnum, ...) abort
+    " return %f%h%w%m%r
+    let winwidth = get(a:, 1, 100)
+    return s:FormatFileName(s:GetFileName(a:bufnum), winwidth, 50) . s:GetFileFlags(a:bufnum)
 endfunction
 
 " Copied from https://github.com/ahmedelgabri/dotfiles/blob/master/files/vim/.vim/autoload/statusline.vim
@@ -357,10 +363,6 @@ function! s:FileInfoStatus(bufnum) abort
     return join(parts, ' ') . ' '
 endfunction
 
-function! s:FileNameStatus(winnum, bufnum) abort
-    " %f%h%w%m%r
-    return s:GetFileName(a:winnum, a:bufnum) . s:GetFileFlags(a:bufnum)
-endfunction
 
 function! s:GitBranchStatus() abort
     return s:FormatBranch(s:GetGitBranch())
@@ -563,7 +565,7 @@ function! StatusLine(current, width) abort
         return s:BuildStatus(
                     \ [
                     \   s:Strip(crystalline#mode_label()),
-                    \   s:FileNameStatus(l:winnum, l:bufnum),
+                    \   s:FileNameStatus(l:bufnum, a:width - 2),
                     \   s:GitBranchStatus(),
                     \ ],
                     \ [
