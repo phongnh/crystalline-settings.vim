@@ -674,3 +674,6 @@ function! ZoomWinStatusLine(zoomstate) abort
 endfunction
 
 let g:ZoomWin_funcref= function('ZoomWinStatusLine')
+
+let &cpo = s:save_cpo
+unlet s:save_cpo
