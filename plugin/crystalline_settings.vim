@@ -468,6 +468,21 @@ function! s:BuildStatus(left_parts, ...) abort
     return stl
 endfunction
 
+function! s:CustomMode(bufnum) abort
+    let ft = s:GetBufferType(a:bufnum)
+
+    if has_key(s:filetype_modes, ft)
+        return s:filetype_modes[ft]
+    endif
+
+    let fname = fnamemodify(bufname(a:bufnum), ':t')
+    if has_key(s:filename_modes, fname)
+        return s:filename_modes[fname]
+    endif
+
+    return ''
+endfunction
+
 function! s:CustomStatus(bufnum) abort
     let l:mode = ''
 
