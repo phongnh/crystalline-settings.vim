@@ -475,6 +475,10 @@ function! s:CustomMode(bufnum) abort
         return s:filename_modes[fname]
     endif
 
+    if fname =~? '^NrrwRgn' && exists('b:nrrw_instn')
+        return printf('%s#%d', 'NrrwRgn', b:nrrw_instn)
+    endif
+
     return ''
 endfunction
 
@@ -521,11 +525,30 @@ function! s:CustomStatus(bufnum) abort
         endif
     endif
 
+    if fname =~? '^NrrwRgn' && exists('b:nrrw_instn')
+        return s:NrrwRgnStatus()
+    endif
+
     if strlen(l:mode)
         return s:BuildMode(l:mode)
     endif
 
     return ''
+endfunction
+
+function! s:NrrwRgnStatus() abort
+    let l:parts = [ printf('%s#%d', 'NrrwRgn', b:nrrw_instn) ]
+
+    let dict = exists('*nrrwrgn#NrrwRgnStatus()') ?  nrrwrgn#NrrwRgnStatus() : {}
+
+    if !empty(dict)
+        let fname = fnamemodify(dict.fullname, ':~:.')
+        call add(l:parts, fname)
+    elseif get(b:, 'orig_buf', 0)
+        call add(l:parts, bufname(b:orig_buf))
+    endif
+
+    return s:BuildStatus(parts)
 endfunction
 
 function! s:ActiveStatusLine(winnum) abort
