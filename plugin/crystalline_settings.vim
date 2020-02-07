@@ -214,10 +214,6 @@ function! s:GetFileFlags(bufnum) abort
     return flags
 endfunction
 
-function! s:GetFileNameAndFlags(winnum, bufnum) abort
-    return s:GetFileName(a:winnum, a:bufnum) . s:GetFileFlags(a:bufnum)
-endfunction
-
 function! s:GetGitBranch() abort
     let branch = ''
 
@@ -294,7 +290,7 @@ function! s:FileSizeStatus(...) abort
     return ''
 endfunction
 
-function! s:IndentationStatus() abort
+function! s:IndentationStatus(...) abort
     let shiftwidth = exists('*shiftwidth') ? shiftwidth() : &shiftwidth
     return printf('%s: %d', (&expandtab ? 'Spaces' : 'Tab Size'), shiftwidth)
 endfunction
@@ -335,21 +331,21 @@ function! s:FileEncodingAndFormatStatus(bufnum) abort
     return stl
 endfunction
 
-function! s:FileInfoStatus() abort
-    let ft = s:GetBufferType('%')
+function! s:FileInfoStatus(bufnum) abort
+    let ft = s:GetBufferType(a:bufnum)
 
     let s:has_devicons = exists('*WebDevIconsGetFileTypeSymbol') && exists('*WebDevIconsGetFileFormatSymbol')
 
     if s:has_devicons
         let parts = s:RemoveEmptyElement([
-                    \ s:FileEncodingStatus('%'),
+                    \ s:FileEncodingStatus(a:bufnum),
                     \ WebDevIconsGetFileFormatSymbol() . ' ',
                     \ ft,
-                    \ WebDevIconsGetFileTypeSymbol(bufname('%')) . ' ',
+                    \ WebDevIconsGetFileTypeSymbol(bufname(a:bufnum)) . ' ',
                     \ ])
     else
         let parts = s:RemoveEmptyElement([
-                    \ s:FileEncodingAndFormatStatus('%'),
+                    \ s:FileEncodingAndFormatStatus(a:bufnum),
                     \ ft,
                     \ ])
     endif
@@ -357,9 +353,9 @@ function! s:FileInfoStatus() abort
     return join(parts, ' ') . ' '
 endfunction
 
-function! s:FileNameStatus() abort
+function! s:FileNameStatus(winnum, bufnum) abort
     " %f%h%w%m%r
-    return s:GetFileNameAndFlags(winnr(), '%')
+    return s:GetFileName(a:winnum, a:bufnum) . s:GetFileFlags(a:bufnum)
 endfunction
 
 function! s:GitBranchStatus() abort
@@ -468,16 +464,10 @@ function! s:BuildStatus(left_parts, ...) abort
     return stl
 endfunction
 
-function! s:IsCustomMode() abort
-    let ft = s:GetBufferType('%')
-    let fname = fnamemodify(bufname('%'), ':t')
-    return has_key(s:filetype_modes, ft) || has_key(s:filename_modes, fname)
-endfunction
+function! s:CustomStatus(bufnum) abort
+    let l:mode = ''
 
-function! s:CustomStatus() abort
-    let ft = s:GetBufferType('%')
-    let l:bufname = bufname('%')
-
+    let ft = s:GetBufferType(a:bufnum)
     if has_key(s:filetype_modes, ft)
         let l:mode = s:filetype_modes[ft]
 
@@ -486,19 +476,22 @@ function! s:CustomStatus() abort
         endif
 
         if ft ==# 'help'
-            return s:BuildStatus([ l:mode, fnamemodify(l:bufname, ':p') ])
+            return s:BuildStatus([ l:mode, fnamemodify(bufname(a:bufnum), ':p') ])
         endif
 
         if ft ==# 'qf'
             let l:qf_title = s:Strip(get(w:, 'quickfix_title', ''))
             return s:BuildStatus([ l:mode, l:qf_title ])
         endif
-    else
-        let fname = fnamemodify(l:bufname, ':t')
+    endif
+
+    let fname = fnamemodify(bufname(a:bufnum), ':t')
+    if has_key(s:filetype_modes, fname)
         let l:mode = s:filename_modes[fname]
 
         if fname ==# '__CtrlSF__'
-            return s:BuildStatus([
+            return s:BuildStatus(
+                        \ [
                         \   l:mode,
                         \   substitute(ctrlsf#utils#SectionB(), 'Pattern: ', '', ''),
                         \   ctrlsf#utils#SectionC(),
@@ -510,22 +503,26 @@ function! s:CustomStatus() abort
         endif
 
         if fname ==# '__CtrlSFPreview__'
-            return s:BuildStatus(
-                        \ [
-                        \   l:mode,
-                        \   ctrlsf#utils#PreviewSectionC(),
-                        \ ]
-                        \ )
+            return s:BuildStatus([ l:mode, ctrlsf#utils#PreviewSectionC() ])
         endif
     endif
 
-    return s:BuildMode(l:mode)
+    if strlen(l:mode)
+        return s:BuildMode(l:mode)
+    endif
+
+    return ''
 endfunction
 
 function! StatusLine(current, width) abort
     if a:current
-        if s:IsCustomMode()
-            return s:CustomStatus()
+        let l:winnum = winnr()
+        let l:bufnum = winbufnr(l:winnum)
+
+        " custom status
+        let stl = s:CustomStatus(l:bufnum)
+        if strlen(stl)
+            return stl
         endif
 
         let l:fill_parts = []
@@ -547,17 +544,18 @@ function! StatusLine(current, width) abort
         return s:BuildStatus(
                     \ [
                     \   s:Strip(crystalline#mode_label()),
-                    \   s:FileNameStatus(),
+                    \   s:FileNameStatus(l:winnum, l:bufnum),
                     \   s:GitBranchStatus(),
                     \ ],
                     \ [
-                    \   s:FileInfoStatus(),
+                    \   s:FileInfoStatus(l:bufnum),
                     \   l:fill_parts,
                     \   l:extra_parts,
                     \ ]
                     \ )
     else
-        return s:Hi('CrystallineInactive') . ' ' . s:FileNameStatus() . ' '
+        " plugin/crystalline_settings.vim[+]
+        return s:Hi('CrystallineInactive') . ' ' . '%f%h%w%m%r' . ' '
     endif
 endfunction
 
