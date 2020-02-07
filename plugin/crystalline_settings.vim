@@ -56,6 +56,11 @@ call extend(s:symbols, {
 "ⓡ  : Readonly
 " ® : Readonly
 
+" Support DevIcons
+let s:has_devicons = findfile('plugin/webdevicons.vim', &rtp) != ''
+" let s:has_devicons = exists('*WebDevIconsGetFileTypeSymbol') && exists('*WebDevIconsGetFileFormatSymbol')
+
+" Alternate status dictionaries
 let s:filename_modes = {
             \ 'ControlP':             'CtrlP',
             \ '__CtrlSF__':           'CtrlSF',
@@ -334,8 +339,6 @@ endfunction
 
 function! s:FileInfoStatus(bufnum) abort
     let ft = s:GetBufferType(a:bufnum)
-
-    let s:has_devicons = exists('*WebDevIconsGetFileTypeSymbol') && exists('*WebDevIconsGetFileFormatSymbol')
 
     if g:crystalline_show_devicons && s:has_devicons
         let parts = s:RemoveEmptyElement([
