@@ -14,6 +14,7 @@ let g:crystalline_show_file_size = get(g:, 'crystalline_show_file_size', 1)
 let g:crystalline_show_devicons  = get(g:, 'crystalline_show_devicons', 1)
 
 " Window width
+let s:xsmall_window_width = 60
 let s:small_window_width  = 80
 let s:normal_window_width = 100
 
@@ -527,48 +528,72 @@ function! s:CustomStatus(bufnum) abort
     return ''
 endfunction
 
-function! StatusLine(current, width) abort
-    if a:current
-        let l:winnum = winnr()
-        let l:bufnum = winbufnr(l:winnum)
+function! s:ActiveStatusLine(winnum) abort
+    let bufnum = winbufnr(a:winnum)
 
-        " custom status
-        let stl = s:CustomStatus(l:bufnum)
-        if strlen(stl)
-            return stl
-        endif
+    " custom status
+    let stl = s:CustomStatus(bufnum)
+    if strlen(stl)
+        return stl
+    endif
 
-        let l:fill_parts = []
-        let l:extra_parts = []
+    let l:fill_parts = []
+    let l:extra_parts = []
 
-        if a:width > s:small_window_width
-            let l:fill_parts = [
-                        \ s:IndentationStatus(),
-                        \ s:FileSizeStatus(),
-                        \ ]
+    let l:width = winwidth(a:winnum)
 
-            let l:extra_parts = [
-                        \ s:ClipboardStatus(),
-                        \ s:PasteStatus(),
-                        \ s:SpellStatus(),
-                        \ ]
-        endif
-
-        return s:BuildStatus(
-                    \ [
-                    \   s:Strip(crystalline#mode_label()),
-                    \   s:FileNameStatus(l:bufnum, a:width - 2),
-                    \   s:GitBranchStatus(a:width),
-                    \ ],
-                    \ [
-                    \   s:FileInfoStatus(l:bufnum),
-                    \   l:fill_parts,
-                    \   l:extra_parts,
+    if l:width >= s:small_window_width
+        let l:fill_parts = [
+                    \ s:IndentationStatus(),
+                    \ s:FileSizeStatus(),
                     \ ]
-                    \ )
+
+        let l:extra_parts = [
+                    \ s:ClipboardStatus(),
+                    \ s:PasteStatus(),
+                    \ s:SpellStatus(),
+                    \ ]
+    endif
+
+    return s:BuildStatus(
+                \ [
+                \   s:Strip(crystalline#mode_label()),
+                \   s:FileNameStatus(bufnum, l:width - 2),
+                \   s:GitBranchStatus(l:width),
+                \ ],
+                \ [
+                \   l:width < s:xsmall_window_width ? &ft : s:FileInfoStatus(bufnum),
+                \   l:fill_parts,
+                \   l:extra_parts,
+                \ ]
+                \ )
+endfunction
+
+function! s:InactiveStatusLine(winnum) abort
+    let bufnum = winbufnr(a:winnum)
+
+    " show only custom mode in inactive buffer
+    let stl = s:CustomMode(bufnum)
+    if empty(stl)
+        let stl = s:FileNameStatus(bufnum)
+    endif
+
+    " plugin/crystalline_settings.vim[+]
+    return s:Hi('CrystallineInactive') . ' ' . stl . ' '
+endfunction
+
+function! StatusLine(current, win) abort
+    let winnum = win_id2win(a:win)
+
+    let l:current = a:current
+    if winnum == winnr() && !l:current
+        let l:current = 1
+    endif
+
+    if l:current
+        return s:ActiveStatusLine(winnum)
     else
-        " plugin/crystalline_settings.vim[+]
-        return s:Hi('CrystallineInactive') . ' ' . '%f%h%w%m%r' . ' '
+        return s:InactiveStatusLine(winnum)
     endif
 endfunction
 
@@ -579,6 +604,16 @@ endfunction
 
 let g:crystalline_statusline_fn = 'StatusLine'
 let g:crystalline_tabline_fn    = 'TabLine'
+
+" FIXME: Overwriting crystalline#get_statusline function
+function! crystalline#get_statusline(current, win) abort
+    call crystalline#trigger_mode_update()
+    try
+        return function(g:crystalline_statusline_fn)(a:current, a:win)
+    catch /^Vim\%((\a\+)\)\=:E118/
+        return function(g:crystalline_statusline_fn)(a:current)
+    endtry
+endfunction
 
 " CtrlP Integration
 let g:ctrlp_status_func = {
