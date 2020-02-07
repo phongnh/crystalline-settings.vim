@@ -154,7 +154,7 @@ function! s:GetBufferType(bufnum) abort
     let ft = getbufvar(a:bufnum, '&filetype')
 
     if empty(ft)
-        let type = getbufvar(a:bufnum, '&buftype')
+        let ft = getbufvar(a:bufnum, '&buftype')
     endif
 
     return ft
