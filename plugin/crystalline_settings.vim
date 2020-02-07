@@ -257,11 +257,13 @@ function! s:ShortenBranch(branch, length) abort
 endfunction
 
 function! s:FormatBranch(branch) abort
-    if s:IsSmallWindow(0)
+    let winnum = winnr()
+
+    if s:IsSmallWindow(winnum)
         return ''
     endif
 
-    if s:IsNormalWindow(0)
+    if s:IsNormalWindow(winnum)
         return s:ShortenBranch(a:branch, 50)
     endif
 
@@ -352,28 +354,16 @@ function! s:FileInfoStatus() abort
                     \ ])
     endif
 
-    return join(parts, ' ')
+    return join(parts, ' ') . ' '
 endfunction
 
-function! CrystallineFileInfoStatus() abort
-    return s:FileInfoStatus()
-endfunction
-
-function! CrystallineFileNameStatus() abort
+function! s:FileNameStatus() abort
     " %f%h%w%m%r
-    return s:GetFileNameAndFlags(0, '%')
+    return s:GetFileNameAndFlags(winnr(), '%')
 endfunction
 
-function! CrystallineBranchStatus() abort
-    if exists('*FugitiveHead')
-        return s:FormatBranch(FugitiveHead())
-    elseif exists('*fugitive#head')
-        return s:FormatBranch(fugitive#head())
-    elseif exists(':Gina') == 2
-        return s:FormatBranch(gina#component#repo#branch())
-    else
-        return fnamemodify(getcwd(), ':t')
-    endif
+function! s:GitBranchStatus() abort
+    return s:FormatBranch(s:GetGitBranch())
 endfunction
 
 function! s:ClipboardStatus() abort
@@ -403,7 +393,6 @@ endfunction
 
 function! s:ParseMode(mode, sep) abort
     let l:mode = join(s:RemoveEmptyElement(s:EnsureList(a:mode)), a:sep)
-    let l:mode = s:Strip(l:mode)
     let l:mode = strlen(l:mode) ? printf(' %s ', l:mode) : ' '
     return l:mode
 endfunction
@@ -557,22 +546,19 @@ function! StatusLine(current, width) abort
 
         return s:BuildStatus(
                     \ [
-                    \   crystalline#mode_label(),
-                    \   '%{CrystallineFileNameStatus()}',
-                    \   '%{CrystallineBranchStatus()}',
+                    \   s:Strip(crystalline#mode_label()),
+                    \   s:FileNameStatus(),
+                    \   s:GitBranchStatus(),
                     \ ],
                     \ [
-                    \   '%{CrystallineFileInfoStatus()}',
+                    \   s:FileInfoStatus(),
                     \   l:fill_parts,
                     \   l:extra_parts,
                     \ ]
                     \ )
     else
-        let stl = s:Hi('CrystallineInactive')
-        let stl .= ' %{CrystallineFileNameStatus()} '
+        return s:Hi('CrystallineInactive') . ' ' . s:FileNameStatus() . ' '
     endif
-
-    return stl
 endfunction
 
 function! TabLine() abort
