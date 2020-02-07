@@ -593,7 +593,7 @@ function! CtrlPMainStatusLine(focus, byfname, regex, prev, item, next, marked) a
 endfunction
 
 function! CtrlPProgressStatusLine(len) abort
-    return printf(' %s %%=%%< %s ', a:len, s:GetCurrentDir())
+    return s:BuildStatus([ a:len ], [ s:GetCurrentDir() ])
 endfunction
 
 " Tagbar Integration
