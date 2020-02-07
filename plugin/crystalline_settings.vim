@@ -160,37 +160,37 @@ function! s:GetBufferType(bufnum) abort
 endfunction
 
 function! s:GetFileName(winnum, bufnum) abort
-    let bname = bufname(a:bufnum)
+    let fname = bufname(a:bufnum)
 
-    if empty(bname)
+    if empty(fname)
         return '[No Name]'
     endif
 
-    let bname = fnamemodify(bname, ':~:.')
+    let fname = fnamemodify(fname, ':~:.')
 
     if s:IsSmallWindow(a:winnum)
-        return fnamemodify(bname, ':t')
+        return fnamemodify(fname, ':t')
     endif
 
     let winwidth = winwidth(a:winnum) - 2
 
-    if strlen(bname) > winwidth && (bname[0] =~ '\~\|/')
-        let bname = s:ShortenPath(bname)
+    if strlen(fname) > winwidth && (fname[0] =~ '\~\|/')
+        let fname = s:ShortenPath(fname)
     endif
 
-    if strlen(bname) > winwidth
-        let bname = fnamemodify(bname, ':t')
+    if strlen(fname) > winwidth
+        let fname = fnamemodify(fname, ':t')
     endif
 
-    if strlen(bname) > 50
-        let bname = s:ShortenPath(bname)
+    if strlen(fname) > 50
+        let fname = s:ShortenPath(fname)
     endif
 
-    if strlen(bname) > 50
-        let bname = fnamemodify(bname, ':t')
+    if strlen(fname) > 50
+        let fname = fnamemodify(fname, ':t')
     endif
 
-    return bname
+    return fname
 endfunction
 
 function! s:GetFileFlags(bufnum) abort
