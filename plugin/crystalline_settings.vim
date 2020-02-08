@@ -118,12 +118,7 @@ function! s:RemoveEmptyElement(list) abort
 endfunction
 
 function! s:EnsureList(list) abort
-    if type(a:list) == type([])
-        let l:list = deepcopy(a:list)
-    else
-        let l:list = [a:list]
-    endif
-    return l:list
+    return type(a:list) == type([]) ? deepcopy(a:list) : [a:list]
 endfunction
 
 function! s:ParseList(list) abort
