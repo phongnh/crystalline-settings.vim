@@ -8,10 +8,14 @@ let s:save_cpo = &cpo
 set cpo&vim
 
 " Crystalline Settings
-let g:crystalline_enable_sep     = get(g:, 'crystalline_powerline', 0)
-let g:crystalline_theme          = get(g:, 'crystalline_theme', 'solarized')
-let g:crystalline_show_file_size = get(g:, 'crystalline_show_file_size', 1)
-let g:crystalline_show_devicons  = get(g:, 'crystalline_show_devicons', 1)
+let g:crystalline_enable_sep      = get(g:, 'crystalline_powerline', 0)
+let g:crystalline_theme           = get(g:, 'crystalline_theme', 'solarized')
+let g:crystalline_show_git_branch = get(g:, 'crystalline_show_git_branch', 1)
+let g:crystalline_show_file_size  = get(g:, 'crystalline_show_file_size', 1)
+let g:crystalline_show_devicons   = get(g:, 'crystalline_show_devicons', 1)
+
+" Disable NERDTree statusline
+let g:NERDTreeStatusline = -1
 
 " Window width
 let s:xsmall_window_width = 60
@@ -58,7 +62,7 @@ call extend(s:symbols, {
 "ⓡ  : Readonly
 " ® : Readonly
 
-" Support DevIcons
+" Detect DevIcons
 let s:has_devicons = findfile('plugin/webdevicons.vim', &rtp) != ''
 " let s:has_devicons = exists('*WebDevIconsGetFileTypeSymbol') && exists('*WebDevIconsGetFileFormatSymbol')
 
