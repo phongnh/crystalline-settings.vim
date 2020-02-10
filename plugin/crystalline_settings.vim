@@ -246,15 +246,17 @@ function! s:ShortenBranch(branch, length) abort
 endfunction
 
 function! s:FormatBranch(branch, winwidth) abort
-    if a:winwidth < s:small_window_width
-        return ''
-    endif
-
     if a:winwidth > s:normal_window_width
         return s:ShortenBranch(a:branch, 50)
     endif
 
-    return s:ShortenBranch(a:branch, 30)
+    let branch = s:ShortenBranch(a:branch, 30)
+
+    if strlen(branch) > 30
+        let branch = strcharpart(branch, 0, 29) . s:symbols.ellipsis
+    endif
+
+    return branch
 endfunction
 
 function! s:FileNameStatus(bufnum, ...) abort
@@ -348,10 +350,14 @@ function! s:FileInfoStatus(bufnum) abort
     return join(parts, ' ') . ' '
 endfunction
 
-
 function! s:GitBranchStatus(...) abort
-    let winwidth = get(a:, 1, 100)
-    return s:FormatBranch(s:GetGitBranch(), winwidth)
+    let l:winwidth = get(a:, 1, 100)
+
+    if g:crystalline_show_git_branch && l:winwidth >= s:small_window_width
+        return s:FormatBranch(s:GetGitBranch(), l:winwidth)
+    endif
+
+    return ''
 endfunction
 
 function! s:ClipboardStatus() abort
