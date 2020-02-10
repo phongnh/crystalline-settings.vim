@@ -192,7 +192,7 @@ function! s:GetFileFlags(bufnum) abort
     " file modified and modifiable
     if getbufvar(a:bufnum, '&modified')
         if !getbufvar(a:bufnum, '&modifiable')
-            let flags .= '[-+]'
+            let flags .= '[+-]'
         else
             let flags .= '[+]'
         endif
