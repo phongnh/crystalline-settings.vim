@@ -78,8 +78,6 @@ let s:filename_modes = {
             \ }
 
 let s:filetype_modes = {
-            \ 'ctrlp':             'CtrlP',
-            \ 'leaderf':           'LeaderF',
             \ 'netrw':             'NetrwTree',
             \ 'nerdtree':          'NERDTree',
             \ 'startify':          'Startify',
@@ -649,7 +647,7 @@ let g:ctrlp_status_func = {
 function! CtrlPMainStatusLine(focus, byfname, regex, prev, item, next, marked) abort
     return s:BuildStatus(
                 \ [
-                \   s:filetype_modes['ctrlp'],
+                \   s:filetype_modes['ControlP'],
                 \   [ a:prev, printf(' « %s » ', a:item), a:next],
                 \ ],
                 \ [
