@@ -28,8 +28,8 @@ let s:normal_window_width = 100
 
 " Symbols
 let s:symbols = {
-            \ 'clipboard': 'ⓒ ',
-            \ 'paste':     'Ⓟ ',
+            \ 'clipboard': 'ⓒ  ',
+            \ 'paste':     'Ⓟ  ',
             \ 'left':      '',
             \ 'right':     '',
             \ 'readonly':  '',
