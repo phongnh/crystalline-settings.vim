@@ -66,6 +66,19 @@ call extend(s:symbols, {
 "ⓡ  : Readonly
 " ® : Readonly
 
+let s:short_modes = {
+            \ 'NORMAL':   'N',
+            \ 'INSERT':   'I',
+            \ 'VISUAL':   'V',
+            \ 'V-LINE':   'L',
+            \ 'V-BLOCK':  'B',
+            \ 'COMMAND':  'C',
+            \ 'SELECT':   'S',
+            \ 'S-LINE':   'S-L',
+            \ 'S-BLOCK':  'S-B',
+            \ 'TERMINAL': 'T',
+            \ }
+
 " Detect DevIcons
 let s:has_devicons = findfile('plugin/webdevicons.vim', &rtp) != ''
 " let s:has_devicons = exists('*WebDevIconsGetFileTypeSymbol') && exists('*WebDevIconsGetFileFormatSymbol')
@@ -92,7 +105,7 @@ let s:filetype_modes = {
             \ 'vim-plug':          'Plugins',
             \ 'terminal':          'Terminal',
             \ 'help':              'HELP',
-            \ 'qf':                '%q',
+            \ 'qf':                'Quickfix',
             \ 'godoc':             'GoDoc',
             \ 'gedoc':             'GeDoc',
             \ 'gitcommit':         'Commit Message',
@@ -102,6 +115,10 @@ let s:filetype_modes = {
             \ 'agit_diff':         'Agit Diff',
             \ 'agit_stat':         'Agit Stat',
             \ }
+
+function! s:Hi(group) abort
+    return printf('%%#%s#', a:group)
+endfunction
 
 function! s:Strip(str) abort
     if exists('*trim')
@@ -138,8 +155,28 @@ function! s:ParseFillList(list, sep) abort
     return s:RemoveEmptyElement(l:list)
 endfunction
 
-function! s:Hi(group) abort
-    return printf('%%#%s#', a:group)
+function! s:ParseMode(mode, sep) abort
+    let l:mode = join(s:RemoveEmptyElement(s:EnsureList(a:mode)), a:sep)
+    return l:mode
+endfunction
+
+function! s:BuildMode(parts, ...) abort
+    let sep = get(a:, 1, s:symbols.left_sep)
+    return s:ParseMode(a:parts, sep)
+endfunction
+
+function! s:BuildRightMode(parts) abort
+    return s:BuildMode(a:parts, s:symbols.right_sep)
+endfunction
+
+function! s:BuildFill(parts, ...) abort
+    let sep = get(a:, 1, s:symbols.left_sep)
+    let l:parts = s:ParseFillList(a:parts, sep)
+    return join(l:parts, sep)
+endfunction
+
+function! s:BuildRightFill(parts, ...) abort
+    return s:BuildFill(a:parts, s:symbols.right_sep)
 endfunction
 
 function! s:GetCurrentDir() abort
@@ -150,24 +187,18 @@ function! s:GetCurrentDir() abort
     return dir
 endfunction
 
-function! s:GetBufferType(bufnum) abort
-    let ft = getbufvar(a:bufnum, '&filetype')
-
-    if empty(ft)
-        let ft = getbufvar(a:bufnum, '&buftype')
-    endif
-
-    return ft
+function! s:GetBufferType() abort
+    return strlen(&filetype) ? &filetype : &buftype
 endfunction
 
-function! s:GetFileName(bufnum) abort
-    let fname = bufname(a:bufnum)
+function! s:GetFileName() abort
+    let fname = expand('%:~:.')
 
     if empty(fname)
         return '[No Name]'
     endif
 
-    return fnamemodify(fname, ':~:.')
+    return fname
 endfunction
 
 function! s:FormatFileName(fname, winwidth, max_width) abort
@@ -180,12 +211,8 @@ function! s:FormatFileName(fname, winwidth, max_width) abort
     if strlen(fname) > a:winwidth && (fname[0] =~ '\~\|/')
         let fname = s:ShortenPath(fname)
     endif
-    
-    let max_width = min([a:winwidth, a:max_width])
 
-    if strlen(fname) > max_width
-        let fname = s:ShortenPath(fname)
-    endif
+    let max_width = min([a:winwidth, a:max_width])
 
     if strlen(fname) > max_width
         let fname = fnamemodify(fname, ':t')
@@ -194,21 +221,21 @@ function! s:FormatFileName(fname, winwidth, max_width) abort
     return fname
 endfunction
 
-function! s:GetFileFlags(bufnum) abort
+function! s:GetFileFlags() abort
     let flags = ''
 
     " file modified and modifiable
-    if getbufvar(a:bufnum, '&modified')
-        if !getbufvar(a:bufnum, '&modifiable')
+    if &modified
+        if !&modifiable
             let flags .= '[+-]'
         else
             let flags .= '[+]'
         endif
-    elseif !getbufvar(a:bufnum, '&modifiable')
+    elseif !&modifiable
         let flags .= '[-]'
     endif
 
-    if getbufvar(a:bufnum, '&readonly')
+    if &readonly
         let flags .= ' ' . s:symbols.readonly . ' '
     endif
 
@@ -267,10 +294,9 @@ function! s:FormatBranch(branch, winwidth) abort
     return branch
 endfunction
 
-function! s:FileNameStatus(bufnum, ...) abort
-    " return %f%h%w%m%r
+function! s:FileNameStatus(...) abort
     let winwidth = get(a:, 1, 100)
-    return s:FormatFileName(s:GetFileName(a:bufnum), winwidth, 50) . s:GetFileFlags(a:bufnum)
+    return s:FormatFileName(s:GetFileName(), winwidth, 50) . s:GetFileFlags()
 endfunction
 
 " Copied from https://github.com/ahmedelgabri/dotfiles/blob/master/files/vim/.vim/autoload/statusline.vim
@@ -290,7 +316,7 @@ function! s:FileSize() abort
     endif
 endfunction
 
-function! s:FileSizeStatus(...) abort
+function! s:FileSizeStatus() abort
     if g:crystalline_show_file_size
         return s:FileSize()
     endif
@@ -299,35 +325,32 @@ endfunction
 
 function! s:IndentationStatus(...) abort
     let shiftwidth = exists('*shiftwidth') ? shiftwidth() : &shiftwidth
-    return printf('%s: %d', (&expandtab ? 'Spaces' : 'Tab Size'), shiftwidth)
+    let compact = get(a:, 1, 0)
+    if compact
+        return printf(&expandtab ? 'SPC: %d' : 'TAB: %d', shiftwidth)
+    else
+        return printf(&expandtab ? 'Spaces: %d' : 'Tab Size: %d', shiftwidth)
+    endif
 endfunction
 
-function! s:FileEncodingStatus(bufnum) abort
-    let encoding = getbufvar(a:bufnum, '&fileencoding')
-    if empty(encoding)
-        let encoding = getbufvar(a:bufnum, '&encoding')
-    endif
+function! s:FileEncodingStatus() abort
+    let l:encoding = strlen(&fileencoding) ? &fileencoding : &encoding
     " Show encoding only if it is not utf-8
-    if empty(encoding) || encoding ==# 'utf-8'
+    if empty(l:encoding) || l:encoding ==# 'utf-8'
         return ''
     endif
-    return printf('[%s]', encoding)
+    return printf('[%s]', l:encoding)
 endfunction
 
-function! s:FileEncodingAndFormatStatus(bufnum) abort
-    let encoding = getbufvar(a:bufnum, '&fileencoding')
-    if empty(encoding)
-        let encoding = getbufvar(a:bufnum, '&encoding')
-    endif
+function! s:FileEncodingAndFormatStatus() abort
+    let l:encoding = strlen(&fileencoding) ? &fileencoding : &encoding
 
-    let format = getbufvar(a:bufnum, '&fileformat')
-
-    if strlen(encoding) && strlen(format)
-        let stl = printf('%s[%s]', encoding, format)
-    elseif strlen(encoding)
-        let stl = encoding
+    if strlen(l:encoding) && strlen(&fileformat)
+        let stl = printf('%s[%s]', l:encoding, &fileformat)
+    elseif strlen(l:encoding)
+        let stl = l:encoding
     else
-        let stl = printf('[%s]', format)
+        let stl = printf('[%s]', &fileformat)
     endif
 
     " Show format only if it is not utf-8[unix]
@@ -338,30 +361,31 @@ function! s:FileEncodingAndFormatStatus(bufnum) abort
     return stl
 endfunction
 
-function! s:FileInfoStatus(bufnum) abort
-    let ft = s:GetBufferType(a:bufnum)
+function! s:FileInfoStatus(...) abort
+    let ft = s:GetBufferType()
 
     if g:crystalline_show_devicons && s:has_devicons
+        let compact = get(a:, 1, 0)
+
         let parts = s:RemoveEmptyElement([
-                    \ s:FileEncodingStatus(a:bufnum),
-                    \ WebDevIconsGetFileFormatSymbol() . ' ',
+                    \ s:FileEncodingStatus(),
+                    \ !compact ? WebDevIconsGetFileFormatSymbol() . ' ' : '',
                     \ ft,
-                    \ WebDevIconsGetFileTypeSymbol(bufname(a:bufnum)) . ' ',
+                    \ !compact ? WebDevIconsGetFileTypeSymbol(expand('%')) . ' ' : '',
                     \ ])
     else
         let parts = s:RemoveEmptyElement([
-                    \ s:FileEncodingAndFormatStatus(a:bufnum),
+                    \ s:FileEncodingAndFormatStatus(),
                     \ ft,
                     \ ])
     endif
 
-    return join(parts, ' ') . ' '
+    return join(parts, ' ')
 endfunction
 
 function! s:GitBranchStatus(...) abort
-    let l:winwidth = get(a:, 1, 100)
-
-    if g:crystalline_show_git_branch && l:winwidth >= s:small_window_width
+    if g:crystalline_show_git_branch
+        let l:winwidth = get(a:, 1, 100)
         return s:FormatBranch(s:GetGitBranch(), l:winwidth)
     endif
 
@@ -389,236 +413,260 @@ function! s:SpellStatus() abort
     return ''
 endfunction
 
-function! s:StatusSeparator() abort
-    return '%='
+let s:crystalline_last_custom_mode_time = reltime()
+
+function! s:CustomMode() abort
+    if has_key(b:, 'crystalline_custom_mode') && reltimefloat(reltime(s:crystalline_last_custom_mode_time)) < 0.5
+        return b:crystalline_custom_mode
+    endif
+    let b:crystalline_custom_mode = s:FetchCustomMode()
+    let s:crystalline_last_custom_mode_time = reltime()
+    return b:crystalline_custom_mode
 endfunction
 
-function! s:ParseMode(mode, sep) abort
-    let l:mode = join(s:RemoveEmptyElement(s:EnsureList(a:mode)), a:sep)
-    let l:mode = strlen(l:mode) ? printf(' %s ', l:mode) : ' '
-    return l:mode
-endfunction
+function! s:FetchCustomMode() abort
+    let fname = expand('%:t')
 
-function! s:BuildMode(...) abort
-    let l:mode = s:ParseMode(a:000, s:symbols.left_sep)
-    return crystalline#mode_color() . l:mode . crystalline#right_mode_sep('')
-endfunction
-
-function! s:BuildLeftStatus(parts) abort
-    let l:parts = s:ParseList(a:parts)
-
-    let stl = s:BuildMode(get(l:parts, 0, []))
-
-    let l:fill_parts = s:ParseFillList(l:parts[1:1], s:symbols.left_sep)
-    if len(l:fill_parts) > 0
-        let l:fill = ' ' . join(l:fill_parts, s:symbols.left_sep) . ' '
-    else
-        let l:fill = ''
-    endif
-    let stl .= l:fill . crystalline#right_sep('', 'Fill')
-
-    let l:extra_parts = s:ParseFillList(l:parts[2:], s:symbols.left_sep)
-    if len(l:extra_parts) > 0
-        let l:extra = ' ' . join(l:extra_parts, s:symbols.left_sep) . ' '
-    else
-        let l:extra = ''
-    endif
-    let stl .= l:extra
-
-    return stl
-endfunction
-
-function! s:BuildRightStatus(parts) abort
-    let l:parts = s:ParseList(a:parts)
-
-    let result = []
-
-    let l:mode = s:ParseMode(get(l:parts, 0, ''), s:symbols.right_sep)
-    call insert(result, crystalline#left_mode_sep('') . l:mode, 0)
-
-    let l:fill_parts = s:ParseFillList(l:parts[1:1], s:symbols.right_sep)
-    if len(l:fill_parts) > 0
-        let l:fill = ' ' . join(l:fill_parts, s:symbols.right_sep) . ' '
-    else
-        let l:fill = ''
-    endif
-    call insert(result, crystalline#left_sep('', 'Fill') . l:fill, 0)
-
-    let l:extra_parts = s:ParseFillList(l:parts[2:], s:symbols.right_sep)
-    if len(l:extra_parts) > 0
-        let l:extra = ' ' . join(l:extra_parts, s:symbols.right_sep) . ' '
-    else
-        let l:extra = ''
-    endif
-    call insert(result, l:extra, 0)
-
-    return join(result, '')
-endfunction
-
-function! s:BuildStatus(left_parts, ...) abort
-    let left_parts  = s:ParseList(a:left_parts)
-    let right_parts = s:ParseList(get(a:, 1, []))
-
-    let stl = '%<' . s:BuildLeftStatus(left_parts)
-
-    let stl .= s:StatusSeparator()
-
-    if len(right_parts) > 0
-        let stl .= '%<' . s:BuildRightStatus(right_parts)
-    endif
-
-    return stl
-endfunction
-
-function! s:CustomMode(bufnum) abort
-    let ft = s:GetBufferType(a:bufnum)
-
-    if has_key(s:filetype_modes, ft)
-        return s:filetype_modes[ft]
-    endif
-
-    let fname = fnamemodify(bufname(a:bufnum), ':t')
     if has_key(s:filename_modes, fname)
-        return s:filename_modes[fname]
-    endif
-
-    if fname =~? '^NrrwRgn' && exists('b:nrrw_instn')
-        return printf('%s#%d', 'NrrwRgn', b:nrrw_instn)
-    endif
-
-    return ''
-endfunction
-
-function! s:CustomStatus(bufnum) abort
-    let l:mode = ''
-
-    let ft = s:GetBufferType(a:bufnum)
-    if has_key(s:filetype_modes, ft)
-        let l:mode = s:filetype_modes[ft]
-
-        if ft ==# 'terminal'
-            return s:BuildStatus([ l:mode, '%f' ])
-        endif
-
-        if ft ==# 'help'
-            return s:BuildStatus([ l:mode, fnamemodify(bufname(a:bufnum), ':p') ])
-        endif
-
-        if ft ==# 'qf'
-            let l:qf_title = s:Strip(get(w:, 'quickfix_title', ''))
-            return s:BuildStatus([ l:mode, l:qf_title ])
-        endif
-    endif
-
-    let fname = fnamemodify(bufname(a:bufnum), ':t')
-    if has_key(s:filename_modes, fname)
-        let l:mode = s:filename_modes[fname]
+        let result = {
+                    \ 'custom': 1,
+                    \ 'name': s:filename_modes[fname],
+                    \ 'type': 'name',
+                    \ }
 
         if fname ==# '__CtrlSF__'
-            return s:BuildStatus(
-                        \ [
-                        \   l:mode,
-                        \   substitute(ctrlsf#utils#SectionB(), 'Pattern: ', '', ''),
-                        \   ctrlsf#utils#SectionC(),
-                        \ ],
-                        \ [
-                        \   ctrlsf#utils#SectionX()
-                        \ ]
-                        \ )
+            return extend(result, {
+                        \ 'lfill': substitute(ctrlsf#utils#SectionB(), 'Pattern: ', '', ''),
+                        \ 'lextra': ctrlsf#utils#SectionC(),
+                        \ 'rmode': ctrlsf#utils#SectionX(),
+                        \ })
         endif
 
         if fname ==# '__CtrlSFPreview__'
-            return s:BuildStatus([ l:mode, ctrlsf#utils#PreviewSectionC() ])
+            let result['lfill'] = ctrlsf#utils#PreviewSectionC()
+            return result
+        endif
+
+        return result
+    endif
+
+    if fname =~? '^NrrwRgn'
+        let nrrw_rgn_status = s:NrrwRgnStatus()
+        if len(nrrw_rgn_status)
+            return {
+                        \ 'custom': 1,
+                        \ 'name': nrrw_rgn_status[0],
+                        \ 'lfill': get(nrrw_rgn_status, 1, ''),
+                        \ 'type': 'name',
+                        \ }
         endif
     endif
 
-    if fname =~? '^NrrwRgn' && exists('b:nrrw_instn')
-        return s:NrrwRgnStatus()
+    let ft = s:GetBufferType()
+    if has_key(s:filetype_modes, ft)
+        let result = {
+                    \ 'custom': 1,
+                    \ 'name': s:filetype_modes[ft],
+                    \ 'type': 'filetype',
+                    \ }
+
+        if ft ==# 'terminal'
+            let result['lfill'] = expand('%')
+            return result
+        endif
+
+        if ft ==# 'help'
+            let result['lfill'] = expand('%:p')
+            return result
+        endif
+
+        if ft ==# 'qf'
+            if getwininfo(win_getid())[0]['loclist']
+                let result['name'] = 'Location'
+            endif
+            let result['lfill'] = s:Strip(get(w:, 'quickfix_title', ''))
+            return result
+        endif
+
+        return result
     endif
 
-    if strlen(l:mode)
-        return s:BuildMode(l:mode)
-    endif
-
-    return ''
+    return { 'custom': 0 }
 endfunction
 
-function! s:NrrwRgnStatus() abort
-    let l:parts = [ printf('%s#%d', 'NrrwRgn', b:nrrw_instn) ]
+function! s:NrrwRgnStatus(...) abort
+    if exists(':WidenRegion') == 2
+        let l:modes = []
 
-    let dict = exists('*nrrwrgn#NrrwRgnStatus()') ?  nrrwrgn#NrrwRgnStatus() : {}
+        if exists('b:nrrw_instn')
+            call add(l:modes, printf('%s#%d', 'NrrwRgn', b:nrrw_instn))
+        else
+            let l:mode = substitute(bufname('%'), '^Nrrwrgn_\zs.*\ze_\d\+$', submatch(0), '')
+            let l:mode = substitute(l:mode, '__', '#', '')
+            call add(l:modes, l:mode)
+        endif
 
-    if !empty(dict)
-        let fname = fnamemodify(dict.fullname, ':~:.')
-        call add(l:parts, fname)
-    elseif get(b:, 'orig_buf', 0)
-        call add(l:parts, bufname(b:orig_buf))
+        let dict = exists('*nrrwrgn#NrrwRgnStatus()') ?  nrrwrgn#NrrwRgnStatus() : {}
+
+        if !empty(dict)
+            call add(l:modes, fnamemodify(dict.fullname, ':~:.'))
+        elseif get(b:, 'orig_buf', 0)
+            call add(l:modes, bufname(b:orig_buf))
+        endif
+
+        return l:modes
     endif
 
-    return s:BuildStatus(parts)
+    return []
 endfunction
 
-function! s:ActiveStatusLine(winnum) abort
-    let bufnum = winbufnr(a:winnum)
+function! s:IsCompact(winwidth) abort
+    return &spell || &paste || strlen(s:ClipboardStatus()) || a:winwidth <= s:xsmall_window_width
+endfunction
 
+function! s:BuildGroup(exp) abort
+    if a:exp =~ '^%'
+        return '%( ' . a:exp . ' %)'
+    else
+        return '%( %{' . a:exp . '} %)'
+    endif
+endfunction
+
+function! StatusLineActiveMode(...) abort
     " custom status
-    let stl = s:CustomStatus(bufnum)
-    if strlen(stl)
-        return stl
+    let l:mode = s:CustomMode()
+    if l:mode['custom']
+        return s:BuildMode([ l:mode['name'] ])
     endif
 
-    let l:fill_parts = []
-    let l:extra_parts = []
+    let l:winwidth = winwidth(get(a:, 1, 0))
 
-    let l:width = winwidth(a:winnum)
-
-    if l:width >= s:small_window_width
-        let l:fill_parts = [
-                    \ s:IndentationStatus(),
-                    \ s:FileSizeStatus(),
-                    \ ]
-
-        let l:extra_parts = [
-                    \ s:ClipboardStatus(),
-                    \ s:PasteStatus(),
-                    \ s:SpellStatus(),
-                    \ ]
+    let l:mode = s:Strip(crystalline#mode_label())
+    if l:winwidth < s:xsmall_window_width
+        let l:mode  = get(s:short_modes, l:mode, l:mode)
     endif
 
-    return s:BuildStatus(
-                \ [
-                \   s:Strip(crystalline#mode_label()),
-                \   s:FileNameStatus(bufnum, l:width - 2),
-                \   s:GitBranchStatus(l:width),
-                \ ],
-                \ [
-                \   l:width < s:xsmall_window_width ? &ft : s:FileInfoStatus(bufnum),
-                \   l:fill_parts,
-                \   l:extra_parts,
-                \ ]
-                \ )
+    return s:BuildMode(l:mode)
 endfunction
 
-function! s:InactiveStatusLine(winnum) abort
-    let bufnum = winbufnr(a:winnum)
-
-    " show only custom mode in inactive buffer
-    let stl = s:CustomMode(bufnum)
-    if empty(stl)
-        let stl = s:FileNameStatus(bufnum)
+function! StatusLineLeftFill(...) abort
+    let l:mode = s:CustomMode()
+    if l:mode['custom']
+        return s:BuildFill([ get(l:mode, 'lfill', '') ])
     endif
 
-    " plugin/crystalline_settings.vim[+]
-    return s:Hi('CrystallineInactive') . ' ' . stl . ' '
+    let l:winwidth = winwidth(get(a:, 1, 0))
+
+    return s:BuildFill([
+                \ s:FileNameStatus(l:winwidth - 2),
+                \ ])
+endfunction
+
+function! StatusLineLeftExtra(...) abort
+    let l:mode = s:CustomMode()
+    if l:mode['custom']
+        return s:BuildFill(get(l:mode, 'lextra', ''))
+    endif
+
+    let l:winwidth = winwidth(get(a:, 1, 0))
+
+    if l:winwidth < s:small_window_width
+        return ''
+    endif
+
+    return s:BuildFill([
+                \ s:GitBranchStatus(l:winwidth),
+                \ ])
+endfunction
+
+function! StatusLineRightMode(...) abort
+    let l:mode = s:CustomMode()
+    if l:mode['custom']
+        return s:BuildRightMode(get(l:mode, 'rmode', ''))
+    endif
+
+    let l:winwidth = winwidth(get(a:, 1, 0))
+    let compact = s:IsCompact(l:winwidth)
+
+    return s:BuildRightMode([
+                \ s:FileInfoStatus(compact),
+                \ ])
+endfunction
+
+function! StatusLineRightFill(...) abort
+    let l:mode = s:CustomMode()
+    if l:mode['custom']
+        return s:BuildRightFill(get(l:mode, 'rfill', ''))
+    endif
+
+    let l:winwidth = winwidth(get(a:, 1, 0))
+
+    if l:winwidth < s:small_window_width
+        return ''
+    endif
+
+    let compact = s:IsCompact(l:winwidth)
+
+    return s:BuildRightFill([
+                \ s:IndentationStatus(compact),
+                \ s:FileSizeStatus(),
+                \ ])
+endfunction
+
+function! StatusLineRightExtra(...) abort
+    let l:mode = s:CustomMode()
+    if l:mode['custom']
+        return s:BuildRightFill(get(l:mode, 'rextra', ''))
+    endif
+
+    let l:winwidth = winwidth(get(a:, 1, 0))
+    if l:winwidth < s:small_window_width
+        return ''
+    endif
+
+    return s:BuildRightFill([
+                \ s:ClipboardStatus(),
+                \ s:PasteStatus(),
+                \ s:SpellStatus(),
+                \ ])
+endfunction
+
+function! StatusLineInactiveMode(...) abort
+    " show only custom mode in inactive buffer
+    let l:mode = s:CustomMode()
+    if l:mode['custom']
+        return s:BuildMode([ l:mode['name'], get(l:mode, 'lfill', '') ])
+    endif
+
+    let l:winwidth = winwidth(get(a:, 1, 0))
+
+    " plugin/statusline.vim[+]
+    return s:FileNameStatus(l:winwidth - 2)
 endfunction
 
 function! StatusLine(current, win) abort
     let winnum = win_id2win(a:win)
-
     if a:current
-        return s:ActiveStatusLine(winnum)
+        return join([
+                    \ crystalline#mode_color(),
+                    \ '%<',
+                    \ s:BuildGroup(printf('StatusLineActiveMode(%d)', winnum)),
+                    \ crystalline#right_mode_sep(''),
+                    \ s:BuildGroup(printf('StatusLineLeftFill(%d)', winnum)),
+                    \ crystalline#right_sep('', 'Fill'),
+                    \ s:BuildGroup(printf('StatusLineLeftExtra(%d)', winnum)),
+                    \ '%=',
+                    \ '%<',
+                    \ s:BuildGroup(printf('StatusLineRightExtra(%d)', winnum)),
+                    \ crystalline#left_sep('', 'Fill'),
+                    \ s:BuildGroup(printf('StatusLineRightFill(%d)', winnum)),
+                    \ crystalline#left_mode_sep(''),
+                    \ s:BuildGroup(printf('StatusLineRightMode(%d)', winnum)),
+                    \ ], '')
     else
-        return s:InactiveStatusLine(winnum)
+        return s:Hi('CrystallineInactive') .
+                    \ '%<' .
+                    \ s:BuildGroup(printf('StatusLineInactiveMode(%d)', winnum))
     endif
 endfunction
 
@@ -647,6 +695,60 @@ augroup VimCrystallineSettings
     autocmd VimEnter * call s:Init()
 augroup END
 
+" Plugin Status
+function! s:Surround(str) abort
+    return strlen(a:str) ? ' ' . a:str . ' ' : a:str
+endfunction
+
+function! s:BuildLeftStatus(parts) abort
+    let l:parts = s:ParseList(a:parts)
+
+    let l:mode = s:Surround(s:ParseMode(get(l:parts, 0, []), s:symbols.left_sep))
+
+    let stl = crystalline#mode_color() . l:mode . crystalline#right_mode_sep('')
+
+    let l:fill = s:Surround(s:BuildFill(l:parts[1:1], s:symbols.left_sep))
+    let stl .= l:fill . crystalline#right_sep('', 'Fill')
+
+    let l:extra = s:Surround(s:BuildFill(l:parts[2:], s:symbols.left_sep))
+    let stl .= l:extra
+
+    return stl
+endfunction
+
+function! s:BuildRightStatus(parts) abort
+    let l:parts = s:ParseList(a:parts)
+
+    let result = []
+
+    let l:mode = s:Surround(s:ParseMode(get(l:parts, 0, ''), s:symbols.right_sep))
+    call insert(result, crystalline#left_mode_sep('') . l:mode, 0)
+
+    let l:fill = s:Surround(s:BuildRightFill(l:parts[1:1]))
+    call insert(result, crystalline#left_sep('', 'Fill') . l:fill, 0)
+
+    let l:extra = s:Surround(s:BuildRightFill(l:parts[2:]))
+    call insert(result, l:extra, 0)
+
+    return join(result, '')
+endfunction
+
+function! s:BuildPluginStatus(left_parts, ...) abort
+    let left_parts  = s:ParseList(a:left_parts)
+    let right_parts = s:ParseList(get(a:, 1, []))
+
+    let stl = '%<' . s:BuildLeftStatus(left_parts)
+
+    let stl .= '%='
+
+    if len(right_parts) > 0
+        let stl .= '%<' . s:BuildRightStatus(right_parts)
+    endif
+
+    return stl
+endfunction
+
+
 " CtrlP Integration
 let g:ctrlp_status_func = {
             \ 'main': 'CtrlPMainStatusLine',
@@ -654,9 +756,9 @@ let g:ctrlp_status_func = {
             \ }
 
 function! CtrlPMainStatusLine(focus, byfname, regex, prev, item, next, marked) abort
-    return s:BuildStatus(
+    return s:BuildPluginStatus(
                 \ [
-                \   s:filetype_modes['ControlP'],
+                \   s:filename_modes['ControlP'],
                 \   [ a:prev, printf(' « %s » ', a:item), a:next],
                 \ ],
                 \ [
@@ -667,7 +769,7 @@ function! CtrlPMainStatusLine(focus, byfname, regex, prev, item, next, marked) a
 endfunction
 
 function! CtrlPProgressStatusLine(len) abort
-    return s:BuildStatus([ a:len ], [ s:GetCurrentDir() ])
+    return s:BuildPluginStatus([ a:len ], [ s:GetCurrentDir() ])
 endfunction
 
 " Tagbar Integration
@@ -675,9 +777,9 @@ let g:tagbar_status_func = 'TagbarStatusFunc'
 
 function! TagbarStatusFunc(current, sort, fname, flags, ...) abort
     if empty(a:flags)
-        return s:BuildStatus([a:sort, a:fname])
+        return s:BuildPluginStatus([a:sort, a:fname])
     else
-        return s:BuildStatus([a:sort, a:fname, printf('[%s]', join(a:flags, ''))])
+        return s:BuildPluginStatus([a:sort, a:fname, printf('[%s]', join(a:flags, ''))])
     endif
 endfunction
 
