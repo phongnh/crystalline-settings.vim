@@ -1,3 +1,7 @@
+" crystalline_settings.vim
+" Maintainer: Phong Nguyen
+" Version:    0.1.0
+
 if exists('g:loaded_vim_crystalline_settings') || v:version < 700
     finish
 endif
@@ -611,12 +615,7 @@ endfunction
 function! StatusLine(current, win) abort
     let winnum = win_id2win(a:win)
 
-    let l:current = a:current
-    if winnum == winnr() && !l:current
-        let l:current = 1
-    endif
-
-    if l:current
+    if a:current
         return s:ActiveStatusLine(winnum)
     else
         return s:InactiveStatusLine(winnum)
