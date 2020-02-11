@@ -28,20 +28,23 @@ let s:normal_window_width = 100
 
 " Symbols
 let s:symbols = {
-            \ 'clipboard': 'ⓒ  ',
-            \ 'paste':     'Ⓟ  ',
             \ 'left':      '',
             \ 'right':     '',
-            \ 'readonly':  '',
+            \ 'branch':    "\ue0a0",
+            \ 'readonly':  "\ue0a2",
+            \ 'clipboard': 'ⓒ  ',
+            \ 'paste':     'Ⓟ  ',
             \ 'ellipsis':  '…',
             \ 'mode_sep':  ' ',
             \ 'fill_sep':  ' ',
             \ }
 
-if !g:crystalline_powerline
+if !g:crystalline_enable_sep
     call extend(s:symbols, {
-            \ 'left':  '»',
-            \ 'right': '«',
+            \ 'left':     '»',
+            \ 'right':    '«',
+            \ 'branch':   '',
+            \ 'readonly': '',
             \ })
 endif
 
@@ -391,7 +394,11 @@ endfunction
 function! s:GitBranchStatus(...) abort
     if g:crystalline_show_git_branch
         let l:winwidth = get(a:, 1, 100)
-        return s:FormatBranch(s:GetGitBranch(), l:winwidth)
+        let branch = s:FormatBranch(s:GetGitBranch(), l:winwidth)
+
+        if strlen(branch)
+            return s:Strip(s:symbols.branch . ' ' . branch)
+        endif
     endif
 
     return ''
