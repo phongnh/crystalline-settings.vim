@@ -289,7 +289,7 @@ function! s:ShortenBranch(branch, length) abort
 endfunction
 
 function! s:FormatBranch(branch, winwidth) abort
-    if a:winwidth > s:normal_window_width
+    if a:winwidth >= s:normal_window_width
         return s:ShortenBranch(a:branch, 50)
     endif
 
@@ -447,7 +447,7 @@ function! StatusLineActiveMode(...) abort
     let l:winwidth = winwidth(get(a:, 1, 0))
 
     let l:mode = s:Strip(crystalline#mode_label())
-    if l:winwidth < s:xsmall_window_width
+    if l:winwidth <= s:xsmall_window_width
         let l:mode  = get(s:short_modes, l:mode, l:mode)
     endif
 
@@ -475,13 +475,13 @@ function! StatusLineLeftExtra(...) abort
 
     let l:winwidth = winwidth(get(a:, 1, 0))
 
-    if l:winwidth < s:small_window_width
-        return ''
+    if l:winwidth >= s:small_window_width
+        return s:BuildFill([
+                    \ s:GitBranchStatus(l:winwidth),
+                    \ ])
     endif
 
-    return s:BuildFill([
-                \ s:GitBranchStatus(l:winwidth),
-                \ ])
+    return ''
 endfunction
 
 function! StatusLineRightMode(...) abort
@@ -506,16 +506,15 @@ function! StatusLineRightFill(...) abort
 
     let l:winwidth = winwidth(get(a:, 1, 0))
 
-    if l:winwidth < s:small_window_width
-        return ''
+    if l:winwidth >= s:small_window_width
+        let compact = s:IsCompact(l:winwidth)
+        return s:BuildRightFill([
+                    \ s:IndentationStatus(compact),
+                    \ s:FileSizeStatus(),
+                    \ ])
     endif
 
-    let compact = s:IsCompact(l:winwidth)
-
-    return s:BuildRightFill([
-                \ s:IndentationStatus(compact),
-                \ s:FileSizeStatus(),
-                \ ])
+    return ''
 endfunction
 
 function! StatusLineRightExtra(...) abort
@@ -525,15 +524,16 @@ function! StatusLineRightExtra(...) abort
     endif
 
     let l:winwidth = winwidth(get(a:, 1, 0))
-    if l:winwidth < s:small_window_width
-        return ''
+
+    if l:winwidth >= s:small_window_width
+        return s:BuildRightFill([
+                    \ s:ClipboardStatus(),
+                    \ s:PasteStatus(),
+                    \ s:SpellStatus(),
+                    \ ])
     endif
 
-    return s:BuildRightFill([
-                \ s:ClipboardStatus(),
-                \ s:PasteStatus(),
-                \ s:SpellStatus(),
-                \ ])
+    return ''
 endfunction
 
 function! StatusLineInactiveMode(...) abort
