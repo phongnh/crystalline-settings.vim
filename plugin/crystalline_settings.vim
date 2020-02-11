@@ -413,113 +413,6 @@ function! s:SpellStatus() abort
     return ''
 endfunction
 
-let s:crystalline_last_custom_mode_time = reltime()
-
-function! s:CustomMode() abort
-    if has_key(b:, 'crystalline_custom_mode') && reltimefloat(reltime(s:crystalline_last_custom_mode_time)) < 0.5
-        return b:crystalline_custom_mode
-    endif
-    let b:crystalline_custom_mode = s:FetchCustomMode()
-    let s:crystalline_last_custom_mode_time = reltime()
-    return b:crystalline_custom_mode
-endfunction
-
-function! s:FetchCustomMode() abort
-    let fname = expand('%:t')
-
-    if has_key(s:filename_modes, fname)
-        let result = {
-                    \ 'custom': 1,
-                    \ 'name': s:filename_modes[fname],
-                    \ 'type': 'name',
-                    \ }
-
-        if fname ==# '__CtrlSF__'
-            return extend(result, {
-                        \ 'lfill': substitute(ctrlsf#utils#SectionB(), 'Pattern: ', '', ''),
-                        \ 'lextra': ctrlsf#utils#SectionC(),
-                        \ 'rmode': ctrlsf#utils#SectionX(),
-                        \ })
-        endif
-
-        if fname ==# '__CtrlSFPreview__'
-            let result['lfill'] = ctrlsf#utils#PreviewSectionC()
-            return result
-        endif
-
-        return result
-    endif
-
-    if fname =~? '^NrrwRgn'
-        let nrrw_rgn_status = s:NrrwRgnStatus()
-        if len(nrrw_rgn_status)
-            return {
-                        \ 'custom': 1,
-                        \ 'name': nrrw_rgn_status[0],
-                        \ 'lfill': get(nrrw_rgn_status, 1, ''),
-                        \ 'type': 'name',
-                        \ }
-        endif
-    endif
-
-    let ft = s:GetBufferType()
-    if has_key(s:filetype_modes, ft)
-        let result = {
-                    \ 'custom': 1,
-                    \ 'name': s:filetype_modes[ft],
-                    \ 'type': 'filetype',
-                    \ }
-
-        if ft ==# 'terminal'
-            let result['lfill'] = expand('%')
-            return result
-        endif
-
-        if ft ==# 'help'
-            let result['lfill'] = expand('%:p')
-            return result
-        endif
-
-        if ft ==# 'qf'
-            if getwininfo(win_getid())[0]['loclist']
-                let result['name'] = 'Location'
-            endif
-            let result['lfill'] = s:Strip(get(w:, 'quickfix_title', ''))
-            return result
-        endif
-
-        return result
-    endif
-
-    return { 'custom': 0 }
-endfunction
-
-function! s:NrrwRgnStatus(...) abort
-    if exists(':WidenRegion') == 2
-        let l:modes = []
-
-        if exists('b:nrrw_instn')
-            call add(l:modes, printf('%s#%d', 'NrrwRgn', b:nrrw_instn))
-        else
-            let l:mode = substitute(bufname('%'), '^Nrrwrgn_\zs.*\ze_\d\+$', submatch(0), '')
-            let l:mode = substitute(l:mode, '__', '#', '')
-            call add(l:modes, l:mode)
-        endif
-
-        let dict = exists('*nrrwrgn#NrrwRgnStatus()') ?  nrrwrgn#NrrwRgnStatus() : {}
-
-        if !empty(dict)
-            call add(l:modes, fnamemodify(dict.fullname, ':~:.'))
-        elseif get(b:, 'orig_buf', 0)
-            call add(l:modes, bufname(b:orig_buf))
-        endif
-
-        return l:modes
-    endif
-
-    return []
-endfunction
-
 function! s:IsCompact(winwidth) abort
     return &spell || &paste || strlen(s:ClipboardStatus()) || a:winwidth <= s:xsmall_window_width
 endfunction
@@ -535,7 +428,7 @@ endfunction
 function! StatusLineActiveMode(...) abort
     " custom status
     let l:mode = s:CustomMode()
-    if l:mode['custom']
+    if len(l:mode)
         return s:BuildMode([ l:mode['name'] ])
     endif
 
@@ -551,7 +444,7 @@ endfunction
 
 function! StatusLineLeftFill(...) abort
     let l:mode = s:CustomMode()
-    if l:mode['custom']
+    if len(l:mode)
         return s:BuildFill([ get(l:mode, 'lfill', '') ])
     endif
 
@@ -564,7 +457,7 @@ endfunction
 
 function! StatusLineLeftExtra(...) abort
     let l:mode = s:CustomMode()
-    if l:mode['custom']
+    if len(l:mode)
         return s:BuildFill(get(l:mode, 'lextra', ''))
     endif
 
@@ -581,7 +474,7 @@ endfunction
 
 function! StatusLineRightMode(...) abort
     let l:mode = s:CustomMode()
-    if l:mode['custom']
+    if len(l:mode)
         return s:BuildRightMode(get(l:mode, 'rmode', ''))
     endif
 
@@ -595,7 +488,7 @@ endfunction
 
 function! StatusLineRightFill(...) abort
     let l:mode = s:CustomMode()
-    if l:mode['custom']
+    if len(l:mode)
         return s:BuildRightFill(get(l:mode, 'rfill', ''))
     endif
 
@@ -615,7 +508,7 @@ endfunction
 
 function! StatusLineRightExtra(...) abort
     let l:mode = s:CustomMode()
-    if l:mode['custom']
+    if len(l:mode)
         return s:BuildRightFill(get(l:mode, 'rextra', ''))
     endif
 
@@ -634,8 +527,8 @@ endfunction
 function! StatusLineInactiveMode(...) abort
     " show only custom mode in inactive buffer
     let l:mode = s:CustomMode()
-    if l:mode['custom']
-        return s:BuildMode([ l:mode['name'], get(l:mode, 'lfill', '') ])
+    if len(l:mode)
+        return s:BuildMode([ l:mode['name'], get(l:mode, 'lfill_inactive', '') ])
     endif
 
     let l:winwidth = winwidth(get(a:, 1, 0))
@@ -748,6 +641,88 @@ function! s:BuildPluginStatus(left_parts, ...) abort
     return stl
 endfunction
 
+" Plugin Integration
+let s:crystalline_time_threshold = 0.5
+
+function! s:SaveLastTime()
+    let s:crystalline_last_custom_mode_time = reltime()
+endfunction
+
+call s:SaveLastTime()
+
+function! s:CustomMode() abort
+    if has_key(b:, 'crystalline_custom_mode') && reltimefloat(reltime(s:crystalline_last_custom_mode_time)) < s:crystalline_time_threshold
+        return b:crystalline_custom_mode
+    endif
+    let b:crystalline_custom_mode = s:FetchCustomMode()
+    let s:crystalline_last_custom_mode_time = reltime()
+    return b:crystalline_custom_mode
+endfunction
+
+function! s:FetchCustomMode() abort
+    let fname = expand('%:t')
+
+    if has_key(s:filename_modes, fname)
+        let result = {
+                    \ 'name': s:filename_modes[fname],
+                    \ 'type': 'name',
+                    \ }
+
+        if fname ==# '__CtrlSF__'
+            return extend(result, s:GetCtrlSFMode())
+        endif
+
+        if fname ==# '__CtrlSFPreview__'
+            return extend(result, s:GetCtrlSFPreviewMode())
+        endif
+
+        return result
+    endif
+
+    if fname =~? '^NrrwRgn'
+        let nrrw_rgn_mode = s:GetNrrwRgnMode()
+        if len(nrrw_rgn_mode)
+            return nrrw_rgn_mode
+        endif
+    endif
+
+    let ft = s:GetBufferType()
+    if has_key(s:filetype_modes, ft)
+        let result = {
+                    \ 'name': s:filetype_modes[ft],
+                    \ 'type': 'filetype',
+                    \ }
+
+        if ft ==# 'terminal'
+            return extend(result, {
+                        \ 'lfill': expand('%'),
+                        \ })
+        endif
+
+        if ft ==# 'help'
+            let fname = expand('%:p')
+            return extend(result, {
+                        \ 'lfill': fname,
+                        \ 'lfill_inactive': fname,
+                        \ })
+        endif
+
+        if ft ==# 'qf'
+            if getwininfo(win_getid())[0]['loclist']
+                let result['name'] = 'Location'
+            endif
+            let qf_title = s:Strip(get(w:, 'quickfix_title', ''))
+            return extend(result, {
+                        \ 'lfill': qf_title,
+                        \ 'lfill_inactive': qf_title,
+                        \ })
+        endif
+
+        return result
+    endif
+
+    return {}
+endfunction
 
 " CtrlP Integration
 let g:ctrlp_status_func = {
@@ -770,6 +745,55 @@ endfunction
 
 function! CtrlPProgressStatusLine(len) abort
     return s:BuildPluginStatus([ a:len ], [ s:GetCurrentDir() ])
+endfunction
+
+" CtrlSF Integration
+function! s:GetCtrlSFMode() abort
+    let pattern = substitute(ctrlsf#utils#SectionB(), 'Pattern: ', '', '')
+
+    return {
+                \ 'lfill': pattern,
+                \ 'lfill_inactive': pattern,
+                \ 'lextra': ctrlsf#utils#SectionC(),
+                \ 'rmode': ctrlsf#utils#SectionX(),
+                \ }
+endfunction
+
+function! s:GetCtrlSFPreviewMode() abort
+    let stl = ctrlsf#utils#PreviewSectionC()
+    return {
+                \ 'lfill': stl,
+                \ 'lfill_inactive': stl,
+                \ }
+endfunction
+
+" NrrwRgn Integration
+function! s:GetNrrwRgnMode(...) abort
+    let result = {}
+
+    if exists(':WidenRegion') == 2
+        let result['type'] = 'nrrwrgn'
+
+        if exists('b:nrrw_instn')
+            let result['name'] = printf('%s#%d', 'NrrwRgn', b:nrrw_instn)
+        else
+            let l:mode = substitute(bufname('%'), '^Nrrwrgn_\zs.*\ze_\d\+$', submatch(0), '')
+            let l:mode = substitute(l:mode, '__', '#', '')
+            let result['name'] = l:mode
+        endif
+
+        let dict = exists('*nrrwrgn#NrrwRgnStatus()') ?  nrrwrgn#NrrwRgnStatus() : {}
+
+        if len(dict)
+            let result['lfill'] = fnamemodify(dict.fullname, ':~:.')
+            let result['lfill_inactive'] = result['lfill']
+        elseif get(b:, 'orig_buf', 0)
+            let result['lfill'] = bufname(b:orig_buf)
+            let result['lfill_inactive'] = result['lfill']
+        endif
+    endif
+
+    return result
 endfunction
 
 " Tagbar Integration
