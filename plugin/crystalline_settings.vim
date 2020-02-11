@@ -102,6 +102,7 @@ let s:filetype_modes = {
             \ 'netrw':             'NetrwTree',
             \ 'nerdtree':          'NERDTree',
             \ 'startify':          'Startify',
+            \ 'tagbar':            'Tagbar',
             \ 'vim-plug':          'Plugins',
             \ 'terminal':          'Terminal',
             \ 'help':              'HELP',
@@ -126,6 +127,10 @@ function! s:Strip(str) abort
     else
         return substitute(a:str, '^\s*\(.\{-}\)\s*$', '\1', '')
     endif
+endfunction
+
+function! s:Wrap(text) abort
+    return printf('%s %s %s', '«', a:text, '»')
 endfunction
 
 function! s:ShortenPath(filename) abort
@@ -588,61 +593,10 @@ augroup VimCrystallineSettings
     autocmd VimEnter * call s:Init()
 augroup END
 
-" Plugin Status
-function! s:Surround(str) abort
-    return strlen(a:str) ? ' ' . a:str . ' ' : a:str
-endfunction
-
-function! s:BuildLeftStatus(parts) abort
-    let l:parts = s:ParseList(a:parts)
-
-    let l:mode = s:Surround(s:ParseMode(get(l:parts, 0, []), s:symbols.left_sep))
-
-    let stl = crystalline#mode_color() . l:mode . crystalline#right_mode_sep('')
-
-    let l:fill = s:Surround(s:BuildFill(l:parts[1:1], s:symbols.left_sep))
-    let stl .= l:fill . crystalline#right_sep('', 'Fill')
-
-    let l:extra = s:Surround(s:BuildFill(l:parts[2:], s:symbols.left_sep))
-    let stl .= l:extra
-
-    return stl
-endfunction
-
-function! s:BuildRightStatus(parts) abort
-    let l:parts = s:ParseList(a:parts)
-
-    let result = []
-
-    let l:mode = s:Surround(s:ParseMode(get(l:parts, 0, ''), s:symbols.right_sep))
-    call insert(result, crystalline#left_mode_sep('') . l:mode, 0)
-
-    let l:fill = s:Surround(s:BuildRightFill(l:parts[1:1]))
-    call insert(result, crystalline#left_sep('', 'Fill') . l:fill, 0)
-
-    let l:extra = s:Surround(s:BuildRightFill(l:parts[2:]))
-    call insert(result, l:extra, 0)
-
-    return join(result, '')
-endfunction
-
-function! s:BuildPluginStatus(left_parts, ...) abort
-    let left_parts  = s:ParseList(a:left_parts)
-    let right_parts = s:ParseList(get(a:, 1, []))
-
-    let stl = '%<' . s:BuildLeftStatus(left_parts)
-
-    let stl .= '%='
-
-    if len(right_parts) > 0
-        let stl .= '%<' . s:BuildRightStatus(right_parts)
-    endif
-
-    return stl
-endfunction
-
 " Plugin Integration
-let s:crystalline_time_threshold = 0.5
+" Save plugin states
+let s:crystalline = {}
+let s:crystalline_time_threshold = 0.50
 
 function! s:SaveLastTime()
     let s:crystalline_last_custom_mode_time = reltime()
@@ -668,6 +622,14 @@ function! s:FetchCustomMode() abort
                     \ 'type': 'name',
                     \ }
 
+        if fname ==# 'ControlP'
+            return extend(result, s:GetCtrlPMode())
+        endif
+
+        if fname ==# '__Tagbar__'
+            return extend(result, s:GetTagbarMode())
+        endif
+
         if fname ==# '__CtrlSF__'
             return extend(result, s:GetCtrlSFMode())
         endif
@@ -692,6 +654,10 @@ function! s:FetchCustomMode() abort
                     \ 'name': s:filetype_modes[ft],
                     \ 'type': 'filetype',
                     \ }
+
+        if ft ==# 'tagbar'
+            return extend(result, s:GetTagbarMode())
+        endif
 
         if ft ==# 'terminal'
             return extend(result, {
@@ -730,21 +696,51 @@ let g:ctrlp_status_func = {
             \ 'prog': 'CtrlPProgressStatusLine',
             \ }
 
-function! CtrlPMainStatusLine(focus, byfname, regex, prev, item, next, marked) abort
-    return s:BuildPluginStatus(
-                \ [
-                \   s:filename_modes['ControlP'],
-                \   [ a:prev, printf(' « %s » ', a:item), a:next],
-                \ ],
-                \ [
-                \   s:GetCurrentDir(),
-                \   a:byfname,
-                \   a:focus,
+function! s:GetCtrlPMode() abort
+    let lfill = s:BuildFill([
+                \ s:crystalline.ctrlp_prev,
+                \ ' ' . s:Wrap(s:crystalline.ctrlp_item) . ' ',
+                \ s:crystalline.ctrlp_next,
                 \ ])
+
+    let rfill = s:BuildRightFill([
+                \ s:crystalline.ctrlp_focus,
+                \ s:crystalline.ctrlp_byfname,
+                \ ])
+
+    return {
+                \ 'name': s:filename_modes['ControlP'],
+                \ 'lfill': lfill,
+                \ 'rfill': rfill,
+                \ 'rmode': s:crystalline.ctrlp_dir,
+                \ 'type': 'ctrlp',
+                \ }
+endfunction
+
+function! CtrlPMainStatusLine(focus, byfname, regex, prev, item, next, marked) abort
+    let s:crystalline.ctrlp_focus   = a:focus
+    let s:crystalline.ctrlp_byfname = a:byfname
+    let s:crystalline.ctrlp_regex   = a:regex
+    let s:crystalline.ctrlp_prev    = a:prev
+    let s:crystalline.ctrlp_item    = a:item
+    let s:crystalline.ctrlp_next    = a:next
+    let s:crystalline.ctrlp_marked  = a:marked
+    let s:crystalline.ctrlp_dir     = s:GetCurrentDir()
+
+    let b:crystalline_custom_mode = s:GetCtrlPMode()
+    call s:SaveLastTime()
+
+    return StatusLine(1, winnr())
 endfunction
 
 function! CtrlPProgressStatusLine(len) abort
-    return s:BuildPluginStatus([ a:len ], [ s:GetCurrentDir() ])
+    let b:statusline_custom_mode = {
+                \ 'name': s:filename_modes['ControlP'],
+                \ 'lfill': a:len,
+                \ 'rmode': s:GetCurrentDir(),
+                \ 'type': 'ctrlp',
+                \ }
+    return StatusLine(1, winnr())
 endfunction
 
 " CtrlSF Integration
@@ -799,12 +795,30 @@ endfunction
 " Tagbar Integration
 let g:tagbar_status_func = 'TagbarStatusFunc'
 
-function! TagbarStatusFunc(current, sort, fname, flags, ...) abort
-    if empty(a:flags)
-        return s:BuildPluginStatus([a:sort, a:fname])
+function! s:GetTagbarMode() abort
+    if empty(s:crystalline.tagbar_flags)
+        let lextra = ''
     else
-        return s:BuildPluginStatus([a:sort, a:fname, printf('[%s]', join(a:flags, ''))])
+        let lextra = printf('[%s]', join(s:crystalline.tagbar_flags, ''))
     endif
+
+    return {
+                \ 'name': s:crystalline.tagbar_sort,
+                \ 'lfill': s:crystalline.tagbar_fname,
+                \ 'lextra': lextra,
+                \ 'type': 'tagbar',
+                \ }
+endfunction
+
+function! TagbarStatusFunc(current, sort, fname, flags, ...) abort
+    let s:crystalline.tagbar_sort  = a:sort
+    let s:crystalline.tagbar_fname = a:fname
+    let s:crystalline.tagbar_flags = a:flags
+
+    let b:crystalline_custom_mode = s:GetTagbarMode()
+    call s:SaveLastTime()
+
+    return StatusLine(1, winnr())
 endfunction
 
 " ZoomWin Integration
