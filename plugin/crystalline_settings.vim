@@ -152,20 +152,16 @@ function! s:EnsureList(list) abort
     return type(a:list) == type([]) ? deepcopy(a:list) : [a:list]
 endfunction
 
-function! s:ParseFillList(list, sep) abort
+function! s:ParseList(list, sep) abort
     let l:list = s:EnsureList(a:list)
     let l:list = map(copy(l:list), "type(v:val) == type([]) ? join(s:RemoveEmptyElement(v:val), a:sep) : v:val")
     return s:RemoveEmptyElement(l:list)
 endfunction
 
-function! s:ParseMode(mode, sep) abort
-    let l:mode = join(s:RemoveEmptyElement(s:EnsureList(a:mode)), a:sep)
-    return l:mode
-endfunction
-
 function! s:BuildMode(parts, ...) abort
     let sep = get(a:, 1, s:symbols.left_sep)
-    return s:ParseMode(a:parts, sep)
+    let l:parts = s:ParseList(a:parts, l:sep)
+    return join(l:parts, l:sep)
 endfunction
 
 function! s:BuildRightMode(parts) abort
@@ -174,7 +170,7 @@ endfunction
 
 function! s:BuildFill(parts, ...) abort
     let sep = get(a:, 1, s:symbols.left_sep)
-    let l:parts = s:ParseFillList(a:parts, sep)
+    let l:parts = s:ParseList(a:parts, sep)
     return join(l:parts, sep)
 endfunction
 
