@@ -152,11 +152,6 @@ function! s:EnsureList(list) abort
     return type(a:list) == type([]) ? deepcopy(a:list) : [a:list]
 endfunction
 
-function! s:ParseList(list) abort
-    let l:list = s:EnsureList(a:list)
-    return s:RemoveEmptyElement(l:list)
-endfunction
-
 function! s:ParseFillList(list, sep) abort
     let l:list = s:EnsureList(a:list)
     let l:list = map(copy(l:list), "type(v:val) == type([]) ? join(s:RemoveEmptyElement(v:val), a:sep) : v:val")
@@ -462,6 +457,13 @@ function! StatusLineLeftFill(...) abort
 
     let l:winwidth = winwidth(get(a:, 1, 0))
 
+    if l:winwidth >= s:small_window_width
+        return s:BuildFill([
+                    \ s:GitBranchStatus(l:winwidth),
+                    \ s:FileNameStatus(l:winwidth - 2),
+                    \ ])
+    endif
+
     return s:BuildFill([
                 \ s:FileNameStatus(l:winwidth - 2),
                 \ ])
@@ -477,7 +479,7 @@ function! StatusLineLeftExtra(...) abort
 
     if l:winwidth >= s:small_window_width
         return s:BuildFill([
-                    \ s:GitBranchStatus(l:winwidth),
+                    \ s:FileSizeStatus(),
                     \ ])
     endif
 
@@ -510,7 +512,6 @@ function! StatusLineRightFill(...) abort
         let compact = s:IsCompact(l:winwidth)
         return s:BuildRightFill([
                     \ s:IndentationStatus(compact),
-                    \ s:FileSizeStatus(),
                     \ ])
     endif
 
