@@ -26,7 +26,7 @@ let s:xsmall_window_width = 60
 let s:small_window_width  = 80
 let s:normal_window_width = 100
 
-" Symbols
+" Symbols: https://en.wikipedia.org/wiki/Enclosed_Alphanumerics
 let s:symbols = {
             \ 'left':      '',
             \ 'right':     '',
@@ -53,22 +53,7 @@ call extend(s:symbols, {
             \ 'right_sep': ' ' . s:symbols.right . ' ',
             \ })
 
-" Alternative Symbols
-" ©: Clipboard
-"Ⓒ  : Clipboard
-"ⓒ  : Clipboard
-"ⓒ  : Clipboard
-"ⓒ  : Clipboard
-"ⓟ  : Paste
-"Ⓟ  : Paste
-"℗  : Paste
-"℗  : Paste
-" Ρ: Paste
-" ρ: Paste
-"Ⓡ  : Readonly
-"ⓡ  : Readonly
-" ® : Readonly
-
+" Short modes
 let s:short_modes = {
             \ 'NORMAL':   'N',
             \ 'INSERT':   'I',
