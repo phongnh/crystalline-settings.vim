@@ -28,8 +28,8 @@ let s:normal_window_width = 100
 
 " Symbols: https://en.wikipedia.org/wiki/Enclosed_Alphanumerics
 let s:symbols = {
-            \ 'left':      '',
-            \ 'right':     '',
+            \ 'left':      "\ue0b1",
+            \ 'right':     "\ue0b3",
             \ 'branch':    "\ue0a0",
             \ 'readonly':  "\ue0a2",
             \ 'clipboard': 'ⓒ  ',
