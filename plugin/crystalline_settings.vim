@@ -821,9 +821,6 @@ function! TagbarStatusFunc(current, sort, fname, flags, ...) abort
     let s:crystalline.tagbar_fname = a:fname
     let s:crystalline.tagbar_flags = a:flags
 
-    let b:crystalline_custom_mode = s:GetTagbarMode()
-    call s:SaveLastTime()
-
     return StatusLine(1, winnr())
 endfunction
 
