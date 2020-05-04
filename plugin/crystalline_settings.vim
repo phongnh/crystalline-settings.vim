@@ -15,7 +15,7 @@ set cpo&vim
 let g:crystalline_enable_sep      = get(g:, 'crystalline_powerline', 0)
 let g:crystalline_theme           = get(g:, 'crystalline_theme', 'solarized')
 let g:crystalline_show_git_branch = get(g:, 'crystalline_show_git_branch', 1)
-let g:crystalline_show_file_size  = get(g:, 'crystalline_show_file_size', 1)
+let g:crystalline_show_file_size  = get(g:, 'crystalline_show_file_size', 0)
 let g:crystalline_show_devicons   = get(g:, 'crystalline_show_devicons', 1)
 
 " Disable NERDTree statusline
