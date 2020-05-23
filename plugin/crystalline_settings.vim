@@ -14,6 +14,7 @@ set cpo&vim
 " Crystalline Settings
 let g:crystalline_enable_sep      = get(g:, 'crystalline_powerline', 0)
 let g:crystalline_theme           = get(g:, 'crystalline_theme', 'solarized')
+let g:crystalline_shorten_path    = get(g:, 'crystalline_shorten_path', 0)
 let g:crystalline_show_git_branch = get(g:, 'crystalline_show_git_branch', 1)
 let g:crystalline_show_devicons   = get(g:, 'crystalline_show_devicons', 1)
 
@@ -193,7 +194,7 @@ function! s:FormatFileName(fname, winwidth, max_width) abort
         return fnamemodify(fname, ':t')
     endif
 
-    if strlen(fname) > a:winwidth && (fname[0] =~ '\~\|/')
+    if strlen(fname) > a:winwidth && (fname[0] =~ '\~\|/') && g:crystalline_shorten_path
         let fname = s:ShortenPath(fname)
     endif
 
@@ -296,6 +297,10 @@ endfunction
 function! s:FileNameStatus(...) abort
     let winwidth = get(a:, 1, 100)
     return s:FormatFileName(s:GetFileName(), winwidth, 50) . s:GetFileFlags()
+endfunction
+
+function! s:InactiveFileNameStatus(...) abort
+    return s:GetFileName() . s:GetFileFlags()
 endfunction
 
 function! s:IndentationStatus(...) abort
@@ -494,10 +499,8 @@ function! StatusLineInactiveMode(...) abort
         return s:BuildMode([ l:mode['name'], get(l:mode, 'lfill_inactive', '') ])
     endif
 
-    let l:winwidth = winwidth(get(a:, 1, 0))
-
     " plugin/statusline.vim[+]
-    return s:FileNameStatus(l:winwidth - 2)
+    return s:InactiveFileNameStatus()
 endfunction
 
 function! StatusLine(current, win) abort
