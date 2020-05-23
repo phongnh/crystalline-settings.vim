@@ -15,7 +15,6 @@ set cpo&vim
 let g:crystalline_enable_sep      = get(g:, 'crystalline_powerline', 0)
 let g:crystalline_theme           = get(g:, 'crystalline_theme', 'solarized')
 let g:crystalline_show_git_branch = get(g:, 'crystalline_show_git_branch', 1)
-let g:crystalline_show_file_size  = get(g:, 'crystalline_show_file_size', 0)
 let g:crystalline_show_devicons   = get(g:, 'crystalline_show_devicons', 1)
 
 " Disable NERDTree statusline
@@ -299,30 +298,6 @@ function! s:FileNameStatus(...) abort
     return s:FormatFileName(s:GetFileName(), winwidth, 50) . s:GetFileFlags()
 endfunction
 
-" Copied from https://github.com/ahmedelgabri/dotfiles/blob/master/files/vim/.vim/autoload/statusline.vim
-function! s:FileSize() abort
-    let l:size = getfsize(expand('%'))
-    if l:size == 0 || l:size == -1 || l:size == -2
-        return ''
-    endif
-    if l:size < 1024
-        return l:size . ' bytes'
-    elseif l:size < 1024 * 1024
-        return printf('%.1f', l:size / 1024.0) . 'k'
-    elseif l:size < 1024 * 1024 * 1024
-        return printf('%.1f', l:size / 1024.0 / 1024.0) . 'm'
-    else
-        return printf('%.1f', l:size / 1024.0 / 1024.0 / 1024.0) . 'g'
-    endif
-endfunction
-
-function! s:FileSizeStatus() abort
-    if g:crystalline_show_file_size
-        return s:FileSize()
-    endif
-    return ''
-endfunction
-
 function! s:IndentationStatus(...) abort
     let l:shiftwidth = exists('*shiftwidth') ? shiftwidth() : &shiftwidth
     let compact = get(a:, 1, 0)
@@ -456,9 +431,6 @@ function! StatusLineLeftExtra(...) abort
     let l:winwidth = winwidth(get(a:, 1, 0))
 
     if l:winwidth >= s:small_window_width
-        return s:BuildFill([
-                    \ s:FileSizeStatus(),
-                    \ ])
     endif
 
     return ''
