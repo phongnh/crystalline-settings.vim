@@ -666,7 +666,7 @@ function! s:CustomMode() abort
         endif
 
         if fname ==# '__Tagbar__'
-            return extend(result, s:GetTagbarMode())
+            return extend(result, crystalline_settings#tagbar#Mode())
         endif
 
         if fname ==# '__CtrlSF__'
@@ -699,7 +699,7 @@ function! s:CustomMode() abort
         endif
 
         if ft ==# 'tagbar'
-            return extend(result, s:GetTagbarMode())
+            return extend(result, crystalline_settings#tagbar#Mode())
         endif
 
         if ft ==# 'terminal'
@@ -867,30 +867,7 @@ function! s:GetNrrwRgnMode(...) abort
 endfunction
 
 " Tagbar Integration
-let g:tagbar_status_func = 'TagbarStatusFunc'
-
-function! s:GetTagbarMode() abort
-    if empty(s:crystalline.tagbar_flags)
-        let lextra = ''
-    else
-        let lextra = printf('[%s]', join(s:crystalline.tagbar_flags, ''))
-    endif
-
-    return {
-                \ 'name': s:crystalline.tagbar_sort,
-                \ 'lfill': s:crystalline.tagbar_fname,
-                \ 'lextra': lextra,
-                \ 'type': 'tagbar',
-                \ }
-endfunction
-
-function! TagbarStatusFunc(current, sort, fname, flags, ...) abort
-    let s:crystalline.tagbar_sort  = a:sort
-    let s:crystalline.tagbar_fname = a:fname
-    let s:crystalline.tagbar_flags = a:flags
-
-    return g:CrystallineStatuslineFn(winnr())
-endfunction
+let g:tagbar_status_func = 'crystalline_settings#tagbar#Status'
 
 " ZoomWin Integration
 let s:ZoomWin_funcref = []
