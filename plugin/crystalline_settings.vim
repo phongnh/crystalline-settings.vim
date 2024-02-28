@@ -284,31 +284,12 @@ function! s:GetGitBranch() abort
     return branch
 endfunction
 
-function! s:ShortenBranch(branch, length) abort
-    let branch = a:branch
-
-    if strlen(branch) > a:length
-        let branch = crystalline_settings#ShortenPath(branch)
-    endif
-
-    if strlen(branch) > a:length
-        let branch = fnamemodify(branch, ':t')
-    endif
-
-    if strlen(branch) > a:length
-        " Show only JIRA ticket prefix
-        let branch = substitute(branch, '^\([A-Z]\{3,}-\d\{1,}\)-.\+', '\1', '')
-    endif
-
-    return branch
-endfunction
-
 function! s:FormatBranch(branch, winwidth) abort
     if a:winwidth >= s:normal_window_width
-        return s:ShortenBranch(a:branch, 50)
+        return crystalline_settings#ShortenBranch(a:branch, 50)
     endif
 
-    let branch = s:ShortenBranch(a:branch, 30)
+    let branch = crystalline_settings#ShortenBranch(a:branch, 30)
 
     if strlen(branch) > 30
         let branch = strcharpart(branch, 0, 29) . s:symbols.ellipsis
