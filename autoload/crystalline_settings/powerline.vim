@@ -1,4 +1,4 @@
-function! crystalline_settings#powerline#Init() abort
+function! s:InitPowerlineStyles() abort
     if exists('g:crystalline_separator_styles') && type(g:crystalline_separator_styles) == v:t_dict
         return
     endif
@@ -69,7 +69,7 @@ function! crystalline_settings#powerline#Init() abort
 endfunction
 
 function! crystalline_settings#powerline#SetSeparators(style) abort
-    call crystalline_settings#powerline#Init()
+    call s:InitPowerlineStyles()
 
     let l:style = 'default'
 
