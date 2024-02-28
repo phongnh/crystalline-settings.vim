@@ -53,6 +53,7 @@ call extend(s:symbols, {
             \ 'right_sep': ' ' . s:symbols.right . ' ',
             \ })
 
+let g:crystalline_vimlabel = has('nvim') ? ' NVIM ' : ' VIM '
 " Short modes
 let s:short_modes = {
             \ 'NORMAL':   'N',
@@ -548,7 +549,7 @@ function! g:CrystallineTablineFn()
     let l:right .= crystalline#Sep(1, 'TabFill', 'TabType')
     let l:max_width -= 1
 
-    let l:vimlabel = has('nvim') ? ' NVIM ' : ' VIM '
+    let l:vimlabel = g:crystalline_vimlabel
     let l:right .= l:vimlabel
     let l:max_width -= strchars(l:vimlabel)
 
