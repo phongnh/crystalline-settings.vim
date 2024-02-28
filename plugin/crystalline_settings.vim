@@ -18,6 +18,7 @@ let g:crystalline_theme           = get(g:, 'crystalline_theme', 'solarized')
 let g:crystalline_shorten_path    = get(g:, 'crystalline_shorten_path', 0)
 let g:crystalline_show_git_branch = get(g:, 'crystalline_show_git_branch', 1)
 let g:crystalline_show_devicons   = get(g:, 'crystalline_show_devicons', 1)
+let g:crystalline_show_vim_logo   = get(g:, 'crystalline_show_vim_logo', 1)
 
 " Improved Model Labels
 let g:crystalline_mode_labels = {
@@ -106,11 +107,55 @@ let s:symbols = {
             \ 'right_sep': ' ' . g:crystalline_separators[1].alt_ch . ' ',
             \ }
 
-let g:crystalline_vimlabel = has('nvim') ? ' NVIM ' : ' VIM '
+let s:crystalline_show_devicons = 0
 
-" Detect DevIcons
-let s:has_devicons = findfile('plugin/webdevicons.vim', &rtp) != ''
-" let s:has_devicons = exists('*WebDevIconsGetFileTypeSymbol') && exists('*WebDevIconsGetFileFormatSymbol')
+if g:crystalline_show_devicons
+    " Detect vim-devicons or nerdfont.vim
+    " let s:has_devicons = exists('*WebDevIconsGetFileTypeSymbol') && exists('*WebDevIconsGetFileFormatSymbol')
+    if findfile('autoload/nerdfont.vim', &rtp) != ''
+        let s:crystalline_show_devicons = 1
+
+        function! s:GetFileTypeSymbol(filename) abort
+            return nerdfont#find(a:filename)
+        endfunction
+
+        function! s:GetFileFormatSymbol(...) abort
+            return nerdfont#fileformat#find()
+        endfunction
+    elseif findfile('plugin/webdevicons.vim', &rtp) != ''
+        let s:crystalline_show_devicons = 1
+
+        function! s:GetFileTypeSymbol(filename) abort
+            return WebDevIconsGetFileTypeSymbol(a:filename)
+        endfunction
+
+        function! s:GetFileFormatSymbol(...) abort
+            return WebDevIconsGetFileFormatSymbol()
+        endfunction
+    elseif exists("g:CrystallineWebDevIconsFind")
+        let s:crystalline_show_devicons = 1
+
+        function! s:GetFileTypeSymbol(filename) abort
+            return g:CrystallineWebDevIconsFind(a:filename)
+        endfunction
+
+        let s:web_devicons_fileformats = {
+                    \ 'dos': '',
+                    \ 'mac': '',
+                    \ 'unix': '',
+                    \ }
+
+        function! s:GetFileFormatSymbol(...) abort
+            return get(s:web_devicons_fileformats, &fileformat, '')
+        endfunction
+    endif
+endif
+
+let g:crystalline_vimlabel = has('nvim') ? ' NVIM ' : ' VIM '
+if g:crystalline_show_vim_logo && s:crystalline_show_devicons
+    " Show Vim Logo in Tabline
+    let g:crystalline_vimlabel = " \ue7c5  "
+endif
 
 " Alternate status dictionaries
 let s:filename_modes = {
@@ -340,10 +385,10 @@ function! s:FileInfoStatus(...) abort
 
     let compact = get(a:, 1, 0)
 
-    if g:crystalline_show_devicons && s:has_devicons && !compact
+    if s:crystalline_show_devicons && !compact
         call extend(parts, [
-                    \ WebDevIconsGetFileTypeSymbol(expand('%')) . ' ',
-                    \ WebDevIconsGetFileFormatSymbol() . ' ',
+                    \ s:GetFileTypeSymbol(expand('%')) . ' ',
+                    \ s:GetFileFormatSymbol() . ' ',
                     \ ])
     endif
 
