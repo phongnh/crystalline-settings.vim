@@ -177,6 +177,7 @@ let s:filetype_modes = {
             \ 'netrw':             'NetrwTree',
             \ 'nerdtree':          'NERDTree',
             \ 'fern':              'Fern',
+            \ 'vaffle':            'Vaffle',
             \ 'startify':          'Startify',
             \ 'tagbar':            'Tagbar',
             \ 'vim-plug':          'Plugins',
@@ -688,6 +689,10 @@ function! s:CustomMode() abort
 
         if ft ==# 'fern'
             return extend(result, crystalline_settings#fern#Mode())
+        endif
+
+        if ft ==# 'vaffle'
+            return extend(result, crystalline_settings#vaffle#Mode())
         endif
 
         if ft ==# 'tagbar'
