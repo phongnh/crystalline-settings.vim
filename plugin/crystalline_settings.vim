@@ -71,9 +71,6 @@ let s:short_modes = {
             \ ' TERMINAL ': ' T ',
             \ }
 
-" Disable NERDTree statusline
-let g:NERDTreeStatusline = -1
-
 " Window width
 let s:xsmall_window_width = 60
 let s:small_window_width  = 80
@@ -226,14 +223,6 @@ endfunction
 
 function! s:BuildRightFill(parts, ...) abort
     return s:BuildFill(a:parts, s:symbols.right_sep)
-endfunction
-
-function! s:GetCurrentDir() abort
-    let dir = fnamemodify(getcwd(), ':~:.')
-    if empty(dir)
-        let dir = getcwd()
-    endif
-    return dir
 endfunction
 
 function! s:GetBufferType() abort
@@ -593,8 +582,6 @@ function! g:CrystallineTabFn(tab, buf, max_width, is_sel) abort
 endfunction
 
 " Plugin Integration
-" Save plugin states
-let s:crystalline = {}
 
 function! s:CustomMode() abort
     let fname = expand('%:t')
@@ -651,28 +638,15 @@ function! s:CustomMode() abort
         endif
 
         if ft ==# 'terminal'
-            return extend(result, {
-                        \ 'lfill': expand('%'),
-                        \ })
+            return extend(result, crystalline_settings#terminal#Mode())
         endif
 
         if ft ==# 'help'
-            let fname = expand('%:p')
-            return extend(result, {
-                        \ 'lfill': fname,
-                        \ 'lfill_inactive': fname,
-                        \ })
+            return extend(result, crystalline_settings#help#Mode())
         endif
 
         if ft ==# 'qf'
-            if getwininfo(win_getid())[0]['loclist']
-                let result['name'] = 'Location'
-            endif
-            let qf_title = crystalline_settings#Strip(get(w:, 'quickfix_title', ''))
-            return extend(result, {
-                        \ 'lfill': qf_title,
-                        \ 'lfill_inactive': qf_title,
-                        \ })
+            return extend(result, crystalline_settings#quickfix#Mode())
         endif
 
         return result
@@ -680,6 +654,9 @@ function! s:CustomMode() abort
 
     return {}
 endfunction
+
+" Disable NERDTree statusline
+let g:NERDTreeStatusline = -1
 
 " CtrlP Integration
 let g:ctrlp_status_func = {
