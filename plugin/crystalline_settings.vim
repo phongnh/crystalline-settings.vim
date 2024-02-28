@@ -150,24 +150,8 @@ function! s:Hi(group) abort
     return printf('%%#%s#', a:group)
 endfunction
 
-function! s:Strip(str) abort
-    if exists('*trim')
-        return trim(a:str)
-    else
-        return substitute(a:str, '^\s*\(.\{-}\)\s*$', '\1', '')
-    endif
-endfunction
-
 function! s:Wrap(text) abort
     return printf('%s %s %s', '«', a:text, '»')
-endfunction
-
-function! s:ShortenPath(filename) abort
-    if exists('*pathshorten')
-        return pathshorten(a:filename)
-    else
-        return substitute(a:filename, '\v\w\zs.{-}\ze(\\|/)', '', 'g')
-    endif
 endfunction
 
 function! s:RemoveEmptyElement(list) abort
@@ -234,7 +218,7 @@ function! s:FormatFileName(fname, winwidth, max_width) abort
     endif
 
     if strlen(fname) > a:winwidth && (fname[0] =~ '\~\|/') && g:crystalline_shorten_path
-        let fname = s:ShortenPath(fname)
+        let fname = crystalline_settings#ShortenPath(fname)
     endif
 
     let max_width = min([a:winwidth, a:max_width])
@@ -304,7 +288,7 @@ function! s:ShortenBranch(branch, length) abort
     let branch = a:branch
 
     if strlen(branch) > a:length
-        let branch = s:ShortenPath(branch)
+        let branch = crystalline_settings#ShortenPath(branch)
     endif
 
     if strlen(branch) > a:length
@@ -389,7 +373,7 @@ function! s:GitBranchStatus(...) abort
         let branch = s:FormatBranch(s:GetGitBranch(), l:winwidth)
 
         if strlen(branch)
-            return s:Strip(s:symbols.branch . ' ' . branch)
+            return crystalline_settings#Strip(s:symbols.branch . ' ' . branch)
         endif
     endif
 
@@ -438,7 +422,7 @@ function! StatusLineActiveMode(...) abort
 
     let l:winwidth = winwidth(get(a:, 1, 0))
 
-    let l:mode = s:Strip(crystalline#ModeLabel())
+    let l:mode = crystalline_settings#Strip(crystalline#ModeLabel())
     if l:winwidth <= s:xsmall_window_width
         let l:mode  = get(s:short_modes, l:mode, l:mode)
     endif
@@ -708,7 +692,7 @@ function! s:CustomMode() abort
             if getwininfo(win_getid())[0]['loclist']
                 let result['name'] = 'Location'
             endif
-            let qf_title = s:Strip(get(w:, 'quickfix_title', ''))
+            let qf_title = crystalline_settings#Strip(get(w:, 'quickfix_title', ''))
             return extend(result, {
                         \ 'lfill': qf_title,
                         \ 'lfill_inactive': qf_title,
