@@ -1,3 +1,6 @@
+" Window width
+let s:normal_window_width = 120
+
 " Caching
 let s:crystalline_time_threshold = 0.50
 let s:crystalline_last_finding_branch_time = reltime()
