@@ -12,7 +12,8 @@ let s:save_cpo = &cpo
 set cpo&vim
 
 " Crystalline Settings
-let g:crystalline_enable_sep      = get(g:, 'crystalline_powerline', 0)
+let g:crystalline_powerline_fonts = get(g:, 'crystalline_powerline_fonts', 0)
+let g:crystalline_enable_sep      = 1
 let g:crystalline_theme           = get(g:, 'crystalline_theme', 'solarized')
 let g:crystalline_shorten_path    = get(g:, 'crystalline_shorten_path', 0)
 let g:crystalline_show_git_branch = get(g:, 'crystalline_show_git_branch', 1)
@@ -78,31 +79,32 @@ let s:small_window_width  = 80
 let s:normal_window_width = 120
 
 " Symbols: https://en.wikipedia.org/wiki/Enclosed_Alphanumerics
-let s:symbols = {
-            \ 'left':      "\ue0b1",
-            \ 'right':     "\ue0b3",
-            \ 'branch':    "\ue0a0",
-            \ 'readonly':  "\ue0a2",
-            \ 'clipboard': 'ⓒ  ',
-            \ 'paste':     'Ⓟ  ',
-            \ 'ellipsis':  '…',
-            \ 'mode_sep':  ' ',
-            \ 'fill_sep':  ' ',
-            \ }
+let g:crystalline_symbols = {
+                \ 'linenr':    '☰',
+                \ 'branch':    '⎇ ',
+                \ 'readonly':  '',
+                \ 'clipboard': '🅒  ',
+                \ 'paste':     '🅟  ',
+                \ 'ellipsis':  '…',
+                \ }
 
-if !g:crystalline_enable_sep
-    call extend(s:symbols, {
-            \ 'left':     '»',
-            \ 'right':    '«',
-            \ 'branch':   '',
-            \ 'readonly': '',
-            \ })
+if g:crystalline_powerline_fonts
+    call extend(g:crystalline_symbols, {
+                \ 'linenr':   "\ue0a1",
+                \ 'branch':   "\ue0a0",
+                \ 'readonly': "\ue0a2",
+                \ })
+    call crystalline_settings#powerline#SetSeparators(get(g:, 'crystalline_powerline_style', 'default'))
+else
+    call crystalline_settings#powerline#SetSeparators('||')
 endif
 
-call extend(s:symbols, {
-            \ 'left_sep':  ' ' . s:symbols.left . ' ',
-            \ 'right_sep': ' ' . s:symbols.right . ' ',
-            \ })
+let s:symbols = {
+            \ 'left':      g:crystalline_separators[0].ch,
+            \ 'right':     g:crystalline_separators[1].ch,
+            \ 'left_sep':  ' ' . g:crystalline_separators[0].alt_ch . ' ',
+            \ 'right_sep': ' ' . g:crystalline_separators[1].alt_ch . ' ',
+            \ }
 
 let g:crystalline_vimlabel = has('nvim') ? ' NVIM ' : ' VIM '
 
@@ -245,7 +247,7 @@ function! s:GetFileFlags() abort
     endif
 
     if &readonly
-        let flags .= ' ' . s:symbols.readonly . ' '
+        let flags .= ' ' . g:crystalline_symbols.readonly . ' '
     endif
 
     return flags
@@ -292,7 +294,7 @@ function! s:FormatBranch(branch, winwidth) abort
     let branch = crystalline_settings#ShortenBranch(a:branch, 30)
 
     if strlen(branch) > 30
-        let branch = strcharpart(branch, 0, 29) . s:symbols.ellipsis
+        let branch = strcharpart(branch, 0, 29) . g:crystalline_symbols.ellipsis
     endif
 
     return branch
@@ -354,7 +356,7 @@ function! s:GitBranchStatus(...) abort
         let branch = s:FormatBranch(s:GetGitBranch(), l:winwidth)
 
         if strlen(branch)
-            return crystalline_settings#Strip(s:symbols.branch . ' ' . branch)
+            return crystalline_settings#Strip(g:crystalline_symbols.branch . ' ' . branch)
         endif
     endif
 
@@ -363,14 +365,14 @@ endfunction
 
 function! s:ClipboardStatus() abort
     if match(&clipboard, 'unnamed') > -1
-        return s:symbols.clipboard
+        return g:crystalline_symbols.clipboard
     endif
     return ''
 endfunction
 
 function! s:PasteStatus() abort
     if &paste
-        return s:symbols.paste
+        return g:crystalline_symbols.paste
     endif
     return ''
 endfunction
@@ -514,20 +516,20 @@ function! g:CrystallineStatuslineFn(winnr) abort
                     \ crystalline#HiItem('A'),
                     \ '%<',
                     \ s:BuildGroup(printf('StatusLineActiveMode(%d)', a:winnr)),
-                    \ crystalline#Sep(1, crystalline#ModeGroup('A'), ''),
+                    \ crystalline#Sep(0, crystalline#ModeGroup('A'), ''),
                     \ s:BuildGroup(printf('StatusLineLeftFill(%d)', a:winnr)),
-                    \ crystalline#Sep(1, '', 'Fill'),
+                    \ crystalline#Sep(0, '', 'Fill'),
                     \ s:BuildGroup(printf('StatusLineLeftExtra(%d)', a:winnr)),
                     \ '%=',
                     \ '%<',
                     \ s:BuildGroup(printf('StatusLineRightExtra(%d)', a:winnr)),
-                    \ crystalline#Sep(0, '', 'Fill'),
+                    \ crystalline#Sep(1, '', 'Fill'),
                     \ s:BuildGroup(printf('StatusLineRightFill(%d)', a:winnr)),
-                    \ crystalline#Sep(0, crystalline#ModeGroup('A'), ''),
+                    \ crystalline#Sep(1, crystalline#ModeGroup('A'), ''),
                     \ s:BuildGroup(printf('StatusLineRightMode(%d)', a:winnr)),
                     \ ], '')
     else
-        return s:Hi('CrystallineInactive') .
+        return crystalline#HiItem('InactiveFill') .
                     \ '%<' .
                     \ s:BuildGroup(printf('StatusLineInactiveMode(%d)', a:winnr))
     endif
