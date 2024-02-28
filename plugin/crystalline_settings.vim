@@ -18,6 +18,57 @@ let g:crystalline_shorten_path    = get(g:, 'crystalline_shorten_path', 0)
 let g:crystalline_show_git_branch = get(g:, 'crystalline_show_git_branch', 1)
 let g:crystalline_show_devicons   = get(g:, 'crystalline_show_devicons', 1)
 
+" Improved Model Labels
+let g:crystalline_mode_labels = {
+            \ 'n':  ' NORMAL ',
+            \ 'c':  ' COMMAND ',
+            \ 'r':  ' NORMAL ',
+            \ '!':  ' NORMAL ',
+            \ 'i':  ' INSERT ',
+            \ 't':  ' TERMINAL ',
+            \ 'v':  ' VISUAL ',
+            \ 'V':  ' V-LINE ',
+            \ '': ' V-BLOCK ',
+            \ 's':  ' SELECT ',
+            \ 'S':  ' S-LINE ',
+            \ '': ' S-BLOCK ',
+            \ 'R':  ' REPLACE ',
+            \ '':   '',
+            \ }
+
+if get(g:, 'crystalline_shorter_mode_labels', 0)
+    let g:crystalline_mode_labels = {
+                \ 'n':  ' N ',
+                \ 'c':  ' C ',
+                \ 'r':  ' N ',
+                \ '!':  ' N ',
+                \ 'i':  ' I ',
+                \ 't':  ' T ',
+                \ 'v':  ' V ',
+                \ 'V':  ' L ',
+                \ '': ' B ',
+                \ 's':  ' S ',
+                \ 'S':  ' S-L ',
+                \ '': ' S-B ',
+                \ 'R':  ' R ',
+                \ '':   '',
+                \ }
+endif
+
+" Short modes
+let s:short_modes = {
+            \ ' NORMAL ':   ' N ',
+            \ ' INSERT ':   ' I ',
+            \ ' VISUAL ':   ' V ',
+            \ ' V-LINE ':   ' L ',
+            \ ' V-BLOCK ':  ' B ',
+            \ ' COMMAND ':  ' C ',
+            \ ' SELECT ':   ' S ',
+            \ ' S-LINE ':   ' S-L ',
+            \ ' S-BLOCK ':  ' S-B ',
+            \ ' TERMINAL ': ' T ',
+            \ }
+
 " Disable NERDTree statusline
 let g:NERDTreeStatusline = -1
 
@@ -54,19 +105,6 @@ call extend(s:symbols, {
             \ })
 
 let g:crystalline_vimlabel = has('nvim') ? ' NVIM ' : ' VIM '
-" Short modes
-let s:short_modes = {
-            \ 'NORMAL':   'N',
-            \ 'INSERT':   'I',
-            \ 'VISUAL':   'V',
-            \ 'V-LINE':   'L',
-            \ 'V-BLOCK':  'B',
-            \ 'COMMAND':  'C',
-            \ 'SELECT':   'S',
-            \ 'S-LINE':   'S-L',
-            \ 'S-BLOCK':  'S-B',
-            \ 'TERMINAL': 'T',
-            \ }
 
 " Detect DevIcons
 let s:has_devicons = findfile('plugin/webdevicons.vim', &rtp) != ''
