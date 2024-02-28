@@ -59,10 +59,10 @@ endfunction
 
 function! s:FormatBranch(branch, winwidth) abort
     if a:winwidth >= s:normal_window_width
-        return crystalline_settings#ShortenBranch(a:branch, 50)
+        return s:ShortenBranch(a:branch, 50)
     endif
 
-    let branch = crystalline_settings#ShortenBranch(a:branch, 30)
+    let branch = s:ShortenBranch(a:branch, 30)
 
     if strlen(branch) > 30
         let branch = strcharpart(branch, 0, 29) . g:crystalline_symbols.ellipsis
