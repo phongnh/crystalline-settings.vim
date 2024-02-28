@@ -399,7 +399,7 @@ function! StatusLineActiveMode(...) abort
 
     let l:winwidth = winwidth(get(a:, 1, 0))
 
-    let l:mode = s:Strip(crystalline#mode_label())
+    let l:mode = s:Strip(crystalline#ModeLabel())
     if l:winwidth <= s:xsmall_window_width
         let l:mode  = get(s:short_modes, l:mode, l:mode)
     endif
@@ -503,29 +503,29 @@ function! StatusLineInactiveMode(...) abort
     return s:InactiveFileNameStatus()
 endfunction
 
-function! StatusLine(current, win) abort
-    let winnum = win_id2win(a:win)
-    if a:current
+function! g:CrystallineStatuslineFn(winnr) abort
+    let l:current = a:winnr == winnr()
+    if l:current
         return join([
-                    \ crystalline#mode_color(),
+                    \ crystalline#HiItem('A'),
                     \ '%<',
-                    \ s:BuildGroup(printf('StatusLineActiveMode(%d)', winnum)),
-                    \ crystalline#right_mode_sep(''),
-                    \ s:BuildGroup(printf('StatusLineLeftFill(%d)', winnum)),
-                    \ crystalline#right_sep('', 'Fill'),
-                    \ s:BuildGroup(printf('StatusLineLeftExtra(%d)', winnum)),
+                    \ s:BuildGroup(printf('StatusLineActiveMode(%d)', a:winnr)),
+                    \ crystalline#Sep(1, crystalline#ModeGroup('A'), ''),
+                    \ s:BuildGroup(printf('StatusLineLeftFill(%d)', a:winnr)),
+                    \ crystalline#Sep(1, '', 'Fill'),
+                    \ s:BuildGroup(printf('StatusLineLeftExtra(%d)', a:winnr)),
                     \ '%=',
                     \ '%<',
-                    \ s:BuildGroup(printf('StatusLineRightExtra(%d)', winnum)),
-                    \ crystalline#left_sep('', 'Fill'),
-                    \ s:BuildGroup(printf('StatusLineRightFill(%d)', winnum)),
-                    \ crystalline#left_mode_sep(''),
-                    \ s:BuildGroup(printf('StatusLineRightMode(%d)', winnum)),
+                    \ s:BuildGroup(printf('StatusLineRightExtra(%d)', a:winnr)),
+                    \ crystalline#Sep(0, '', 'Fill'),
+                    \ s:BuildGroup(printf('StatusLineRightFill(%d)', a:winnr)),
+                    \ crystalline#Sep(0, crystalline#ModeGroup('A'), ''),
+                    \ s:BuildGroup(printf('StatusLineRightMode(%d)', a:winnr)),
                     \ ], '')
     else
         return s:Hi('CrystallineInactive') .
                     \ '%<' .
-                    \ s:BuildGroup(printf('StatusLineInactiveMode(%d)', winnum))
+                    \ s:BuildGroup(printf('StatusLineInactiveMode(%d)', a:winnr))
     endif
 endfunction
 
@@ -594,8 +594,6 @@ function! g:CrystallineTabFn(tab, buf, max_width, is_sel) abort
 
     return [crystalline#EscapeStatuslineString(l:tab), l:tabwidth]
 endfunction
-
-let g:crystalline_statusline_fn = 'StatusLine'
 
 " Plugin Integration
 " Save plugin states
@@ -733,7 +731,7 @@ function! CtrlPMainStatusLine(focus, byfname, regex, prev, item, next, marked) a
     let s:crystalline.ctrlp_marked  = a:marked
     let s:crystalline.ctrlp_dir     = s:GetCurrentDir()
 
-    return StatusLine(1, winnr())
+    return g:CrystallineStatuslineFn(winnr())
 endfunction
 
 function! CtrlPProgressStatusLine(len) abort
@@ -741,7 +739,7 @@ function! CtrlPProgressStatusLine(len) abort
     let s:crystalline.ctrlp_len  = a:len
     let s:crystalline.ctrlp_dir  = s:GetCurrentDir()
 
-    return StatusLine(1, winnr())
+    return g:CrystallineStatuslineFn(winnr())
 endfunction
 
 " Fern Integration
@@ -840,7 +838,7 @@ function! TagbarStatusFunc(current, sort, fname, flags, ...) abort
     let s:crystalline.tagbar_fname = a:fname
     let s:crystalline.tagbar_flags = a:flags
 
-    return StatusLine(1, winnr())
+    return g:CrystallineStatuslineFn(winnr())
 endfunction
 
 " ZoomWin Integration
