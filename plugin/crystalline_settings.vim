@@ -662,11 +662,11 @@ function! s:CustomMode() abort
         endif
 
         if fname ==# '__CtrlSF__'
-            return extend(result, s:GetCtrlSFMode())
+            return extend(result, crystalline_settings#ctrlsf#Mode())
         endif
 
         if fname ==# '__CtrlSFPreview__'
-            return extend(result, s:GetCtrlSFPreviewMode())
+            return extend(result, crystalline_settings#ctrlsf#PreviewMode())
         endif
 
         return result
@@ -753,26 +753,6 @@ function! s:GetFernMode(...) abort
     endif
 
     return result
-endfunction
-
-" CtrlSF Integration
-function! s:GetCtrlSFMode() abort
-    let pattern = substitute(ctrlsf#utils#SectionB(), 'Pattern: ', '', '')
-
-    return {
-                \ 'lfill': pattern,
-                \ 'lfill_inactive': pattern,
-                \ 'lextra': ctrlsf#utils#SectionC(),
-                \ 'rmode': ctrlsf#utils#SectionX(),
-                \ }
-endfunction
-
-function! s:GetCtrlSFPreviewMode() abort
-    let stl = ctrlsf#utils#PreviewSectionC()
-    return {
-                \ 'lfill': stl,
-                \ 'lfill_inactive': stl,
-                \ }
 endfunction
 
 " NrrwRgn Integration
