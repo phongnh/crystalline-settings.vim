@@ -193,10 +193,6 @@ let s:filetype_modes = {
             \ 'agit_stat':         'Agit Stat',
             \ }
 
-function! s:Hi(group) abort
-    return printf('%%#%s#', a:group)
-endfunction
-
 function! s:Wrap(text) abort
     return printf('%s %s %s', '«', a:text, '»')
 endfunction
@@ -558,19 +554,19 @@ function! g:CrystallineStatuslineFn(winnr) abort
     let l:current = a:winnr == winnr()
     if l:current
         return join([
-                    \ crystalline#HiItem('A'),
                     \ '%<',
+                    \ crystalline#ModeHiItem('A'),
                     \ s:BuildGroup(printf('StatusLineActiveMode(%d)', a:winnr)),
-                    \ crystalline#Sep(0, crystalline#ModeGroup('A'), ''),
+                    \ crystalline#Sep(0, crystalline#ModeSepGroup('A'), 'B'),
                     \ s:BuildGroup(printf('StatusLineLeftFill(%d)', a:winnr)),
-                    \ crystalline#Sep(0, '', 'Fill'),
+                    \ crystalline#Sep(0, 'B', 'Fill'),
                     \ s:BuildGroup(printf('StatusLineLeftExtra(%d)', a:winnr)),
                     \ '%=',
                     \ '%<',
                     \ s:BuildGroup(printf('StatusLineRightExtra(%d)', a:winnr)),
-                    \ crystalline#Sep(1, '', 'Fill'),
+                    \ crystalline#Sep(1, 'Fill', 'B'),
                     \ s:BuildGroup(printf('StatusLineRightFill(%d)', a:winnr)),
-                    \ crystalline#Sep(1, crystalline#ModeGroup('A'), ''),
+                    \ crystalline#Sep(1, 'B', 'A'),
                     \ s:BuildGroup(printf('StatusLineRightMode(%d)', a:winnr)),
                     \ ], '')
     else
