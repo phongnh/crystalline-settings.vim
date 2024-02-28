@@ -687,7 +687,7 @@ function! s:CustomMode() abort
                     \ }
 
         if ft ==# 'fern'
-            return extend(result, crystalline_settings#fern#Mode(expand('%')))
+            return extend(result, crystalline_settings#fern#Mode())
         endif
 
         if ft ==# 'tagbar'
