@@ -291,53 +291,6 @@ function! s:GetFileFlags() abort
     return flags
 endfunction
 
-function! s:GetGitBranch() abort
-    " Get branch from caching if it is available
-    if has_key(b:, 'crystalline_git_branch') && reltimefloat(reltime(s:crystalline_last_finding_branch_time)) < s:crystalline_time_threshold
-        return b:crystalline_git_branch
-    endif
-
-    let branch = ''
-
-    if exists('*FugitiveHead')
-        let branch = FugitiveHead()
-
-        if empty(branch) && exists('*FugitiveDetect') && !exists('b:git_dir')
-            call FugitiveDetect(getcwd())
-            let branch = FugitiveHead()
-        endif
-    elseif exists('*fugitive#head')
-        let branch = fugitive#head()
-
-        if empty(branch) && exists('*fugitive#detect') && !exists('b:git_dir')
-            call fugitive#detect(getcwd())
-            let branch = fugitive#head()
-        endif
-    elseif exists(':Gina') == 2
-        let branch = gina#component#repo#branch()
-    endif
-
-    " Caching
-    let b:crystalline_git_branch = branch
-    let s:crystalline_last_finding_branch_time = reltime()
-
-    return branch
-endfunction
-
-function! s:FormatBranch(branch, winwidth) abort
-    if a:winwidth >= s:normal_window_width
-        return crystalline_settings#ShortenBranch(a:branch, 50)
-    endif
-
-    let branch = crystalline_settings#ShortenBranch(a:branch, 30)
-
-    if strlen(branch) > 30
-        let branch = strcharpart(branch, 0, 29) . g:crystalline_symbols.ellipsis
-    endif
-
-    return branch
-endfunction
-
 function! s:FileNameStatus(...) abort
     let winwidth = get(a:, 1, 100)
     return s:FormatFileName(s:GetFileName(), winwidth, 50) . s:GetFileFlags()
@@ -391,7 +344,7 @@ endfunction
 function! s:GitBranchStatus(...) abort
     if g:crystalline_show_git_branch
         let l:winwidth = get(a:, 1, 100)
-        let branch = s:FormatBranch(s:GetGitBranch(), l:winwidth)
+        let branch = crystalline_settings#git#Branch(l:winwidth)
 
         if strlen(branch)
             return crystalline_settings#Strip(g:crystalline_symbols.branch . ' ' . branch)
@@ -642,8 +595,6 @@ endfunction
 " Plugin Integration
 " Save plugin states
 let s:crystalline = {}
-let s:crystalline_time_threshold = 0.50
-let s:crystalline_last_finding_branch_time = reltime()
 
 function! s:CustomMode() abort
     let fname = expand('%:t')
