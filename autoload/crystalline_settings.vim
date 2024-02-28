@@ -8,7 +8,7 @@ else
     endfunction
 endif
 
-function! crystalline_settings#ShortenPath(a:file) abort
+function! crystalline_settings#ShortenPath(file) abort
     return s:ShortenPath(a:file)
 endfunction
 
