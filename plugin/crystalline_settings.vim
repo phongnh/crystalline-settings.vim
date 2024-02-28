@@ -193,10 +193,6 @@ let s:filetype_modes = {
             \ 'agit_stat':         'Agit Stat',
             \ }
 
-function! s:Wrap(text) abort
-    return printf('%s %s %s', '«', a:text, '»')
-endfunction
-
 function! s:RemoveEmptyElement(list) abort
     return filter(copy(a:list), '!empty(v:val)')
 endfunction
@@ -658,7 +654,7 @@ function! s:CustomMode() abort
                     \ }
 
         if fname ==# 'ControlP'
-            return extend(result, s:GetCtrlPMode())
+            return extend(result, crystalline_settings#ctrlp#Mode())
         endif
 
         if fname ==# '__Tagbar__'
@@ -731,63 +727,9 @@ endfunction
 
 " CtrlP Integration
 let g:ctrlp_status_func = {
-            \ 'main': 'CtrlPMainStatusLine',
-            \ 'prog': 'CtrlPProgressStatusLine',
+            \ 'main': 'crystalline_settings#ctrlp#MainStatus',
+            \ 'prog': 'crystalline_settings#ctrlp#ProgressStatus',
             \ }
-
-function! s:GetCtrlPMode() abort
-    let result = {
-                \ 'name': s:filename_modes['ControlP'],
-                \ 'rmode': s:crystalline.ctrlp_dir,
-                \ 'type': 'ctrlp',
-                \ }
-
-    if s:crystalline.ctrlp_main
-        let lfill = s:BuildFill([
-                    \ s:crystalline.ctrlp_prev,
-                    \ ' ' . s:Wrap(s:crystalline.ctrlp_item) . ' ',
-                    \ s:crystalline.ctrlp_next,
-                    \ ])
-
-        let rfill = s:BuildRightFill([
-                    \ s:crystalline.ctrlp_focus,
-                    \ s:crystalline.ctrlp_byfname,
-                    \ ])
-
-        call extend(result, {
-                \ 'lfill': lfill,
-                \ 'rfill': rfill,
-                \ })
-    else
-        call extend(result, {
-                    \ 'lfill': s:crystalline.ctrlp_len,
-                    \ })
-    endif
-
-    return result
-endfunction
-
-function! CtrlPMainStatusLine(focus, byfname, regex, prev, item, next, marked) abort
-    let s:crystalline.ctrlp_main    = 1
-    let s:crystalline.ctrlp_focus   = a:focus
-    let s:crystalline.ctrlp_byfname = a:byfname
-    let s:crystalline.ctrlp_regex   = a:regex
-    let s:crystalline.ctrlp_prev    = a:prev
-    let s:crystalline.ctrlp_item    = a:item
-    let s:crystalline.ctrlp_next    = a:next
-    let s:crystalline.ctrlp_marked  = a:marked
-    let s:crystalline.ctrlp_dir     = s:GetCurrentDir()
-
-    return g:CrystallineStatuslineFn(winnr())
-endfunction
-
-function! CtrlPProgressStatusLine(len) abort
-    let s:crystalline.ctrlp_main = 0
-    let s:crystalline.ctrlp_len  = a:len
-    let s:crystalline.ctrlp_dir  = s:GetCurrentDir()
-
-    return g:CrystallineStatuslineFn(winnr())
-endfunction
 
 " Fern Integration
 function! s:GetFernMode(...) abort
