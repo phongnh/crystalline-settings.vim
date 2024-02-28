@@ -537,23 +537,6 @@ endfunction
 let g:crystalline_statusline_fn = 'StatusLine'
 let g:crystalline_tabline_fn    = 'TabLine'
 
-function s:Init() abort
-    " FIXME: Overwriting crystalline#get_statusline function
-    function! crystalline#get_statusline(current, win) abort
-        call crystalline#trigger_mode_update()
-        try
-            return function(g:crystalline_statusline_fn)(a:current, a:win)
-        catch /^Vim\%((\a\+)\)\=:E118/
-            return function(g:crystalline_statusline_fn)(a:current)
-        endtry
-    endfunction
-endfunction
-
-augroup VimCrystallineSettings
-    autocmd!
-    autocmd VimEnter * call s:Init()
-augroup END
-
 " Plugin Integration
 " Save plugin states
 let s:crystalline = {}
