@@ -673,7 +673,7 @@ function! s:CustomMode() abort
     endif
 
     if fname =~? '^NrrwRgn'
-        let nrrw_rgn_mode = s:GetNrrwRgnMode()
+        let nrrw_rgn_mode = crystalline_settings#nrrwrgn#Mode()
         if len(nrrw_rgn_mode)
             return nrrw_rgn_mode
         endif
@@ -730,35 +730,6 @@ let g:ctrlp_status_func = {
             \ 'main': 'crystalline_settings#ctrlp#MainStatus',
             \ 'prog': 'crystalline_settings#ctrlp#ProgressStatus',
             \ }
-
-" NrrwRgn Integration
-function! s:GetNrrwRgnMode(...) abort
-    let result = {}
-
-    if exists(':WidenRegion') == 2
-        let result['type'] = 'nrrwrgn'
-
-        if exists('b:nrrw_instn')
-            let result['name'] = printf('%s#%d', 'NrrwRgn', b:nrrw_instn)
-        else
-            let l:mode = substitute(bufname('%'), '^Nrrwrgn_\zs.*\ze_\d\+$', submatch(0), '')
-            let l:mode = substitute(l:mode, '__', '#', '')
-            let result['name'] = l:mode
-        endif
-
-        let dict = exists('*nrrwrgn#NrrwRgnStatus()') ?  nrrwrgn#NrrwRgnStatus() : {}
-
-        if len(dict)
-            let result['lfill'] = fnamemodify(dict.fullname, ':~:.')
-            let result['lfill_inactive'] = result['lfill']
-        elseif get(b:, 'orig_buf', 0)
-            let result['lfill'] = bufname(b:orig_buf)
-            let result['lfill_inactive'] = result['lfill']
-        endif
-    endif
-
-    return result
-endfunction
 
 " Tagbar Integration
 let g:tagbar_status_func = 'crystalline_settings#tagbar#Status'
