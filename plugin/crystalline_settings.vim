@@ -267,19 +267,6 @@ function! s:FileInfoStatus(...) abort
     return join(s:RemoveEmptyElement(parts), ' ')
 endfunction
 
-function! s:GitBranchStatus(...) abort
-    if g:crystalline_show_git_branch
-        let l:winwidth = get(a:, 1, 100)
-        let branch = crystalline_settings#git#Branch(l:winwidth)
-
-        if strlen(branch)
-            return crystalline_settings#Strip(g:crystalline_symbols.branch . ' ' . branch)
-        endif
-    endif
-
-    return ''
-endfunction
-
 function! s:BuildGroup(exp) abort
     if a:exp =~ '^%'
         return '%( ' . a:exp . ' %)'
@@ -313,9 +300,9 @@ function! StatusLineLeftFill(...) abort
 
     let l:winwidth = winwidth(get(a:, 1, 0))
 
-    if l:winwidth >= g:crystalline_winwidth_config.small
+    if g:crystalline_show_git_branch && l:winwidth >= g:crystalline_winwidth_config.small
         return s:BuildFill([
-                    \ s:GitBranchStatus(l:winwidth),
+                    \ crystalline_settings#git#Branch(l:winwidth),
                     \ s:FileNameStatus(l:winwidth - 2),
                     \ ])
     endif

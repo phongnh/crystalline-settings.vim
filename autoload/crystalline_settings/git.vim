@@ -69,5 +69,11 @@ function! s:FormatBranch(branch, winwidth) abort
 endfunction
 
 function! crystalline_settings#git#Branch(...) abort
-    return s:FormatBranch(s:GetGitBranch(), get(a:, 1, winwidth(0)))
+    let branch = s:FormatBranch(s:GetGitBranch(), get(a:, 1, winwidth(0)))
+
+    if strlen(branch)
+        return g:crystalline_symbols.branch . ' ' . branch
+    endif
+
+    return branch
 endfunction
