@@ -57,8 +57,8 @@ if get(g:, 'crystalline_shorter_mode_labels', 0)
                 \ }
 endif
 
-" Short modes
-let s:short_modes = {
+" Shorter modes
+let s:crystalline_shorter_modes = {
             \ ' NORMAL ':   ' N ',
             \ ' INSERT ':   ' I ',
             \ ' VISUAL ':   ' V ',
@@ -335,7 +335,7 @@ function! StatusLineActiveMode(...) abort
 
     let l:mode = crystalline_settings#Strip(crystalline#ModeLabel())
     if l:winwidth <= g:crystalline_winwidth_config.xsmall
-        let l:mode  = get(s:short_modes, l:mode, l:mode)
+        let l:mode  = get(s:crystalline_shorter_modes, l:mode, l:mode)
     endif
 
     return s:BuildMode(l:mode)
