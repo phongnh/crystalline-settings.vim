@@ -368,9 +368,9 @@ function! StatusLineRightExtra(...) abort
 
     if l:winwidth >= g:crystalline_winwidth_config.small
         return s:BuildRightFill([
-                    \ crystalline_settings#parts#Clipboard(),
-                    \ crystalline_settings#parts#Paste(),
                     \ crystalline_settings#parts#Spell(),
+                    \ crystalline_settings#parts#Paste(),
+                    \ crystalline_settings#parts#Clipboard(),
                     \ ])
     endif
 
