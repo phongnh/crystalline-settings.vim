@@ -12,8 +12,8 @@ let s:save_cpo = &cpo
 set cpo&vim
 
 " Crystalline Settings
-let g:crystalline_powerline_fonts = get(g:, 'crystalline_powerline_fonts', 0)
 let g:crystalline_enable_sep      = 1
+let g:crystalline_powerline_fonts = get(g:, 'crystalline_powerline_fonts', 0)
 let g:crystalline_theme           = get(g:, 'crystalline_theme', 'solarized')
 let g:crystalline_shorten_path    = get(g:, 'crystalline_shorten_path', 0)
 let g:crystalline_show_git_branch = get(g:, 'crystalline_show_git_branch', 1)
@@ -115,35 +115,17 @@ if g:crystalline_show_devicons
         function! s:GetFileTypeSymbol(filename) abort
             return nerdfont#find(a:filename)
         endfunction
-
-        function! s:GetFileFormatSymbol(...) abort
-            return nerdfont#fileformat#find()
-        endfunction
     elseif findfile('plugin/webdevicons.vim', &rtp) != ''
         let s:crystalline_show_devicons = 1
 
         function! s:GetFileTypeSymbol(filename) abort
             return WebDevIconsGetFileTypeSymbol(a:filename)
         endfunction
-
-        function! s:GetFileFormatSymbol(...) abort
-            return WebDevIconsGetFileFormatSymbol()
-        endfunction
     elseif exists("g:CrystallineWebDevIconsFind")
         let s:crystalline_show_devicons = 1
 
         function! s:GetFileTypeSymbol(filename) abort
             return g:CrystallineWebDevIconsFind(a:filename)
-        endfunction
-
-        let s:web_devicons_fileformats = {
-                    \ 'dos': '',
-                    \ 'mac': '',
-                    \ 'unix': '',
-                    \ }
-
-        function! s:GetFileFormatSymbol(...) abort
-            return get(s:web_devicons_fileformats, &fileformat, '')
         endfunction
     endif
 endif
@@ -323,7 +305,6 @@ function! s:FileInfoStatus(...) abort
     if s:crystalline_show_devicons && !compact
         call extend(parts, [
                     \ s:GetFileTypeSymbol(expand('%')) . ' ',
-                    \ s:GetFileFormatSymbol() . ' ',
                     \ ])
     endif
 
