@@ -76,7 +76,6 @@ function! crystalline_settings#ctrlp#Mode() abort
     let result = {
                 \ 'name': 'CtrlP',
                 \ 'rmode': s:crystalline_ctrlp.dir,
-                \ 'type': 'ctrlp',
                 \ }
 
     if s:crystalline_ctrlp.main

@@ -4,6 +4,5 @@ function! crystalline_settings#vista#Mode(...) abort
     return {
                 \ 'lfill': provider,
                 \ 'lfill_inactive': provider,
-                \ 'type': 'vista',
                 \ }
 endfunction

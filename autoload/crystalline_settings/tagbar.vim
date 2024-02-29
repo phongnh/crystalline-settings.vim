@@ -19,6 +19,5 @@ function! crystalline_settings#tagbar#Mode(...) abort
                 \ 'name': s:crystalline_tagbar.sort,
                 \ 'lfill': s:crystalline_tagbar.fname,
                 \ 'lextra': lextra,
-                \ 'type': 'tagbar',
                 \ }
 endfunction

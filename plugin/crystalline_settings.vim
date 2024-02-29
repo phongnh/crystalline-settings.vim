@@ -477,7 +477,6 @@ function! s:CustomMode() abort
     if has_key(g:crystalline_filename_modes, fname)
         let result = {
                     \ 'name': g:crystalline_filename_modes[fname],
-                    \ 'type': 'name',
                     \ }
 
         if fname ==# 'ControlP'
@@ -507,7 +506,6 @@ function! s:CustomMode() abort
     if has_key(g:crystalline_filetype_modes, ft)
         let result = {
                     \ 'name': g:crystalline_filetype_modes[ft],
-                    \ 'type': 'filetype',
                     \ }
 
         if has_key(g:crystalline_plugin_modes, ft)
