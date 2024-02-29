@@ -1,6 +1,3 @@
-" Window width
-let s:normal_window_width = 120
-
 " Caching
 let s:crystalline_time_threshold = 0.50
 let s:crystalline_last_finding_branch_time = reltime()
@@ -58,7 +55,7 @@ function! s:ShortenBranch(branch, length) abort
 endfunction
 
 function! s:FormatBranch(branch, winwidth) abort
-    if a:winwidth >= s:normal_window_width
+    if a:winwidth >= g:crystalline_winwidth_config.normal
         return s:ShortenBranch(a:branch, 50)
     endif
 

@@ -72,9 +72,11 @@ let s:short_modes = {
             \ }
 
 " Window width
-let s:xsmall_window_width = 60
-let s:small_window_width  = 80
-let s:normal_window_width = 120
+let g:crystalline_winwidth_config = extend({
+            \ 'xsmall': 60,
+            \ 'small':  80,
+            \ 'normal': 120,
+            \ }, get(g:, 'crystalline_winwidth_config', {}))
 
 " Symbols: https://en.wikipedia.org/wiki/Enclosed_Alphanumerics
 let g:crystalline_symbols = {
@@ -221,26 +223,6 @@ function! s:GetFileName() abort
     return fname
 endfunction
 
-function! s:FormatFileName(fname, winwidth, max_width) abort
-    let fname = a:fname
-
-    if a:winwidth < s:small_window_width
-        return fnamemodify(fname, ':t')
-    endif
-
-    if strlen(fname) > a:winwidth && (fname[0] =~ '\~\|/') && g:crystalline_shorten_path
-        let fname = crystalline_settings#ShortenPath(fname)
-    endif
-
-    let max_width = min([a:winwidth, a:max_width])
-
-    if strlen(fname) > max_width
-        let fname = fnamemodify(fname, ':t')
-    endif
-
-    return fname
-endfunction
-
 function! s:GetFileFlags() abort
     let flags = ''
 
@@ -264,7 +246,7 @@ endfunction
 
 function! s:FileNameStatus(...) abort
     let winwidth = get(a:, 1, 100)
-    return s:FormatFileName(s:GetFileName(), winwidth, 50) . s:GetFileFlags()
+    return crystalline_settings#FormatFileName(s:GetFileName(), winwidth, 50) . s:GetFileFlags()
 endfunction
 
 function! s:InactiveFileNameStatus(...) abort
@@ -300,9 +282,7 @@ function! s:FileInfoStatus(...) abort
                 \ s:GetBufferType(),
                 \ ]
 
-    let compact = get(a:, 1, 0)
-
-    if s:crystalline_show_devicons && !compact
+    if s:crystalline_show_devicons
         call extend(parts, [
                     \ s:GetFileTypeSymbol(expand('%')) . ' ',
                     \ ])
@@ -325,28 +305,15 @@ function! s:GitBranchStatus(...) abort
 endfunction
 
 function! s:ClipboardStatus() abort
-    if match(&clipboard, 'unnamed') > -1
-        return g:crystalline_symbols.clipboard
-    endif
-    return ''
+    return crystalline_settings#IsClipboardEnabled() ? g:crystalline_symbols.clipboard : ''
 endfunction
 
 function! s:PasteStatus() abort
-    if &paste
-        return g:crystalline_symbols.paste
-    endif
-    return ''
+    return &paste ? g:crystalline_symbols.paste : ''
 endfunction
 
 function! s:SpellStatus() abort
-    if &spell
-        return toupper(substitute(&spelllang, ',', '/', 'g'))
-    endif
-    return ''
-endfunction
-
-function! s:IsCompact(winwidth) abort
-    return &spell || &paste || strlen(s:ClipboardStatus()) || a:winwidth <= s:xsmall_window_width
+    return &spell ? toupper(substitute(&spelllang, ',', '/', 'g')) : ''
 endfunction
 
 function! s:BuildGroup(exp) abort
@@ -367,7 +334,7 @@ function! StatusLineActiveMode(...) abort
     let l:winwidth = winwidth(get(a:, 1, 0))
 
     let l:mode = crystalline_settings#Strip(crystalline#ModeLabel())
-    if l:winwidth <= s:xsmall_window_width
+    if l:winwidth <= g:crystalline_winwidth_config.xsmall
         let l:mode  = get(s:short_modes, l:mode, l:mode)
     endif
 
@@ -382,7 +349,7 @@ function! StatusLineLeftFill(...) abort
 
     let l:winwidth = winwidth(get(a:, 1, 0))
 
-    if l:winwidth >= s:small_window_width
+    if l:winwidth >= g:crystalline_winwidth_config.small
         return s:BuildFill([
                     \ s:GitBranchStatus(l:winwidth),
                     \ s:FileNameStatus(l:winwidth - 2),
@@ -402,7 +369,7 @@ function! StatusLineLeftExtra(...) abort
 
     let l:winwidth = winwidth(get(a:, 1, 0))
 
-    if l:winwidth >= s:small_window_width
+    if l:winwidth >= g:crystalline_winwidth_config.small
     endif
 
     return ''
@@ -415,7 +382,7 @@ function! StatusLineRightMode(...) abort
     endif
 
     let l:winwidth = winwidth(get(a:, 1, 0))
-    let compact = s:IsCompact(l:winwidth)
+    let compact = crystalline_settings#IsCompact(l:winwidth)
 
     return s:BuildRightMode([
                 \ s:FileInfoStatus(compact),
@@ -430,8 +397,8 @@ function! StatusLineRightFill(...) abort
 
     let l:winwidth = winwidth(get(a:, 1, 0))
 
-    if l:winwidth >= s:small_window_width
-        let compact = s:IsCompact(l:winwidth)
+    if l:winwidth >= g:crystalline_winwidth_config.small
+        let compact = crystalline_settings#IsCompact(l:winwidth)
         return s:BuildRightFill([
                     \ s:IndentationStatus(compact),
                     \ ])
@@ -448,7 +415,7 @@ function! StatusLineRightExtra(...) abort
 
     let l:winwidth = winwidth(get(a:, 1, 0))
 
-    if l:winwidth >= s:small_window_width
+    if l:winwidth >= g:crystalline_winwidth_config.small
         return s:BuildRightFill([
                     \ s:ClipboardStatus(),
                     \ s:PasteStatus(),
