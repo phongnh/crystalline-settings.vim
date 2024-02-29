@@ -233,14 +233,6 @@ function! s:FileInfoStatus(...) abort
     return join(filter(copy(parts), 'v:val != ""'), ' ')
 endfunction
 
-function! s:BuildGroup(exp) abort
-    if a:exp =~ '^%'
-        return '%( ' . a:exp . ' %)'
-    else
-        return '%( %{' . a:exp . '} %)'
-    endif
-endfunction
-
 function! StatusLineActiveMode(...) abort
     " custom status
     let l:mode = s:CustomMode()
@@ -357,23 +349,23 @@ function! g:CrystallineStatuslineFn(winnr) abort
         return join([
                     \ '%<',
                     \ crystalline#ModeHiItem('A'),
-                    \ s:BuildGroup(printf('StatusLineActiveMode(%d)', a:winnr)),
+                    \ crystalline_settings#Group(printf('StatusLineActiveMode(%d)', a:winnr)),
                     \ crystalline#Sep(0, crystalline#ModeSepGroup('A'), 'B'),
-                    \ s:BuildGroup(printf('StatusLineLeftFill(%d)', a:winnr)),
+                    \ crystalline_settings#Group(printf('StatusLineLeftFill(%d)', a:winnr)),
                     \ crystalline#Sep(0, 'B', 'Fill'),
-                    \ s:BuildGroup(printf('StatusLineLeftExtra(%d)', a:winnr)),
+                    \ crystalline_settings#Group(printf('StatusLineLeftExtra(%d)', a:winnr)),
                     \ '%=',
                     \ '%<',
-                    \ s:BuildGroup(printf('StatusLineRightExtra(%d)', a:winnr)),
+                    \ crystalline_settings#Group(printf('StatusLineRightExtra(%d)', a:winnr)),
                     \ crystalline#Sep(1, 'Fill', 'B'),
-                    \ s:BuildGroup(printf('StatusLineRightFill(%d)', a:winnr)),
+                    \ crystalline_settings#Group(printf('StatusLineRightFill(%d)', a:winnr)),
                     \ crystalline#Sep(1, 'B', 'A'),
-                    \ s:BuildGroup(printf('StatusLineRightMode(%d)', a:winnr)),
+                    \ crystalline_settings#Group(printf('StatusLineRightMode(%d)', a:winnr)),
                     \ ], '')
     else
         return crystalline#HiItem('InactiveFill') .
                     \ '%<' .
-                    \ s:BuildGroup(printf('StatusLineInactiveMode(%d)', a:winnr))
+                    \ crystalline_settings#Group(printf('StatusLineInactiveMode(%d)', a:winnr))
     endif
 endfunction
 

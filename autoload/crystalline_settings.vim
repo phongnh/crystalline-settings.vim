@@ -46,6 +46,14 @@ function! crystalline_settings#IsCompact(winwidth) abort
     return &spell || &paste || crystalline_settings#IsClipboardEnabled() || a:winwidth <= g:crystalline_winwidth_config.xsmall
 endfunction
 
+function! crystalline_settings#Group(exp) abort
+    if a:exp =~ '^%'
+        return '%( ' . a:exp . ' %)'
+    else
+        return '%( %{' . a:exp . '} %)'
+    endif
+endfunction
+
 function! crystalline_settings#Concatenate(parts, ...) abort
     let separator = get(a:, 1, 0) ? g:crystalline_symbols.right_sep : g:crystalline_symbols.left_sep
     return join(filter(copy(a:parts), 'v:val !=# ""'), ' ' . separator . ' ')
