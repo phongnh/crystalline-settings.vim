@@ -99,12 +99,12 @@ else
     call crystalline_settings#powerline#SetSeparators('||')
 endif
 
-let s:symbols = {
+let g:crystalline_symbols = extend(g:crystalline_symbols, {
             \ 'left':      g:crystalline_separators[0].ch,
             \ 'right':     g:crystalline_separators[1].ch,
             \ 'left_sep':  ' ' . g:crystalline_separators[0].alt_ch . ' ',
             \ 'right_sep': ' ' . g:crystalline_separators[1].alt_ch . ' ',
-            \ }
+            \ })
 
 let s:crystalline_show_devicons = 0
 
@@ -190,23 +190,23 @@ function! s:ParseList(list, sep) abort
 endfunction
 
 function! s:BuildMode(parts, ...) abort
-    let sep = get(a:, 1, s:symbols.left_sep)
+    let sep = get(a:, 1, g:crystalline_symbols.left_sep)
     let l:parts = s:ParseList(a:parts, l:sep)
     return join(l:parts, l:sep)
 endfunction
 
 function! s:BuildRightMode(parts) abort
-    return s:BuildMode(a:parts, s:symbols.right_sep)
+    return s:BuildMode(a:parts, g:crystalline_symbols.right_sep)
 endfunction
 
 function! s:BuildFill(parts, ...) abort
-    let sep = get(a:, 1, s:symbols.left_sep)
+    let sep = get(a:, 1, g:crystalline_symbols.left_sep)
     let l:parts = s:ParseList(a:parts, sep)
     return join(l:parts, sep)
 endfunction
 
 function! s:BuildRightFill(parts, ...) abort
-    return s:BuildFill(a:parts, s:symbols.right_sep)
+    return s:BuildFill(a:parts, g:crystalline_symbols.right_sep)
 endfunction
 
 function! s:GetBufferType() abort
