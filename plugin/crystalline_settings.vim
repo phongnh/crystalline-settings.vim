@@ -280,18 +280,6 @@ function! s:GitBranchStatus(...) abort
     return ''
 endfunction
 
-function! s:ClipboardStatus() abort
-    return crystalline_settings#IsClipboardEnabled() ? g:crystalline_symbols.clipboard : ''
-endfunction
-
-function! s:PasteStatus() abort
-    return &paste ? g:crystalline_symbols.paste : ''
-endfunction
-
-function! s:SpellStatus() abort
-    return &spell ? toupper(substitute(&spelllang, ',', '/', 'g')) : ''
-endfunction
-
 function! s:BuildGroup(exp) abort
     if a:exp =~ '^%'
         return '%( ' . a:exp . ' %)'
@@ -393,9 +381,9 @@ function! StatusLineRightExtra(...) abort
 
     if l:winwidth >= g:crystalline_winwidth_config.small
         return s:BuildRightFill([
-                    \ s:ClipboardStatus(),
-                    \ s:PasteStatus(),
-                    \ s:SpellStatus(),
+                    \ crystalline_settings#parts#Clipboard(),
+                    \ crystalline_settings#parts#Paste(),
+                    \ crystalline_settings#parts#Spell(),
                     \ ])
     endif
 
