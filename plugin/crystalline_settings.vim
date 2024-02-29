@@ -469,6 +469,7 @@ let g:crystalline_plugin_modes = {
             \ 'terminal':        'crystalline_settings#terminal#Mode',
             \ 'help':            'crystalline_settings#help#Mode',
             \ 'qf':              'crystalline_settings#quickfix#Mode',
+            \ 'gitcommit':       'crystalline_settings#gitcommit#Mode',
             \ }
 
 function! s:CustomMode() abort
