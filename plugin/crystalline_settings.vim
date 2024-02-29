@@ -102,8 +102,8 @@ endif
 let g:crystalline_symbols = extend(g:crystalline_symbols, {
             \ 'left':      g:crystalline_separators[0].ch,
             \ 'right':     g:crystalline_separators[1].ch,
-            \ 'left_sep':  ' ' . g:crystalline_separators[0].alt_ch . ' ',
-            \ 'right_sep': ' ' . g:crystalline_separators[1].alt_ch . ' ',
+            \ 'left_sep':  g:crystalline_separators[0].alt_ch,
+            \ 'right_sep': g:crystalline_separators[1].alt_ch,
             \ })
 
 let s:crystalline_show_devicons = g:crystalline_show_devicons && crystalline_settings#devicons#Detect()
@@ -150,40 +150,6 @@ let s:filetype_modes = {
             \ 'agit_diff':         'Agit Diff',
             \ 'agit_stat':         'Agit Stat',
             \ }
-
-function! s:RemoveEmptyElement(list) abort
-    return filter(copy(a:list), '!empty(v:val)')
-endfunction
-
-function! s:EnsureList(list) abort
-    return type(a:list) == type([]) ? deepcopy(a:list) : [a:list]
-endfunction
-
-function! s:ParseList(list, sep) abort
-    let l:list = s:EnsureList(a:list)
-    let l:list = map(copy(l:list), "type(v:val) == type([]) ? join(s:RemoveEmptyElement(v:val), a:sep) : v:val")
-    return s:RemoveEmptyElement(l:list)
-endfunction
-
-function! s:BuildMode(parts, ...) abort
-    let sep = get(a:, 1, g:crystalline_symbols.left_sep)
-    let l:parts = s:ParseList(a:parts, l:sep)
-    return join(l:parts, l:sep)
-endfunction
-
-function! s:BuildRightMode(parts) abort
-    return s:BuildMode(a:parts, g:crystalline_symbols.right_sep)
-endfunction
-
-function! s:BuildFill(parts, ...) abort
-    let sep = get(a:, 1, g:crystalline_symbols.left_sep)
-    let l:parts = s:ParseList(a:parts, sep)
-    return join(l:parts, sep)
-endfunction
-
-function! s:BuildRightFill(parts, ...) abort
-    return s:BuildFill(a:parts, g:crystalline_symbols.right_sep)
-endfunction
 
 function! s:GetBufferType() abort
     return strlen(&filetype) ? &filetype : &buftype
@@ -264,7 +230,7 @@ function! s:FileInfoStatus(...) abort
                     \ ])
     endif
 
-    return join(s:RemoveEmptyElement(parts), ' ')
+    return join(filter(copy(parts), 'v:val != ""'), ' ')
 endfunction
 
 function! s:BuildGroup(exp) abort
@@ -279,7 +245,7 @@ function! StatusLineActiveMode(...) abort
     " custom status
     let l:mode = s:CustomMode()
     if len(l:mode)
-        return s:BuildMode([ l:mode['name'] ])
+        return l:mode['name']
     endif
 
     let l:winwidth = winwidth(get(a:, 1, 0))
@@ -289,33 +255,31 @@ function! StatusLineActiveMode(...) abort
         let l:mode  = get(s:crystalline_shorter_modes, l:mode, l:mode)
     endif
 
-    return s:BuildMode(l:mode)
+    return l:mode
 endfunction
 
 function! StatusLineLeftFill(...) abort
     let l:mode = s:CustomMode()
     if len(l:mode)
-        return s:BuildFill([ get(l:mode, 'lfill', '') ])
+        return get(l:mode, 'lfill', '')
     endif
 
     let l:winwidth = winwidth(get(a:, 1, 0))
 
     if g:crystalline_show_git_branch && l:winwidth >= g:crystalline_winwidth_config.small
-        return s:BuildFill([
+        return crystalline_settings#Concatenate([
                     \ crystalline_settings#git#Branch(l:winwidth),
                     \ s:FileNameStatus(l:winwidth - 2),
                     \ ])
     endif
 
-    return s:BuildFill([
-                \ s:FileNameStatus(l:winwidth - 2),
-                \ ])
+    return s:FileNameStatus(l:winwidth - 2)
 endfunction
 
 function! StatusLineLeftExtra(...) abort
     let l:mode = s:CustomMode()
     if len(l:mode)
-        return s:BuildFill(get(l:mode, 'lextra', ''))
+        return get(l:mode, 'lextra', '')
     endif
 
     let l:winwidth = winwidth(get(a:, 1, 0))
@@ -329,30 +293,26 @@ endfunction
 function! StatusLineRightMode(...) abort
     let l:mode = s:CustomMode()
     if len(l:mode)
-        return s:BuildRightMode(get(l:mode, 'rmode', ''))
+        return get(l:mode, 'rmode', '')
     endif
 
     let l:winwidth = winwidth(get(a:, 1, 0))
     let compact = crystalline_settings#IsCompact(l:winwidth)
 
-    return s:BuildRightMode([
-                \ s:FileInfoStatus(compact),
-                \ ])
+    return s:FileInfoStatus(compact)
 endfunction
 
 function! StatusLineRightFill(...) abort
     let l:mode = s:CustomMode()
     if len(l:mode)
-        return s:BuildRightFill(get(l:mode, 'rfill', ''))
+        return get(l:mode, 'rfill', '')
     endif
 
     let l:winwidth = winwidth(get(a:, 1, 0))
 
     if l:winwidth >= g:crystalline_winwidth_config.small
         let compact = crystalline_settings#IsCompact(l:winwidth)
-        return s:BuildRightFill([
-                    \ s:IndentationStatus(compact),
-                    \ ])
+        return s:IndentationStatus(compact)
     endif
 
     return ''
@@ -361,17 +321,17 @@ endfunction
 function! StatusLineRightExtra(...) abort
     let l:mode = s:CustomMode()
     if len(l:mode)
-        return s:BuildRightFill(get(l:mode, 'rextra', ''))
+        return get(l:mode, 'rextra', '')
     endif
 
     let l:winwidth = winwidth(get(a:, 1, 0))
 
     if l:winwidth >= g:crystalline_winwidth_config.small
-        return s:BuildRightFill([
+        return crystalline_settings#Concatenate([
                     \ crystalline_settings#parts#Spell(),
                     \ crystalline_settings#parts#Paste(),
                     \ crystalline_settings#parts#Clipboard(),
-                    \ ])
+                    \ ], 1)
     endif
 
     return ''
@@ -381,7 +341,10 @@ function! StatusLineInactiveMode(...) abort
     " show only custom mode in inactive buffer
     let l:mode = s:CustomMode()
     if len(l:mode)
-        return s:BuildMode([ l:mode['name'], get(l:mode, 'lfill_inactive', '') ])
+        return crystalline_settings#Concatenate([
+                    \ l:mode['name'],
+                    \ get(l:mode, 'lfill_inactive', ''),
+                    \ ])
     endif
 
     " plugin/statusline.vim[+]
