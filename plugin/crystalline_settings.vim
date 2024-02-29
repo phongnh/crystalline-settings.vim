@@ -612,10 +612,7 @@ function! s:CustomMode() abort
     endif
 
     if fname =~? '^NrrwRgn'
-        let nrrw_rgn_mode = crystalline_settings#nrrwrgn#Mode()
-        if len(nrrw_rgn_mode)
-            return nrrw_rgn_mode
-        endif
+        return crystalline_settings#nrrwrgn#Mode()
     endif
 
     let ft = s:GetBufferType()
