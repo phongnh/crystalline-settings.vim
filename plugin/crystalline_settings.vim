@@ -115,28 +115,44 @@ if g:crystalline_show_vim_logo && s:crystalline_show_devicons
 endif
 
 " Alternate status dictionaries
-let s:filename_modes = {
+let g:crystalline_filename_modes = {
             \ 'ControlP':             'CtrlP',
             \ '__CtrlSF__':           'CtrlSF',
             \ '__CtrlSFPreview__':    'Preview',
             \ '__Tagbar__':           'Tagbar',
             \ '__Gundo__':            'Gundo',
             \ '__Gundo_Preview__':    'Gundo Preview',
+            \ '__Mundo__':            'Mundo',
+            \ '__Mundo_Preview__':    'Mundo Preview',
             \ '[BufExplorer]':        'BufExplorer',
             \ '[Command Line]':       'Command Line',
             \ '[Plugins]':            'Plugins',
             \ '__committia_status__': 'Committia Status',
             \ '__committia_diff__':   'Committia Diff',
             \ '__doc__':              'Document',
+            \ '__LSP_SETTINGS__':     'LSP Settings',
             \ }
 
-let s:filetype_modes = {
-            \ 'netrw':             'NetrwTree',
+let g:crystalline_filetype_modes = {
+            \ 'netrw':             'Netrw',
+            \ 'molder':            'Molder',
+            \ 'dirvish':           'Dirvish',
+            \ 'vaffle':            'Vaffle',
             \ 'nerdtree':          'NERDTree',
             \ 'fern':              'Fern',
-            \ 'vaffle':            'Vaffle',
+            \ 'neo-tree':          'NeoTree',
+            \ 'carbon.explorer':   'Carbon',
+            \ 'oil':               'Oil',
+            \ 'NvimTree':          'NvimTree',
+            \ 'CHADTree':          'CHADTree',
+            \ 'LuaTree':           'LuaTree',
+            \ 'Mundo':             'Mundo',
+            \ 'MundoDiff':         'Mundo Preview',
             \ 'startify':          'Startify',
+            \ 'alpha':             'Alpha',
             \ 'tagbar':            'Tagbar',
+            \ 'vista':             'Vista',
+            \ 'vista_kind':        'Vista',
             \ 'vim-plug':          'Plugins',
             \ 'terminal':          'TERMINAL',
             \ 'help':              'HELP',
@@ -146,6 +162,7 @@ let s:filetype_modes = {
             \ 'gitcommit':         'Commit Message',
             \ 'fugitiveblame':     'FugitiveBlame',
             \ 'gitmessengerpopup': 'Git Messenger',
+            \ 'GV':                'GV',
             \ 'agit':              'Agit',
             \ 'agit_diff':         'Agit Diff',
             \ 'agit_stat':         'Agit Stat',
@@ -436,13 +453,30 @@ function! g:CrystallineTabFn(tab, buf, max_width, is_sel) abort
 endfunction
 
 " Plugin Integration
+let g:crystalline_plugin_modes = {
+            \ 'ctrlp':           'crystalline_settings#ctrlp#Mode',
+            \ 'netrw':           'crystalline_settings#netrw#Mode',
+            \ 'dirvish':         'crystalline_settings#dirvish#Mode',
+            \ 'molder':          'crystalline_settings#molder#Mode',
+            \ 'vaffle':          'crystalline_settings#vaffle#Mode',
+            \ 'fern':            'crystalline_settings#fern#Mode',
+            \ 'carbon.explorer': 'crystalline_settings#carbon#Mode',
+            \ 'neo-tree':        'crystalline_settings#neotree#Mode',
+            \ 'oil':             'crystalline_settings#oil#Mode',
+            \ 'tagbar':          'crystalline_settings#tagbar#Mode',
+            \ 'vista_kind':      'crystalline_settings#vista#Mode',
+            \ 'vista':           'crystalline_settings#vista#Mode',
+            \ 'terminal':        'crystalline_settings#terminal#Mode',
+            \ 'help':            'crystalline_settings#help#Mode',
+            \ 'qf':              'crystalline_settings#quickfix#Mode',
+            \ }
 
 function! s:CustomMode() abort
     let fname = expand('%:t')
 
-    if has_key(s:filename_modes, fname)
+    if has_key(g:crystalline_filename_modes, fname)
         let result = {
-                    \ 'name': s:filename_modes[fname],
+                    \ 'name': g:crystalline_filename_modes[fname],
                     \ 'type': 'name',
                     \ }
 
@@ -470,34 +504,14 @@ function! s:CustomMode() abort
     endif
 
     let ft = s:GetBufferType()
-    if has_key(s:filetype_modes, ft)
+    if has_key(g:crystalline_filetype_modes, ft)
         let result = {
-                    \ 'name': s:filetype_modes[ft],
+                    \ 'name': g:crystalline_filetype_modes[ft],
                     \ 'type': 'filetype',
                     \ }
 
-        if ft ==# 'fern'
-            return extend(result, crystalline_settings#fern#Mode())
-        endif
-
-        if ft ==# 'vaffle'
-            return extend(result, crystalline_settings#vaffle#Mode())
-        endif
-
-        if ft ==# 'tagbar'
-            return extend(result, crystalline_settings#tagbar#Mode())
-        endif
-
-        if ft ==# 'terminal'
-            return extend(result, crystalline_settings#terminal#Mode())
-        endif
-
-        if ft ==# 'help'
-            return extend(result, crystalline_settings#help#Mode())
-        endif
-
-        if ft ==# 'qf'
-            return extend(result, crystalline_settings#quickfix#Mode())
+        if has_key(g:crystalline_plugin_modes, ft)
+            return extend(result, function(g:crystalline_plugin_modes[ft])())
         endif
 
         return result

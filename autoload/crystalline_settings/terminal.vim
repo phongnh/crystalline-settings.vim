@@ -1,3 +1,3 @@
 function! crystalline_settings#help#Mode(...) abort
-    return {  'name': 'TERMINAL', 'lfill': expand('%') }
+    return { 'name': 'TERMINAL', 'lfill': expand('%') }
 endfunction
