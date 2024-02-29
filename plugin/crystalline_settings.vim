@@ -106,31 +106,7 @@ let g:crystalline_symbols = extend(g:crystalline_symbols, {
             \ 'right_sep': ' ' . g:crystalline_separators[1].alt_ch . ' ',
             \ })
 
-let s:crystalline_show_devicons = 0
-
-if g:crystalline_show_devicons
-    " Detect vim-devicons or nerdfont.vim
-    " let s:has_devicons = exists('*WebDevIconsGetFileTypeSymbol') && exists('*WebDevIconsGetFileFormatSymbol')
-    if findfile('autoload/nerdfont.vim', &rtp) != ''
-        let s:crystalline_show_devicons = 1
-
-        function! s:GetFileTypeSymbol(filename) abort
-            return nerdfont#find(a:filename)
-        endfunction
-    elseif findfile('plugin/webdevicons.vim', &rtp) != ''
-        let s:crystalline_show_devicons = 1
-
-        function! s:GetFileTypeSymbol(filename) abort
-            return WebDevIconsGetFileTypeSymbol(a:filename)
-        endfunction
-    elseif exists("g:CrystallineWebDevIconsFind")
-        let s:crystalline_show_devicons = 1
-
-        function! s:GetFileTypeSymbol(filename) abort
-            return g:CrystallineWebDevIconsFind(a:filename)
-        endfunction
-    endif
-endif
+let s:crystalline_show_devicons = g:crystalline_show_devicons && crystalline_settings#devicons#Detect()
 
 let g:crystalline_vimlabel = has('nvim') ? ' NVIM ' : ' VIM '
 if g:crystalline_show_vim_logo && s:crystalline_show_devicons
@@ -284,7 +260,7 @@ function! s:FileInfoStatus(...) abort
 
     if s:crystalline_show_devicons
         call extend(parts, [
-                    \ s:GetFileTypeSymbol(expand('%')) . ' ',
+                    \ crystalline_settings#devicons#FileType(expand('%')) . ' ',
                     \ ])
     endif
 
