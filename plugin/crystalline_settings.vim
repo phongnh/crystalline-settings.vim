@@ -13,122 +13,29 @@ set cpo&vim
 
 call crystalline_settings#Setup()
 
-function! StatusLineActiveMode(...) abort
-    let l:mode = crystalline_settings#parts#Integration()
-    if len(l:mode)
-        return l:mode['name']
-    endif
-
-    return crystalline_settings#Concatenate([
-                \ crystalline_settings#parts#Mode(),
-                \ crystalline_settings#parts#Clipboard(),
-                \ crystalline_settings#parts#Paste(),
-                \ crystalline_settings#parts#Spell(),
-                \ ])
-endfunction
-
-function! StatusLineLeftFill(...) abort
-    let l:mode = crystalline_settings#parts#Integration()
-    if len(l:mode)
-        return get(l:mode, 'lfill', '')
-    endif
-
-    let l:winwidth = winwidth(get(a:, 1, 0))
-
-    if g:crystalline_show_git_branch && l:winwidth >= g:crystalline_winwidth_config.small
-        return crystalline_settings#Concatenate([
-                    \ crystalline_settings#git#Branch(l:winwidth),
-                    \ crystalline_settings#parts#FileName(l:winwidth - 2),
-                    \ ])
-    endif
-
-    return crystalline_settings#parts#FileName(l:winwidth - 2)
-endfunction
-
-function! StatusLineLeftExtra(...) abort
-    let l:mode = crystalline_settings#parts#Integration()
-    if len(l:mode)
-        return get(l:mode, 'lextra', '')
-    endif
-
-    let l:winwidth = winwidth(get(a:, 1, 0))
-
-    if l:winwidth >= g:crystalline_winwidth_config.small
-    endif
-
-    return ''
-endfunction
-
-function! StatusLineRightMode(...) abort
-    let l:mode = crystalline_settings#parts#Integration()
-    if len(l:mode)
-        return get(l:mode, 'rmode', '')
-    endif
-
-    let l:winnr = get(a:, 1, 0)
-    return crystalline_settings#parts#FileInfo(l:winnr)
-endfunction
-
-function! StatusLineRightFill(...) abort
-    let l:mode = crystalline_settings#parts#Integration()
-    if len(l:mode)
-        return get(l:mode, 'rfill', '')
-    endif
-
-    let l:winnr = get(a:, 1, 0)
-    let l:compact = crystalline_settings#IsCompact(l:winnr)
-    return crystalline_settings#Concatenate([
-                \ crystalline_settings#parts#Indentation(l:compact),
-                \ crystalline_settings#parts#FileEncodingAndFormat(),
-                \ ], 1)
-endfunction
-
-function! StatusLineRightExtra(...) abort
-    let l:mode = crystalline_settings#parts#Integration()
-    if len(l:mode)
-        return get(l:mode, 'rextra', '')
-    endif
-
-    return ''
-endfunction
-
-function! StatusLineInactiveMode(...) abort
-    " show only custom mode in inactive buffer
-    let l:mode = crystalline_settings#parts#Integration()
-    if len(l:mode)
-        return crystalline_settings#Concatenate([
-                    \ l:mode['name'],
-                    \ get(l:mode, 'lfill_inactive', ''),
-                    \ ])
-    endif
-
-    " plugin/statusline.vim[+]
-    return crystalline_settings#parts#InactiveFileName()
-endfunction
-
 function! g:CrystallineStatuslineFn(winnr) abort
     let l:current = a:winnr == winnr()
     if l:current
         return join([
                     \ '%<',
                     \ crystalline#ModeHiItem('A'),
-                    \ crystalline_settings#Group(printf('StatusLineActiveMode(%d)', a:winnr)),
+                    \ crystalline_settings#Group(printf('crystalline_settings#sections#Mode(%d)', a:winnr)),
                     \ crystalline#Sep(0, crystalline#ModeSepGroup('A'), 'B'),
-                    \ crystalline_settings#Group(printf('StatusLineLeftFill(%d)', a:winnr)),
+                    \ crystalline_settings#Group(printf('crystalline_settings#sections#Plugin(%d)', a:winnr)),
                     \ crystalline#Sep(0, 'B', 'Fill'),
-                    \ crystalline_settings#Group(printf('StatusLineLeftExtra(%d)', a:winnr)),
+                    \ crystalline_settings#Group(printf('crystalline_settings#sections#FileName(%d)', a:winnr)),
                     \ '%=',
                     \ '%<',
-                    \ crystalline_settings#Group(printf('StatusLineRightExtra(%d)', a:winnr)),
+                    \ crystalline_settings#Group(printf('crystalline_settings#sections#Info(%d)', a:winnr)),
                     \ crystalline#Sep(1, 'Fill', 'B'),
-                    \ crystalline_settings#Group(printf('StatusLineRightFill(%d)', a:winnr)),
+                    \ crystalline_settings#Group(printf('crystalline_settings#sections#Settings(%d)', a:winnr)),
                     \ crystalline#Sep(1, 'B', 'A'),
-                    \ crystalline_settings#Group(printf('StatusLineRightMode(%d)', a:winnr)),
+                    \ crystalline_settings#Group(printf('crystalline_settings#sections#Buffer(%d)', a:winnr)),
                     \ ], '')
     else
         return crystalline#HiItem('InactiveFill') .
                     \ '%<' .
-                    \ crystalline_settings#Group(printf('StatusLineInactiveMode(%d)', a:winnr))
+                    \ crystalline_settings#Group(printf('crystalline_settings#sections#InactiveMode(%d)', a:winnr))
     endif
 endfunction
 
@@ -140,28 +47,6 @@ function! g:GroupSuffix()
         return '1'
     endif
     return ''
-endfunction
-
-function! g:CrystallineTablineFn()
-    let g:crystalline_group_suffix = g:GroupSuffix()
-    let l:max_width = &columns
-
-    let l:right = '%='
-
-    let l:right .= crystalline#Sep(1, 'TabFill', 'TabType')
-    let l:max_width -= 1
-
-    let l:vimlabel = g:crystalline_vimlabel
-    let l:right .= l:vimlabel
-    let l:max_width -= strchars(l:vimlabel)
-
-    let l:max_tabs = 10
-
-    return crystalline#DefaultTabline({
-                \ 'enable_sep': g:crystalline_enable_sep,
-                \ 'max_tabs': l:max_tabs,
-                \ 'max_width': l:max_width
-                \ }) . l:right
 endfunction
 
 function! g:CrystallineTabFn(tab, buf, max_width, is_sel) abort
@@ -196,6 +81,29 @@ function! g:CrystallineTabFn(tab, buf, max_width, is_sel) abort
     endif
 
     return [crystalline#EscapeStatuslineString(l:tab), l:tabwidth]
+endfunction
+
+
+function! g:CrystallineTablineFn()
+    let g:crystalline_group_suffix = g:GroupSuffix()
+    let l:max_width = &columns
+
+    let l:right = '%='
+
+    let l:right .= crystalline#Sep(1, 'TabFill', 'TabType')
+    let l:max_width -= 1
+
+    let l:vimlabel = g:crystalline_vimlabel
+    let l:right .= l:vimlabel
+    let l:max_width -= strchars(l:vimlabel)
+
+    let l:max_tabs = 10
+
+    return crystalline#DefaultTabline({
+                \ 'enable_sep': g:crystalline_enable_sep,
+                \ 'max_tabs': l:max_tabs,
+                \ 'max_width': l:max_width
+                \ }) . l:right
 endfunction
 
 augroup CrystallineSettings
