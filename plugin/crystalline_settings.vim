@@ -75,7 +75,7 @@ function! StatusLineRightFill(...) abort
         return get(l:mode, 'rfill', '')
     endif
 
-    let l:winnr = winwidth(get(a:, 1, 0))
+    let l:winnr = get(a:, 1, 0)
     let l:compact = crystalline_settings#IsCompact(l:winnr)
     return crystalline_settings#parts#Indentation(l:compact)
 endfunction
