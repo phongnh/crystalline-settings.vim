@@ -14,6 +14,7 @@ set cpo&vim
 call crystalline_settings#Setup()
 
 function! g:CrystallineStatuslineFn(winnr) abort
+    let g:crystalline_group_suffix = g:GroupSuffix()
     let l:current = a:winnr == winnr()
     if l:current
         return join([

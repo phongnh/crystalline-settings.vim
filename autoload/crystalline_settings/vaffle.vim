@@ -7,7 +7,7 @@ function! crystalline_settings#vaffle#Mode(...) abort
 
     let vaffle_folder = get(data, 2, '')
     if strlen(vaffle_folder)
-        let result['lfill'] = fnamemodify(vaffle_folder, ':p:~:h')
+        let result['plugin'] = fnamemodify(vaffle_folder, ':p:~:h')
     endif
 
     return result

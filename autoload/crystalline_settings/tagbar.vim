@@ -9,14 +9,13 @@ endfunction
 
 function! crystalline_settings#tagbar#Mode(...) abort
     if empty(s:crystalline_tagbar.flags)
-        let lextra = ''
+        let flags = ''
     else
-        let lextra = printf('[%s]', join(s:crystalline_tagbar.flags, ''))
+        let flags = printf('[%s]', join(s:crystalline_tagbar.flags, ''))
     endif
 
     return {
                 \ 'name': s:crystalline_tagbar.sort,
-                \ 'lfill': s:crystalline_tagbar.fname,
-                \ 'lextra': lextra,
+                \ 'plugin': crystalline_settings#Concatenate([s:crystalline_tagbar.fname, flags]),
                 \ }
 endfunction

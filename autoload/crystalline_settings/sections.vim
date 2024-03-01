@@ -15,7 +15,7 @@ endfunction
 function! crystalline_settings#sections#Plugin(...) abort
     let l:mode = crystalline_settings#parts#Integration()
     if len(l:mode)
-        return get(l:mode, 'lfill', '')
+        return get(l:mode, 'plugin', '')
     endif
 
     let l:winwidth = winwidth(get(a:, 1, 0))
@@ -33,7 +33,7 @@ endfunction
 function! crystalline_settings#sections#FileName(...) abort
     let l:mode = crystalline_settings#parts#Integration()
     if len(l:mode)
-        return get(l:mode, 'lextra', '')
+        return get(l:mode, 'filename', '')
     endif
 
     let l:winwidth = winwidth(get(a:, 1, 0))
@@ -47,7 +47,7 @@ endfunction
 function! crystalline_settings#sections#Buffer(...) abort
     let l:mode = crystalline_settings#parts#Integration()
     if len(l:mode)
-        return get(l:mode, 'rmode', '')
+        return get(l:mode, 'buffer', '')
     endif
 
     let l:winnr = get(a:, 1, 0)
@@ -57,7 +57,7 @@ endfunction
 function! crystalline_settings#sections#Settings(...) abort
     let l:mode = crystalline_settings#parts#Integration()
     if len(l:mode)
-        return get(l:mode, 'rfill', '')
+        return get(l:mode, 'settings', '')
     endif
 
     let l:winnr = get(a:, 1, 0)
@@ -71,7 +71,7 @@ endfunction
 function! crystalline_settings#sections#Info(...) abort
     let l:mode = crystalline_settings#parts#Integration()
     if len(l:mode)
-        return get(l:mode, 'rextra', '')
+        return get(l:mode, 'info', '')
     endif
 
     return ''
@@ -83,7 +83,8 @@ function! crystalline_settings#sections#InactiveMode(...) abort
     if len(l:mode)
         return crystalline_settings#Concatenate([
                     \ l:mode['name'],
-                    \ get(l:mode, 'lfill_inactive', ''),
+                    \ get(l:mode, 'plugin', ''),
+                    \ get(l:mode, 'filename', ''),
                     \ ])
     endif
 

@@ -30,28 +30,28 @@ endfunction
 function! crystalline_settings#ctrlp#Mode() abort
     let result = {
                 \ 'name': 'CtrlP',
-                \ 'rmode': s:crystalline_ctrlp.dir,
+                \ 'buffer': s:crystalline_ctrlp.dir,
                 \ }
 
     if s:crystalline_ctrlp.main
-        let lfill = crystalline_settings#Concatenate([
+        let plugin = crystalline_settings#Concatenate([
                     \ s:crystalline_ctrlp.prev,
                     \ printf(' %s %s %s ', '«', s:crystalline_ctrlp.item, '»'),
                     \ s:crystalline_ctrlp.next,
                     \ ])
 
-        let rfill = crystalline_settings#Concatenate([
+        let settings = crystalline_settings#Concatenate([
                     \ s:crystalline_ctrlp.focus,
                     \ s:crystalline_ctrlp.byfname,
                     \ ], 1)
 
         call extend(result, {
-                \ 'lfill': lfill,
-                \ 'rfill': rfill,
+                \ 'plugin': plugin,
+                \ 'settings': settings,
                 \ })
     else
         call extend(result, {
-                    \ 'lfill': s:crystalline_ctrlp.len,
+                    \ 'settings': s:crystalline_ctrlp.len,
                     \ })
     endif
 
