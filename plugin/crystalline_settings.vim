@@ -162,18 +162,8 @@ let g:crystalline_filetype_modes = {
             \ 'agit_stat':         'Agit Stat',
             \ }
 
-function! s:FileNameStatus(...) abort
-    let winwidth = get(a:, 1, 100)
-    return crystalline_settings#parts#Readonly() . crystalline_settings#FormatFileName(crystalline_settings#FileName(), winwidth, 50) . crystalline_settings#parts#Modified()
-endfunction
-
-function! s:InactiveFileNameStatus(...) abort
-    return crystalline_settings#parts#Readonly() . crystalline_settings#FileName() . crystalline_settings#parts#Modified()
-endfunction
-
 function! StatusLineActiveMode(...) abort
-    " custom status
-    let l:mode = s:CustomMode()
+    let l:mode = crystalline_settings#parts#Integration()
     if len(l:mode)
         return l:mode['name']
     endif
@@ -187,7 +177,7 @@ function! StatusLineActiveMode(...) abort
 endfunction
 
 function! StatusLineLeftFill(...) abort
-    let l:mode = s:CustomMode()
+    let l:mode = crystalline_settings#parts#Integration()
     if len(l:mode)
         return get(l:mode, 'lfill', '')
     endif
@@ -197,15 +187,15 @@ function! StatusLineLeftFill(...) abort
     if g:crystalline_show_git_branch && l:winwidth >= g:crystalline_winwidth_config.small
         return crystalline_settings#Concatenate([
                     \ crystalline_settings#git#Branch(l:winwidth),
-                    \ s:FileNameStatus(l:winwidth - 2),
+                    \ crystalline_settings#parts#FileName(l:winwidth - 2),
                     \ ])
     endif
 
-    return s:FileNameStatus(l:winwidth - 2)
+    return crystalline_settings#parts#FileName(l:winwidth - 2)
 endfunction
 
 function! StatusLineLeftExtra(...) abort
-    let l:mode = s:CustomMode()
+    let l:mode = crystalline_settings#parts#Integration()
     if len(l:mode)
         return get(l:mode, 'lextra', '')
     endif
@@ -219,7 +209,7 @@ function! StatusLineLeftExtra(...) abort
 endfunction
 
 function! StatusLineRightMode(...) abort
-    let l:mode = s:CustomMode()
+    let l:mode = crystalline_settings#parts#Integration()
     if len(l:mode)
         return get(l:mode, 'rmode', '')
     endif
@@ -229,7 +219,7 @@ function! StatusLineRightMode(...) abort
 endfunction
 
 function! StatusLineRightFill(...) abort
-    let l:mode = s:CustomMode()
+    let l:mode = crystalline_settings#parts#Integration()
     if len(l:mode)
         return get(l:mode, 'rfill', '')
     endif
@@ -240,7 +230,7 @@ function! StatusLineRightFill(...) abort
 endfunction
 
 function! StatusLineRightExtra(...) abort
-    let l:mode = s:CustomMode()
+    let l:mode = crystalline_settings#parts#Integration()
     if len(l:mode)
         return get(l:mode, 'rextra', '')
     endif
@@ -250,7 +240,7 @@ endfunction
 
 function! StatusLineInactiveMode(...) abort
     " show only custom mode in inactive buffer
-    let l:mode = s:CustomMode()
+    let l:mode = crystalline_settings#parts#Integration()
     if len(l:mode)
         return crystalline_settings#Concatenate([
                     \ l:mode['name'],
@@ -259,7 +249,7 @@ function! StatusLineInactiveMode(...) abort
     endif
 
     " plugin/statusline.vim[+]
-    return s:InactiveFileNameStatus()
+    return crystalline_settings#parts#InactiveFileName()
 endfunction
 
 function! g:CrystallineStatuslineFn(winnr) abort
@@ -352,73 +342,6 @@ function! g:CrystallineTabFn(tab, buf, max_width, is_sel) abort
     endif
 
     return [crystalline#EscapeStatuslineString(l:tab), l:tabwidth]
-endfunction
-
-" Plugin Integration
-let g:crystalline_plugin_modes = {
-            \ 'ctrlp':           'crystalline_settings#ctrlp#Mode',
-            \ 'netrw':           'crystalline_settings#netrw#Mode',
-            \ 'dirvish':         'crystalline_settings#dirvish#Mode',
-            \ 'molder':          'crystalline_settings#molder#Mode',
-            \ 'vaffle':          'crystalline_settings#vaffle#Mode',
-            \ 'fern':            'crystalline_settings#fern#Mode',
-            \ 'carbon.explorer': 'crystalline_settings#carbon#Mode',
-            \ 'neo-tree':        'crystalline_settings#neotree#Mode',
-            \ 'oil':             'crystalline_settings#oil#Mode',
-            \ 'tagbar':          'crystalline_settings#tagbar#Mode',
-            \ 'vista_kind':      'crystalline_settings#vista#Mode',
-            \ 'vista':           'crystalline_settings#vista#Mode',
-            \ 'terminal':        'crystalline_settings#terminal#Mode',
-            \ 'help':            'crystalline_settings#help#Mode',
-            \ 'qf':              'crystalline_settings#quickfix#Mode',
-            \ 'gitcommit':       'crystalline_settings#gitcommit#Mode',
-            \ }
-
-function! s:CustomMode() abort
-    let fname = expand('%:t')
-
-    if has_key(g:crystalline_filename_modes, fname)
-        let result = {
-                    \ 'name': g:crystalline_filename_modes[fname],
-                    \ }
-
-        if fname ==# 'ControlP'
-            return extend(result, crystalline_settings#ctrlp#Mode())
-        endif
-
-        if fname ==# '__Tagbar__'
-            return extend(result, crystalline_settings#tagbar#Mode())
-        endif
-
-        if fname ==# '__CtrlSF__'
-            return extend(result, crystalline_settings#ctrlsf#Mode())
-        endif
-
-        if fname ==# '__CtrlSFPreview__'
-            return extend(result, crystalline_settings#ctrlsf#PreviewMode())
-        endif
-
-        return result
-    endif
-
-    if fname =~# '^NrrwRgn_\zs.*\ze_\d\+$'
-        return crystalline_settings#nrrwrgn#Mode()
-    endif
-
-    let ft = crystalline_settings#BufferType()
-    if has_key(g:crystalline_filetype_modes, ft)
-        let result = {
-                    \ 'name': g:crystalline_filetype_modes[ft],
-                    \ }
-
-        if has_key(g:crystalline_plugin_modes, ft)
-            return extend(result, function(g:crystalline_plugin_modes[ft])())
-        endif
-
-        return result
-    endif
-
-    return {}
 endfunction
 
 augroup CrystallineSettings
