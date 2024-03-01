@@ -58,3 +58,12 @@ function! crystalline_settings#Concatenate(parts, ...) abort
     let separator = get(a:, 1, 0) ? g:crystalline_symbols.right_sep : g:crystalline_symbols.left_sep
     return join(filter(copy(a:parts), 'v:val !=# ""'), ' ' . separator . ' ')
 endfunction
+
+function! crystalline_settings#BufferType() abort
+    return strlen(&filetype) ? &filetype : &buftype
+endfunction
+
+function! crystalline_settings#FileName() abort
+    let fname = expand('%')
+    return strlen(fname) ? fnamemodify(fname, ':~:.') : '[No Name]'
+endfunction

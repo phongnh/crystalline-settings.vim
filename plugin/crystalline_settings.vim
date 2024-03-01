@@ -157,77 +157,19 @@ let g:crystalline_filetype_modes = {
             \ 'agit_stat':         'Agit Stat',
             \ }
 
-function! s:GetBufferType() abort
-    return strlen(&filetype) ? &filetype : &buftype
-endfunction
-
-function! s:GetFileName() abort
-    let fname = expand('%:~:.')
-
-    if empty(fname)
-        return '[No Name]'
-    endif
-
-    return fname
-endfunction
-
-function! s:GetFileFlags() abort
-    let flags = ''
-
-    " file modified and modifiable
-    if &modified
-        if !&modifiable
-            let flags .= '[+-]'
-        else
-            let flags .= '[+]'
-        endif
-    elseif !&modifiable
-        let flags .= '[-]'
-    endif
-
-    if &readonly
-        let flags .= ' ' . g:crystalline_symbols.readonly . ' '
-    endif
-
-    return flags
-endfunction
-
 function! s:FileNameStatus(...) abort
     let winwidth = get(a:, 1, 100)
-    return crystalline_settings#FormatFileName(s:GetFileName(), winwidth, 50) . s:GetFileFlags()
+    return crystalline_settings#parts#Readonly() . crystalline_settings#FormatFileName(crystalline_settings#FileName(), winwidth, 50) . crystalline_settings#parts#Modified()
 endfunction
 
 function! s:InactiveFileNameStatus(...) abort
-    return s:GetFileName() . s:GetFileFlags()
-endfunction
-
-function! s:IndentationStatus(...) abort
-    let l:shiftwidth = exists('*shiftwidth') ? shiftwidth() : &shiftwidth
-    let compact = get(a:, 1, 0)
-    if compact
-        return printf(&expandtab ? 'SPC: %d' : 'TAB: %d', l:shiftwidth)
-    else
-        return printf(&expandtab ? 'Spaces: %d' : 'Tab Size: %d', l:shiftwidth)
-    endif
-endfunction
-
-function! s:FileEncodingAndFormatStatus() abort
-    let l:encoding = strlen(&fileencoding) ? &fileencoding : &encoding
-    let l:bomb     = &bomb ? '[BOM]' : ''
-    let l:format   = strlen(&fileformat) ? printf('[%s]', &fileformat) : ''
-
-    " Skip common string utf-8[unix]
-    if (l:encoding . l:format) ==# 'utf-8[unix]'
-        return l:bomb
-    endif
-
-    return l:encoding . l:bomb . l:format
+    return crystalline_settings#parts#Readonly() . crystalline_settings#FileName() . crystalline_settings#parts#Modified()
 endfunction
 
 function! s:FileInfoStatus(...) abort
     let parts = [
-                \ s:FileEncodingAndFormatStatus(),
-                \ s:GetBufferType(),
+                \ crystalline_settings#parts#FileEncodindAndFormat(),
+                \ crystalline_settings#BufferType(),
                 \ ]
 
     if s:crystalline_show_devicons
@@ -308,7 +250,7 @@ function! StatusLineRightFill(...) abort
 
     if l:winwidth >= g:crystalline_winwidth_config.small
         let compact = crystalline_settings#IsCompact(l:winwidth)
-        return s:IndentationStatus(compact)
+        return crystalline_settings#parts#Indentation(compact)
     endif
 
     return ''
@@ -480,7 +422,7 @@ function! s:CustomMode() abort
         return crystalline_settings#nrrwrgn#Mode()
     endif
 
-    let ft = s:GetBufferType()
+    let ft = crystalline_settings#BufferType()
     if has_key(g:crystalline_filetype_modes, ft)
         let result = {
                     \ 'name': g:crystalline_filetype_modes[ft],
