@@ -11,6 +11,9 @@ let g:loaded_vim_crystalline_settings = 1
 let s:save_cpo = &cpo
 set cpo&vim
 
+" Disable NERDTree statusline
+let g:NERDTreeStatusline = -1
+
 " Crystalline Settings
 let g:crystalline_enable_sep      = 1
 let g:crystalline_powerline_fonts = get(g:, 'crystalline_powerline_fonts', 0)
@@ -418,31 +421,10 @@ function! s:CustomMode() abort
     return {}
 endfunction
 
-" Disable NERDTree statusline
-let g:NERDTreeStatusline = -1
-
-" CtrlP Integration
-let g:ctrlp_status_func = {
-            \ 'main': 'crystalline_settings#ctrlp#MainStatus',
-            \ 'prog': 'crystalline_settings#ctrlp#ProgressStatus',
-            \ }
-
-" Tagbar Integration
-let g:tagbar_status_func = 'crystalline_settings#tagbar#Status'
-
-" ZoomWin Integration
-let g:crystalline_zoomwin_funcref = []
-
-if exists('g:ZoomWin_funcref')
-    if type(g:ZoomWin_funcref) == v:t_func
-        let g:crystalline_zoomwin_funcref = [g:ZoomWin_funcref]
-    elseif type(g:ZoomWin_funcref) == v:t_func
-        let g:crystalline_zoomwin_funcref = g:ZoomWin_funcref
-    endif
-    let g:crystalline_zoomwin_funcref = uniq(copy(g:crystalline_zoomwin_funcref))
-endif
-
-let g:ZoomWin_funcref = function('crystalline_settings#zoomwin#Status')
+augroup CrystallineSettings
+    autocmd!
+    autocmd VimEnter * call crystalline_settings#Init()
+augroup END
 
 let &cpo = s:save_cpo
 unlet s:save_cpo

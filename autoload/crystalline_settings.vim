@@ -68,3 +68,28 @@ function! crystalline_settings#FileName() abort
     let fname = expand('%')
     return strlen(fname) ? fnamemodify(fname, ':~:.') : '[No Name]'
 endfunction
+
+function! crystalline_settings#Init() abort
+    " CtrlP Integration
+    let g:ctrlp_status_func = {
+                \ 'main': 'crystalline_settings#ctrlp#MainStatus',
+                \ 'prog': 'crystalline_settings#ctrlp#ProgressStatus',
+                \ }
+
+    " Tagbar Integration
+    let g:tagbar_status_func = 'crystalline_settings#tagbar#Status'
+
+    " ZoomWin Integration
+    let g:crystalline_zoomwin_funcref = []
+
+    if exists('g:ZoomWin_funcref')
+        if type(g:ZoomWin_funcref) == v:t_func
+            let g:crystalline_zoomwin_funcref = [g:ZoomWin_funcref]
+        elseif type(g:ZoomWin_funcref) == v:t_func
+            let g:crystalline_zoomwin_funcref = g:ZoomWin_funcref
+        endif
+        let g:crystalline_zoomwin_funcref = uniq(copy(g:crystalline_zoomwin_funcref))
+    endif
+
+    let g:ZoomWin_funcref = function('crystalline_settings#zoomwin#Status')
+endfunction
