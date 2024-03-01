@@ -62,13 +62,15 @@ function! g:CrystallineTabFn(tab, buf, max_width, is_sel) abort
     let l:lr_width = strchars(l:left) + strchars(l:right)
     let l:max_name_width = a:max_width - l:lr_width
 
+    let l:nr = crystalline#DefaultTablineIsBuffers() ? a:buf : a:tab
+
     " Get name
     let l:name = bufname(a:buf)
     if l:name ==# ''
-        let l:name = g:crystalline_tab_empty
+        let l:name = printf('%d: %s', l:nr, g:crystalline_tab_empty)
         let l:name_width = strchars(l:name)
     else
-        let l:name = printf('%d: %s', a:buf, fnamemodify(l:name, ':t'))
+        let l:name = printf('%d: %s', l:nr, fnamemodify(l:name, ':t'))
         let l:name_width = strchars(l:name)
     endif
 
