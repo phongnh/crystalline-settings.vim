@@ -83,4 +83,10 @@ function! crystalline_settings#powerline#SetSeparators(style) abort
     endif
 
     let g:crystalline_separators = deepcopy(get(g:crystalline_separator_styles, l:style, g:crystalline_separator_styles['default']))
+    let g:crystalline_symbols = extend(g:crystalline_symbols, {
+            \ 'left':      g:crystalline_separators[0].ch,
+            \ 'right':     g:crystalline_separators[1].ch,
+            \ 'left_sep':  g:crystalline_separators[0].alt_ch,
+            \ 'right_sep': g:crystalline_separators[1].alt_ch,
+            \ })
 endfunction

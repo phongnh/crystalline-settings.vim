@@ -85,15 +85,17 @@ if g:crystalline_powerline_fonts
                 \ })
     call crystalline_settings#powerline#SetSeparators(get(g:, 'crystalline_powerline_style', 'default'))
 else
-    call crystalline_settings#powerline#SetSeparators('||')
+    let g:crystalline_separators = [
+                \ { 'ch': '', 'alt_ch': '|', 'dir': '>' },
+                \ { 'ch': '', 'alt_ch': '|', 'dir': '<' },
+                \ ]
+    let g:crystalline_symbols = extend(g:crystalline_symbols, {
+                \ 'left':      '',
+                \ 'right':     '',
+                \ 'left_sep':  '|',
+                \ 'right_sep': '|',
+                \ })
 endif
-
-let g:crystalline_symbols = extend(g:crystalline_symbols, {
-            \ 'left':      g:crystalline_separators[0].ch,
-            \ 'right':     g:crystalline_separators[1].ch,
-            \ 'left_sep':  g:crystalline_separators[0].alt_ch,
-            \ 'right_sep': g:crystalline_separators[1].alt_ch,
-            \ })
 
 let s:crystalline_show_devicons = g:crystalline_show_devicons && crystalline_settings#devicons#Detect()
 
@@ -331,7 +333,7 @@ function! g:CrystallineTablineFn()
     let l:max_tabs = 10
 
     return crystalline#DefaultTabline({
-                \ 'enable_sep': 1,
+                \ 'enable_sep': g:crystalline_enable_sep,
                 \ 'max_tabs': l:max_tabs,
                 \ 'max_width': l:max_width
                 \ }) . l:right
