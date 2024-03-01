@@ -90,6 +90,8 @@ function! crystalline_settings#Setup() abort
     let g:crystalline_show_devicons   = get(g:, 'crystalline_show_devicons', 1)
     let g:crystalline_show_vim_logo   = get(g:, 'crystalline_show_vim_logo', 1)
 
+    let g:crystalline_auto_prefix_groups = 1
+
     " Improved Model Labels
     let g:crystalline_mode_labels = {
                 \ 'n':  ' NORMAL ',
