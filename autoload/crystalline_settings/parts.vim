@@ -76,3 +76,15 @@ function! crystalline_settings#parts#FileEncodindAndFormat() abort
 
     return l:encoding . l:bomb . l:format
 endfunction
+
+function! crystalline_settings#parts#FileType(...) abort
+    return crystalline_settings#BufferType() . crystalline_settings#devicons#FileType(expand('%'))
+endfunction
+
+function! crystalline_settings#parts#FileInfo(...) abort
+    let parts = [
+                \ crystalline_settings#parts#FileEncodindAndFormat(),
+                \ crystalline_settings#parts#FileType(),
+                \ ]
+    return join(filter(copy(parts), 'v:val !=# ""'), ' ')
+endfunction

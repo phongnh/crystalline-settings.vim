@@ -168,21 +168,6 @@ function! s:InactiveFileNameStatus(...) abort
     return crystalline_settings#parts#Readonly() . crystalline_settings#FileName() . crystalline_settings#parts#Modified()
 endfunction
 
-function! s:FileInfoStatus(...) abort
-    let parts = [
-                \ crystalline_settings#parts#FileEncodindAndFormat(),
-                \ crystalline_settings#BufferType(),
-                \ ]
-
-    if s:crystalline_show_devicons
-        call extend(parts, [
-                    \ crystalline_settings#devicons#FileType(expand('%')) . ' ',
-                    \ ])
-    endif
-
-    return join(filter(copy(parts), 'v:val != ""'), ' ')
-endfunction
-
 function! StatusLineActiveMode(...) abort
     " custom status
     let l:mode = s:CustomMode()
@@ -236,10 +221,8 @@ function! StatusLineRightMode(...) abort
         return get(l:mode, 'rmode', '')
     endif
 
-    let l:winwidth = winwidth(get(a:, 1, 0))
-    let compact = crystalline_settings#IsCompact(l:winwidth)
-
-    return s:FileInfoStatus(compact)
+    let l:winnr = get(a:, 1, 0)
+    return crystalline_settings#parts#FileInfo(l:winnr)
 endfunction
 
 function! StatusLineRightFill(...) abort
@@ -248,14 +231,9 @@ function! StatusLineRightFill(...) abort
         return get(l:mode, 'rfill', '')
     endif
 
-    let l:winwidth = winwidth(get(a:, 1, 0))
-
-    if l:winwidth >= g:crystalline_winwidth_config.small
-        let compact = crystalline_settings#IsCompact(l:winwidth)
-        return crystalline_settings#parts#Indentation(compact)
-    endif
-
-    return ''
+    let l:winnr = winwidth(get(a:, 1, 0))
+    let l:compact = crystalline_settings#IsCompact(l:winnr)
+    return crystalline_settings#parts#Indentation(l:compact)
 endfunction
 
 function! StatusLineRightExtra(...) abort

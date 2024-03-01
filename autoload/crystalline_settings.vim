@@ -43,7 +43,8 @@ function! crystalline_settings#IsClipboardEnabled() abort
 endfunction
 
 function! crystalline_settings#IsCompact(...) abort
-    return winwidth(0) <= g:crystalline_winwidth_config.compact || count([crystalline_settings#IsClipboardEnabled(), &paste, &spell], 1) > 1
+    let l:winnr = get(a:, 1, 0)
+    return winwidth(l:winnr) <= g:crystalline_winwidth_config.compact || count([crystalline_settings#IsClipboardEnabled(), &paste, &spell], 1) > 1
 endfunction
 
 function! crystalline_settings#Group(exp) abort
