@@ -42,8 +42,8 @@ function! crystalline_settings#IsClipboardEnabled() abort
     return match(&clipboard, 'unnamed') > -1
 endfunction
 
-function! crystalline_settings#IsCompact(winwidth) abort
-    return &spell || &paste || crystalline_settings#IsClipboardEnabled() || a:winwidth <= g:crystalline_winwidth_config.xsmall
+function! crystalline_settings#IsCompact(...) abort
+    return winwidth(0) <= g:crystalline_winwidth_config.compact || count([crystalline_settings#IsClipboardEnabled(), &paste, &spell], 1) > 1
 endfunction
 
 function! crystalline_settings#Group(exp) abort

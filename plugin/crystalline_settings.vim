@@ -16,6 +16,7 @@ let g:crystalline_enable_sep      = 1
 let g:crystalline_powerline_fonts = get(g:, 'crystalline_powerline_fonts', 0)
 let g:crystalline_theme           = get(g:, 'crystalline_theme', 'solarized')
 let g:crystalline_shorten_path    = get(g:, 'crystalline_shorten_path', 0)
+let g:crystalline_show_short_mode = get(g:, 'crystalline_show_short_mode', 0)
 let g:crystalline_show_git_branch = get(g:, 'crystalline_show_git_branch', 1)
 let g:crystalline_show_devicons   = get(g:, 'crystalline_show_devicons', 1)
 let g:crystalline_show_vim_logo   = get(g:, 'crystalline_show_vim_logo', 1)
@@ -38,44 +39,32 @@ let g:crystalline_mode_labels = {
             \ '':   '',
             \ }
 
-if get(g:, 'crystalline_shorter_mode_labels', 0)
-    let g:crystalline_mode_labels = {
-                \ 'n':  ' N ',
-                \ 'c':  ' C ',
-                \ 'r':  ' N ',
-                \ '!':  ' N ',
-                \ 'i':  ' I ',
-                \ 't':  ' T ',
-                \ 'v':  ' V ',
-                \ 'V':  ' L ',
-                \ '': ' B ',
-                \ 's':  ' S ',
-                \ 'S':  ' S-L ',
-                \ '': ' S-B ',
-                \ 'R':  ' R ',
-                \ '':   '',
-                \ }
-endif
-
-" Shorter modes
-let s:crystalline_shorter_modes = {
-            \ ' NORMAL ':   ' N ',
-            \ ' INSERT ':   ' I ',
-            \ ' VISUAL ':   ' V ',
-            \ ' V-LINE ':   ' L ',
-            \ ' V-BLOCK ':  ' B ',
-            \ ' COMMAND ':  ' C ',
-            \ ' SELECT ':   ' S ',
-            \ ' S-LINE ':   ' S-L ',
-            \ ' S-BLOCK ':  ' S-B ',
-            \ ' TERMINAL ': ' T ',
+let g:crystalline_short_mode_labels = {
+            \ 'n':  ' N ',
+            \ 'c':  ' C ',
+            \ 'r':  ' N ',
+            \ '!':  ' N ',
+            \ 'i':  ' I ',
+            \ 't':  ' T ',
+            \ 'v':  ' V ',
+            \ 'V':  ' L ',
+            \ '': ' B ',
+            \ 's':  ' S ',
+            \ 'S':  ' S-L ',
+            \ '': ' S-B ',
+            \ 'R':  ' R ',
+            \ '':   '',
             \ }
+
+if g:crystalline_show_short_mode
+    let g:crystalline_mode_labels = copy(g:crystalline_short_mode_labels)
+endif
 
 " Window width
 let g:crystalline_winwidth_config = extend({
-            \ 'xsmall': 60,
-            \ 'small':  80,
-            \ 'normal': 120,
+            \ 'compact': 60,
+            \ 'small':   80,
+            \ 'normal':  120,
             \ }, get(g:, 'crystalline_winwidth_config', {}))
 
 " Symbols: https://en.wikipedia.org/wiki/Enclosed_Alphanumerics
@@ -83,8 +72,8 @@ let g:crystalline_symbols = {
                 \ 'linenr':    '☰',
                 \ 'branch':    '⎇ ',
                 \ 'readonly':  '',
-                \ 'clipboard': '🅒  ',
-                \ 'paste':     '🅟  ',
+                \ 'clipboard': '🅒 ',
+                \ 'paste':     '🅟 ',
                 \ 'ellipsis':  '…',
                 \ }
 
@@ -257,14 +246,12 @@ function! StatusLineActiveMode(...) abort
         return l:mode['name']
     endif
 
-    let l:winwidth = winwidth(get(a:, 1, 0))
-
-    let l:mode = crystalline_settings#Strip(crystalline#ModeLabel())
-    if l:winwidth <= g:crystalline_winwidth_config.xsmall
-        let l:mode  = get(s:crystalline_shorter_modes, l:mode, l:mode)
-    endif
-
-    return l:mode
+    return crystalline_settings#Concatenate([
+                \ crystalline_settings#parts#Mode(),
+                \ crystalline_settings#parts#Clipboard(),
+                \ crystalline_settings#parts#Paste(),
+                \ crystalline_settings#parts#Spell(),
+                \ ])
 endfunction
 
 function! StatusLineLeftFill(...) abort
@@ -331,16 +318,6 @@ function! StatusLineRightExtra(...) abort
     let l:mode = s:CustomMode()
     if len(l:mode)
         return get(l:mode, 'rextra', '')
-    endif
-
-    let l:winwidth = winwidth(get(a:, 1, 0))
-
-    if l:winwidth >= g:crystalline_winwidth_config.small
-        return crystalline_settings#Concatenate([
-                    \ crystalline_settings#parts#Spell(),
-                    \ crystalline_settings#parts#Paste(),
-                    \ crystalline_settings#parts#Clipboard(),
-                    \ ], 1)
     endif
 
     return ''

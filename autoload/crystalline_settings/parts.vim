@@ -1,3 +1,11 @@
+function! crystalline_settings#parts#Mode() abort
+    if crystalline_settings#IsCompact()
+        return crystalline_settings#Trim(get(g:crystalline_short_mode_labels, mode(), ''))
+    else
+        return crystalline_settings#Trim(crystalline#ModeLabel())
+    endif
+endfunction
+
 function! crystalline_settings#parts#Clipboard() abort
     return crystalline_settings#IsClipboardEnabled() ? g:crystalline_symbols.clipboard : ''
 endfunction
