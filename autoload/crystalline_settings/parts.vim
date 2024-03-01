@@ -72,10 +72,6 @@ function! crystalline_settings#parts#FileType(...) abort
     return crystalline_settings#BufferType() . crystalline_settings#devicons#FileType(expand('%'))
 endfunction
 
-function! crystalline_settings#parts#FileInfo(...) abort
-    return crystalline_settings#parts#FileType()
-endfunction
-
 function! crystalline_settings#parts#FileName(...) abort
     let winwidth = get(a:, 1, 100)
     return crystalline_settings#parts#Readonly() . crystalline_settings#FormatFileName(crystalline_settings#FileName(), winwidth, 50) . crystalline_settings#parts#Modified()

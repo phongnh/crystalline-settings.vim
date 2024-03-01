@@ -59,8 +59,7 @@ function! crystalline_settings#sections#Buffer(...) abort
 endfunction
 
 function! s:RenderBufferSection(...) abort
-    let l:winnr = get(a:, 1, 0)
-    return crystalline_settings#parts#FileInfo(l:winnr)
+    return crystalline_settings#parts#FileType()
 endfunction
 
 function! crystalline_settings#sections#Settings(...) abort
