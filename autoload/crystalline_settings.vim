@@ -69,7 +69,108 @@ function! crystalline_settings#FileName() abort
     return strlen(fname) ? fnamemodify(fname, ':~:.') : '[No Name]'
 endfunction
 
+function! crystalline_settings#Setup() abort
+    " Disable NERDTree statusline
+    let g:NERDTreeStatusline = -1
+
+    " Crystalline Settings
+    let g:crystalline_enable_sep      = 1
+    let g:crystalline_powerline_fonts = get(g:, 'crystalline_powerline_fonts', 0)
+    let g:crystalline_theme           = get(g:, 'crystalline_theme', 'solarized')
+    let g:crystalline_shorten_path    = get(g:, 'crystalline_shorten_path', 0)
+    let g:crystalline_show_short_mode = get(g:, 'crystalline_show_short_mode', 0)
+    let g:crystalline_show_git_branch = get(g:, 'crystalline_show_git_branch', 1)
+    let g:crystalline_show_devicons   = get(g:, 'crystalline_show_devicons', 1)
+    let g:crystalline_show_vim_logo   = get(g:, 'crystalline_show_vim_logo', 1)
+
+    " Improved Model Labels
+    let g:crystalline_mode_labels = {
+                \ 'n':  ' NORMAL ',
+                \ 'c':  ' COMMAND ',
+                \ 'r':  ' NORMAL ',
+                \ '!':  ' NORMAL ',
+                \ 'i':  ' INSERT ',
+                \ 't':  ' TERMINAL ',
+                \ 'v':  ' VISUAL ',
+                \ 'V':  ' V-LINE ',
+                \ '': ' V-BLOCK ',
+                \ 's':  ' SELECT ',
+                \ 'S':  ' S-LINE ',
+                \ '': ' S-BLOCK ',
+                \ 'R':  ' REPLACE ',
+                \ '':   '',
+                \ }
+
+    let g:crystalline_short_mode_labels = {
+                \ 'n':  ' N ',
+                \ 'c':  ' C ',
+                \ 'r':  ' N ',
+                \ '!':  ' N ',
+                \ 'i':  ' I ',
+                \ 't':  ' T ',
+                \ 'v':  ' V ',
+                \ 'V':  ' L ',
+                \ '': ' B ',
+                \ 's':  ' S ',
+                \ 'S':  ' S-L ',
+                \ '': ' S-B ',
+                \ 'R':  ' R ',
+                \ '':   '',
+                \ }
+
+    if g:crystalline_show_short_mode
+        let g:crystalline_mode_labels = copy(g:crystalline_short_mode_labels)
+    endif
+
+    " Window width
+    let g:crystalline_winwidth_config = extend({
+                \ 'compact': 60,
+                \ 'small':   80,
+                \ 'normal':  120,
+                \ }, get(g:, 'crystalline_winwidth_config', {}))
+
+    " Symbols: https://en.wikipedia.org/wiki/Enclosed_Alphanumerics
+    let g:crystalline_symbols = {
+                \ 'linenr':    '☰',
+                \ 'branch':    '⎇ ',
+                \ 'readonly':  '',
+                \ 'clipboard': '🅒 ',
+                \ 'paste':     '🅟 ',
+                \ 'ellipsis':  '…',
+                \ }
+
+    if g:crystalline_powerline_fonts
+        call extend(g:crystalline_symbols, {
+                    \ 'linenr':   "\ue0a1",
+                    \ 'branch':   "\ue0a0",
+                    \ 'readonly': "\ue0a2",
+                    \ })
+        call crystalline_settings#powerline#SetSeparators(get(g:, 'crystalline_powerline_style', 'default'))
+    else
+        let g:crystalline_separators = [
+                    \ { 'ch': '', 'alt_ch': '|', 'dir': '>' },
+                    \ { 'ch': '', 'alt_ch': '|', 'dir': '<' },
+                    \ ]
+        let g:crystalline_symbols = extend(g:crystalline_symbols, {
+                    \ 'left':      '',
+                    \ 'right':     '',
+                    \ 'left_sep':  '|',
+                    \ 'right_sep': '|',
+                    \ })
+    endif
+
+    let g:crystalline_show_devicons = g:crystalline_show_devicons && crystalline_settings#devicons#Detect()
+
+    let g:crystalline_vimlabel = has('nvim') ? ' NVIM ' : ' VIM '
+    if g:crystalline_show_devicons && g:crystalline_show_vim_logo
+        " Show Vim Logo in Tabline
+        let g:crystalline_vimlabel = " \ue7c5  "
+    endif
+endfunction
+
 function! crystalline_settings#Init() abort
+    setglobal noshowmode
+
     " CtrlP Integration
     let g:ctrlp_status_func = {
                 \ 'main': 'crystalline_settings#ctrlp#MainStatus',

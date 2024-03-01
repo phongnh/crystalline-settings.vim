@@ -98,6 +98,60 @@ function! crystalline_settings#parts#InactiveFileName(...) abort
     return crystalline_settings#parts#Readonly() . crystalline_settings#FileName() . crystalline_settings#parts#Modified()
 endfunction
 
+" Alternate status dictionaries
+let g:crystalline_filename_modes = {
+            \ 'ControlP':             'CtrlP',
+            \ '__CtrlSF__':           'CtrlSF',
+            \ '__CtrlSFPreview__':    'Preview',
+            \ '__Tagbar__':           'Tagbar',
+            \ '__Gundo__':            'Gundo',
+            \ '__Gundo_Preview__':    'Gundo Preview',
+            \ '__Mundo__':            'Mundo',
+            \ '__Mundo_Preview__':    'Mundo Preview',
+            \ '[BufExplorer]':        'BufExplorer',
+            \ '[Command Line]':       'Command Line',
+            \ '[Plugins]':            'Plugins',
+            \ '__committia_status__': 'Committia Status',
+            \ '__committia_diff__':   'Committia Diff',
+            \ '__doc__':              'Document',
+            \ '__LSP_SETTINGS__':     'LSP Settings',
+            \ }
+
+let g:crystalline_filetype_modes = {
+            \ 'netrw':             'Netrw',
+            \ 'molder':            'Molder',
+            \ 'dirvish':           'Dirvish',
+            \ 'vaffle':            'Vaffle',
+            \ 'nerdtree':          'NERDTree',
+            \ 'fern':              'Fern',
+            \ 'neo-tree':          'NeoTree',
+            \ 'carbon.explorer':   'Carbon',
+            \ 'oil':               'Oil',
+            \ 'NvimTree':          'NvimTree',
+            \ 'CHADTree':          'CHADTree',
+            \ 'LuaTree':           'LuaTree',
+            \ 'Mundo':             'Mundo',
+            \ 'MundoDiff':         'Mundo Preview',
+            \ 'startify':          'Startify',
+            \ 'alpha':             'Alpha',
+            \ 'tagbar':            'Tagbar',
+            \ 'vista':             'Vista',
+            \ 'vista_kind':        'Vista',
+            \ 'vim-plug':          'Plugins',
+            \ 'terminal':          'TERMINAL',
+            \ 'help':              'HELP',
+            \ 'qf':                'Quickfix',
+            \ 'godoc':             'GoDoc',
+            \ 'gedoc':             'GeDoc',
+            \ 'gitcommit':         'Commit Message',
+            \ 'fugitiveblame':     'FugitiveBlame',
+            \ 'gitmessengerpopup': 'Git Messenger',
+            \ 'GV':                'GV',
+            \ 'agit':              'Agit',
+            \ 'agit_diff':         'Agit Diff',
+            \ 'agit_stat':         'Agit Stat',
+            \ }
+
 let g:crystalline_plugin_modes = {
             \ 'ctrlp':           'crystalline_settings#ctrlp#Mode',
             \ 'netrw':           'crystalline_settings#netrw#Mode',
