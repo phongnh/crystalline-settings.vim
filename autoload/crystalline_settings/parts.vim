@@ -34,16 +34,10 @@ endfunction
 
 function! crystalline_settings#parts#Modified(...) abort
     if &modified
-        if !&modifiable
-            return '[+-]'
-        else
-            return '[+]'
-        endif
-    elseif !&modifiable
-        return '[-]'
+        return !&modifiable ? '[+-]' : '[+]'
+    else
+        return !&modifiable ? '[-]' : ''
     endif
-
-    return ''
 endfunction
 
 function! crystalline_settings#parts#SimpleLineInfo(...) abort
@@ -64,17 +58,14 @@ function! crystalline_settings#parts#LineInfo(...) abort
     return printf('%4d:%-3d %3s', line('.'), col('.'), l:percent)
 endfunction
 
-function! crystalline_settings#parts#FileEncodindAndFormat() abort
+function! crystalline_settings#parts#FileEncodingAndFormat() abort
     let l:encoding = strlen(&fileencoding) ? &fileencoding : &encoding
-    let l:bomb     = &bomb ? '[BOM]' : ''
-    let l:format   = strlen(&fileformat) ? printf('[%s]', &fileformat) : ''
-
-    " Skip common string utf-8[unix]
-    if (l:encoding . l:format) ==# 'utf-8[unix]'
-        return l:bomb
-    endif
-
-    return l:encoding . l:bomb . l:format
+    let l:encoding = (l:encoding ==# 'utf-8') ? '' : l:encoding . ' '
+    let l:bomb     = &bomb ? g:crystalline_symbols.bomb . ' ' : ''
+    let l:noeol    = &eol ? '' : g:crystalline_symbols.noeol . ' '
+    let l:format   = get(g:crystalline_symbols, &fileformat, '[empty]')
+    let l:format   = (l:format ==# '[unix]') ? '' : l:format . ' '
+    return l:encoding . l:bomb . l:noeol . l:format
 endfunction
 
 function! crystalline_settings#parts#FileType(...) abort
@@ -82,11 +73,7 @@ function! crystalline_settings#parts#FileType(...) abort
 endfunction
 
 function! crystalline_settings#parts#FileInfo(...) abort
-    let parts = [
-                \ crystalline_settings#parts#FileEncodindAndFormat(),
-                \ crystalline_settings#parts#FileType(),
-                \ ]
-    return join(filter(copy(parts), 'v:val !=# ""'), ' ')
+    return crystalline_settings#parts#FileType()
 endfunction
 
 function! crystalline_settings#parts#FileName(...) abort
@@ -183,7 +170,7 @@ function! crystalline_settings#parts#Integration() abort
                     \ '__CtrlSF__':        'crystalline_settings#ctrlsf#Mode',
                     \ '__CtrlSFPreview__': 'crystalline_settings#ctrlsf#PreviewMode',
                     \ }
-        
+
         if has_key(l:plugin_modes, fname)
             return extend(result, function(l:plugin_modes[fname])())
         endif

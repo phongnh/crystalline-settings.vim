@@ -44,7 +44,14 @@ endfunction
 
 function! crystalline_settings#IsCompact(...) abort
     let l:winnr = get(a:, 1, 0)
-    return winwidth(l:winnr) <= g:crystalline_winwidth_config.compact || count([crystalline_settings#IsClipboardEnabled(), &paste, &spell], 1) > 1
+    return winwidth(l:winnr) <= g:crystalline_winwidth_config.compact ||
+                \ count([
+                \   crystalline_settings#IsClipboardEnabled(),
+                \   &paste,
+                \   &spell,
+                \   &bomb,
+                \   !&eol,
+                \ ], 1) > 1
 endfunction
 
 function! crystalline_settings#Group(exp) abort
@@ -131,13 +138,23 @@ function! crystalline_settings#Setup() abort
 
     " Symbols: https://en.wikipedia.org/wiki/Enclosed_Alphanumerics
     let g:crystalline_symbols = {
+                \ 'dos':       '[dos]',
+                \ 'mac':       '[mac]',
+                \ 'unix':      '[unix]',
                 \ 'linenr':    '☰',
                 \ 'branch':    '⎇ ',
                 \ 'readonly':  '',
+                \ 'bomb':      '🅑 ',
+                \ 'noeol':     '∉ ',
                 \ 'clipboard': '🅒 ',
                 \ 'paste':     '🅟 ',
                 \ 'ellipsis':  '…',
                 \ }
+    " call extend(g:crystalline_symbols, {
+    "            \ 'dos':  '[DOS]',
+    "            \ 'mac':  '[MAC]',
+    "            \ 'unix': '[UNIX]',
+    "            \ })
 
     if g:crystalline_powerline_fonts
         call extend(g:crystalline_symbols, {
@@ -160,6 +177,23 @@ function! crystalline_settings#Setup() abort
     endif
 
     let g:crystalline_show_devicons = g:crystalline_show_devicons && crystalline_settings#devicons#Detect()
+
+    if g:crystalline_show_devicons
+        call extend(g:crystalline_symbols, {
+                   \ 'bomb':  "\ue287 ",
+                   \ 'noeol': "\ue293 ",
+                   \ 'dos':   "\ue70f",
+                   \ 'mac':   "\ue711",
+                   \ 'unix':  "\ue712",
+                   \ })
+        let g:crystalline_symbols.unix = '[unix]'
+        " call extend(g:crystalline_symbols, {
+        "           \ 'dos':  'CRLF',
+        "           \ 'mac':  'CR',
+        "           \ 'unix': 'LF',
+        "           \ })
+        " let g:crystalline_symbols.bomb = "\uf1e2 " " 󰚑
+    endif
 
     let g:crystalline_vimlabel = has('nvim') ? ' NVIM ' : ' VIM '
     if g:crystalline_show_devicons && g:crystalline_show_vim_logo

@@ -77,7 +77,10 @@ function! StatusLineRightFill(...) abort
 
     let l:winnr = get(a:, 1, 0)
     let l:compact = crystalline_settings#IsCompact(l:winnr)
-    return crystalline_settings#parts#Indentation(l:compact)
+    return crystalline_settings#Concatenate([
+                \ crystalline_settings#parts#Indentation(l:compact),
+                \ crystalline_settings#parts#FileEncodingAndFormat(),
+                \ ], 1)
 endfunction
 
 function! StatusLineRightExtra(...) abort
