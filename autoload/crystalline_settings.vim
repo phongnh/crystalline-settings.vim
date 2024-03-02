@@ -152,11 +152,6 @@ function! crystalline_settings#Setup() abort
                 \ 'paste':     '🅟 ',
                 \ 'ellipsis':  '…',
                 \ }
-    " call extend(g:crystalline_symbols, {
-    "            \ 'dos':  '[DOS]',
-    "            \ 'mac':  '[MAC]',
-    "            \ 'unix': '[UNIX]',
-    "            \ })
 
     if g:crystalline_powerline_fonts
         call extend(g:crystalline_symbols, {
@@ -189,12 +184,6 @@ function! crystalline_settings#Setup() abort
                    \ 'unix':  "\ue712",
                    \ })
         let g:crystalline_symbols.unix = '[unix]'
-        " call extend(g:crystalline_symbols, {
-        "           \ 'dos':  'CRLF',
-        "           \ 'mac':  'CR',
-        "           \ 'unix': 'LF',
-        "           \ })
-        " let g:crystalline_symbols.bomb = "\uf1e2 " " 󰚑
     endif
 
     let g:crystalline_vimlabel = has('nvim') ? ' NVIM ' : ' VIM '
