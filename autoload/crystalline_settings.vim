@@ -76,36 +76,6 @@ function! crystalline_settings#FileName() abort
     return strlen(fname) ? fnamemodify(fname, ':~:.') : '[No Name]'
 endfunction
 
-function! crystalline_settings#DetectTheme() abort
-    if has('vim_starting') && exists('g:crystalline_theme') && g:crystalline_theme ==# 'default'
-        call crystalline_settings#SetTheme()
-        if g:crystalline_theme !=# 'default'
-            call crystalline#SetTheme(g:crystalline_theme)
-        endif
-    endif
-endfunction
-
-function! crystalline_settings#SetTheme() abort
-    if !exists('s:crystalline_themes')
-        let s:crystalline_themes = map(split(globpath(&rtp, 'autoload/crystalline/theme/*.vim')), "fnamemodify(v:val, ':t:r')")
-    endif
-
-    let g:crystalline_theme = tolower(substitute(g:colors_name, '[ -]', '_', 'g'))
-    if index(s:crystalline_themes, g:crystalline_theme) > -1
-        return g:crystalline_theme
-    endif
-
-    for [l:pattern, l:theme] in items(g:crystalline_theme_mappings)
-        if match(g:crystalline_theme, l:pattern) > -1 && index(s:crystalline_themes, l:theme) > -1
-            let g:crystalline_theme = l:theme
-            return g:crystalline_theme
-        endif
-    endfor
-
-    let g:crystalline_theme = 'default'
-    return g:crystalline_theme
-endfunction
-
 function! crystalline_settings#Setup() abort
     " Disable NERDTree statusline
     let g:NERDTreeStatusline = -1
@@ -230,6 +200,8 @@ endfunction
 
 function! crystalline_settings#Init() abort
     setglobal noshowmode
+
+    call crystalline_settings#theme#Init()
 
     " CtrlP Integration
     let g:ctrlp_status_func = {

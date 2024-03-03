@@ -109,10 +109,12 @@ function! g:CrystallineTablineFn()
                 \ }) . l:right
 endfunction
 
+command! -nargs=1 -complete=custom,crystalline_settings#theme#List CrystallineTheme call crystalline#SetTheme(<f-args>)
+
 augroup CrystallineSettings
     autocmd!
-    autocmd User CrystallineSetTheme ++once call crystalline_settings#DetectTheme()
-    autocmd ColorScheme * call crystalline_settings#SetTheme()
+    autocmd User CrystallineSetTheme ++once call crystalline_settings#theme#Detect()
+    autocmd ColorScheme * call crystalline_settings#theme#Set()
     autocmd VimEnter * call crystalline_settings#Init()
 augroup END
 
