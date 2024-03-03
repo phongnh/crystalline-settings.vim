@@ -76,6 +76,36 @@ function! crystalline_settings#FileName() abort
     return strlen(fname) ? fnamemodify(fname, ':~:.') : '[No Name]'
 endfunction
 
+function! crystalline_settings#DetectTheme() abort
+    if has('vim_starting') && exists('g:crystalline_theme') && g:crystalline_theme ==# 'default'
+        call crystalline_settings#SetTheme()
+        if g:crystalline_theme !=# 'default'
+            call crystalline#SetTheme(g:crystalline_theme)
+        endif
+    endif
+endfunction
+
+function! crystalline_settings#SetTheme() abort
+    if !exists('s:crystalline_themes')
+        let s:crystalline_themes = map(split(globpath(&rtp, 'autoload/crystalline/theme/*.vim')), "fnamemodify(v:val, ':t:r')")
+    endif
+
+    let g:crystalline_theme = tolower(substitute(g:colors_name, '[ -]', '_', 'g'))
+    if index(s:crystalline_themes, g:crystalline_theme) > -1
+        return g:crystalline_theme
+    endif
+
+    for [l:pattern, l:theme] in items(g:crystalline_theme_mappings)
+        if match(g:crystalline_theme, l:pattern) > -1 && index(s:crystalline_themes, l:theme) > -1
+            let g:crystalline_theme = l:theme
+            return g:crystalline_theme
+        endif
+    endfor
+
+    let g:crystalline_theme = 'default'
+    return g:crystalline_theme
+endfunction
+
 function! crystalline_settings#Setup() abort
     " Disable NERDTree statusline
     let g:NERDTreeStatusline = -1
@@ -83,12 +113,17 @@ function! crystalline_settings#Setup() abort
     " Crystalline Settings
     let g:crystalline_enable_sep      = 1
     let g:crystalline_powerline_fonts = get(g:, 'crystalline_powerline_fonts', 0)
-    let g:crystalline_theme           = get(g:, 'crystalline_theme', 'solarized')
     let g:crystalline_shorten_path    = get(g:, 'crystalline_shorten_path', 0)
     let g:crystalline_show_short_mode = get(g:, 'crystalline_show_short_mode', 0)
     let g:crystalline_show_git_branch = get(g:, 'crystalline_show_git_branch', 1)
     let g:crystalline_show_devicons   = get(g:, 'crystalline_show_devicons', 1)
     let g:crystalline_show_vim_logo   = get(g:, 'crystalline_show_vim_logo', 1)
+
+    " Theme mappings
+    let g:crystalline_theme_mappings = extend({
+                \ '^\(solarized\|soluarized\|flattened\)': 'solarized8',
+                \ '^gruvbox': 'gruvbox',
+                \  }, get(g:, 'crystalline_theme_mappings', {}))
 
     let g:crystalline_auto_prefix_groups = 1
 

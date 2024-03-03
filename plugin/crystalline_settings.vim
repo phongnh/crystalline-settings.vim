@@ -111,6 +111,8 @@ endfunction
 
 augroup CrystallineSettings
     autocmd!
+    autocmd User CrystallineSetTheme ++once call crystalline_settings#DetectTheme()
+    autocmd ColorScheme * call crystalline_settings#SetTheme()
     autocmd VimEnter * call crystalline_settings#Init()
 augroup END
 
