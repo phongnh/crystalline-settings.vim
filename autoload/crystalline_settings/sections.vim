@@ -23,7 +23,7 @@ endfunction
 function! s:RenderPluginSection(...) abort
     let l:winwidth = winwidth(get(a:, 1, 0))
 
-    if g:crystalline_show_git_branch && l:winwidth >= g:crystalline_winwidth_config.small
+    if g:crystalline_show_git_branch && l:winwidth >= g:crystalline_winwidth_config.default
         return crystalline_settings#Concatenate([
                     \ crystalline_settings#git#Branch(l:winwidth),
                     \ crystalline_settings#parts#FileName(l:winwidth - 2),
@@ -42,11 +42,6 @@ function! crystalline_settings#sections#FileName(...) abort
 endfunction
 
 function! s:RenderFileNameSection(...) abort
-    let l:winwidth = winwidth(get(a:, 1, 0))
-
-    if l:winwidth >= g:crystalline_winwidth_config.small
-    endif
-
     return ''
 endfunction
 
@@ -72,9 +67,11 @@ endfunction
 
 function! s:RenderSettingsSection(...) abort
     let l:winnr = get(a:, 1, 0)
-    let l:compact = crystalline_settings#IsCompact(l:winnr)
+    if winwidth(l:winnr) <= g:crystalline_winwidth_config.compact
+        return ''
+    endif
     return crystalline_settings#Concatenate([
-                \ crystalline_settings#parts#Indentation(l:compact),
+                \ crystalline_settings#parts#Indentation(),
                 \ crystalline_settings#parts#FileEncodingAndFormat(),
                 \ ], 1)
 endfunction

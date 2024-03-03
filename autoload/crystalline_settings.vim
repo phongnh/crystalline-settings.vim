@@ -21,7 +21,7 @@ endif
 function! crystalline_settings#FormatFileName(fname, winwidth, max_width) abort
     let fname = a:fname
 
-    if a:winwidth < g:crystalline_winwidth_config.small
+    if a:winwidth < g:crystalline_winwidth_config.default
         return fnamemodify(fname, ':t')
     endif
 
@@ -38,22 +38,6 @@ function! crystalline_settings#FormatFileName(fname, winwidth, max_width) abort
     return fname
 endfunction
 
-function! crystalline_settings#IsClipboardEnabled() abort
-    return match(&clipboard, 'unnamed') > -1
-endfunction
-
-function! crystalline_settings#IsCompact(...) abort
-    let l:winnr = get(a:, 1, 0)
-    return winwidth(l:winnr) <= g:crystalline_winwidth_config.compact ||
-                \ count([
-                \   crystalline_settings#IsClipboardEnabled(),
-                \   &paste,
-                \   &spell,
-                \   &bomb,
-                \   !&eol,
-                \ ], 1) > 1
-endfunction
-
 function! crystalline_settings#Group(exp) abort
     if a:exp =~ '^%'
         return '%( ' . a:exp . ' %)'
@@ -65,15 +49,6 @@ endfunction
 function! crystalline_settings#Concatenate(parts, ...) abort
     let separator = get(a:, 1, 0) ? g:crystalline_symbols.right_sep : g:crystalline_symbols.left_sep
     return join(filter(copy(a:parts), 'v:val !=# ""'), ' ' . separator . ' ')
-endfunction
-
-function! crystalline_settings#BufferType() abort
-    return strlen(&filetype) ? &filetype : &buftype
-endfunction
-
-function! crystalline_settings#FileName() abort
-    let fname = expand('%')
-    return strlen(fname) ? fnamemodify(fname, ':~:.') : '[No Name]'
 endfunction
 
 function! crystalline_settings#Setup() abort
@@ -139,7 +114,7 @@ function! crystalline_settings#Setup() abort
     " Window width
     let g:crystalline_winwidth_config = extend({
                 \ 'compact': 60,
-                \ 'small':   80,
+                \ 'default': 90,
                 \ 'normal':  120,
                 \ }, get(g:, 'crystalline_winwidth_config', {}))
 
