@@ -133,7 +133,9 @@ function! crystalline_settings#Setup() abort
                 \ 'ellipsis':  '…',
                 \ }
 
-    if g:crystalline_powerline_fonts
+    let g:crystalline_show_devicons = g:crystalline_show_devicons && crystalline_settings#devicons#Detect()
+
+    if g:crystalline_powerline_fonts || g:crystalline_show_devicons
         call extend(g:crystalline_symbols, {
                     \ 'linenr':   "\ue0a1",
                     \ 'branch':   "\ue0a0",
@@ -152,8 +154,6 @@ function! crystalline_settings#Setup() abort
                     \ 'right_sep': '|',
                     \ })
     endif
-
-    let g:crystalline_show_devicons = g:crystalline_show_devicons && crystalline_settings#devicons#Detect()
 
     if g:crystalline_show_devicons
         call extend(g:crystalline_symbols, {
