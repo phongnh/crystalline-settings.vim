@@ -179,25 +179,31 @@ function! crystalline_settings#Init() abort
     call crystalline_settings#theme#Init()
 
     " CtrlP Integration
-    let g:ctrlp_status_func = {
-                \ 'main': 'crystalline_settings#ctrlp#MainStatus',
-                \ 'prog': 'crystalline_settings#ctrlp#ProgressStatus',
-                \ }
-
-    " Tagbar Integration
-    let g:tagbar_status_func = 'crystalline_settings#tagbar#Status'
-
-    " ZoomWin Integration
-    let g:crystalline_zoomwin_funcref = []
-
-    if exists('g:ZoomWin_funcref')
-        if type(g:ZoomWin_funcref) == v:t_func
-            let g:crystalline_zoomwin_funcref = [g:ZoomWin_funcref]
-        elseif type(g:ZoomWin_funcref) == v:t_func
-            let g:crystalline_zoomwin_funcref = g:ZoomWin_funcref
-        endif
-        let g:crystalline_zoomwin_funcref = uniq(copy(g:crystalline_zoomwin_funcref))
+    if exists(':CtrlP') == 2
+        let g:ctrlp_status_func = {
+                    \ 'main': 'crystalline_settings#ctrlp#MainStatus',
+                    \ 'prog': 'crystalline_settings#ctrlp#ProgressStatus',
+                    \ }
     endif
 
-    let g:ZoomWin_funcref = function('crystalline_settings#zoomwin#Status')
+    " Tagbar Integration
+    if exists(':Tagbar') == 2
+        let g:tagbar_status_func = 'crystalline_settings#tagbar#Status'
+    endif
+
+    " ZoomWin Integration
+    if exists(':ZoomWin') == 2
+        let g:crystalline_zoomwin_funcref = []
+
+        if exists('g:ZoomWin_funcref')
+            if type(g:ZoomWin_funcref) == v:t_func
+                let g:crystalline_zoomwin_funcref = [g:ZoomWin_funcref]
+            elseif type(g:ZoomWin_funcref) == v:t_func
+                let g:crystalline_zoomwin_funcref = g:ZoomWin_funcref
+            endif
+            let g:crystalline_zoomwin_funcref = uniq(copy(g:crystalline_zoomwin_funcref))
+        endif
+
+        let g:ZoomWin_funcref = function('crystalline_settings#zoomwin#Status')
+    endif
 endfunction
