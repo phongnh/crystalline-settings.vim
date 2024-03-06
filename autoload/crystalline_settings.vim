@@ -70,8 +70,6 @@ function! crystalline_settings#Setup() abort
                 \ '^gruvbox': 'gruvbox',
                 \  }, get(g:, 'crystalline_theme_mappings', {}))
 
-    let g:crystalline_auto_prefix_groups = 1
-
     " Improved Model Labels
     let g:crystalline_mode_labels = {
                 \ 'n':  ' NORMAL ',
