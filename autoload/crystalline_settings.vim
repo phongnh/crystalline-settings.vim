@@ -60,8 +60,8 @@ function! crystalline_settings#Setup() abort
     let g:crystalline_powerline_fonts = get(g:, 'crystalline_powerline_fonts', 0)
     let g:crystalline_shorten_path    = get(g:, 'crystalline_shorten_path', 0)
     let g:crystalline_show_short_mode = get(g:, 'crystalline_show_short_mode', 0)
-    let g:crystalline_show_git_branch = get(g:, 'crystalline_show_git_branch', 1)
-    let g:crystalline_show_devicons   = get(g:, 'crystalline_show_devicons', 1)
+    let g:crystalline_show_git_branch = get(g:, 'crystalline_show_git_branch', 0)
+    let g:crystalline_show_devicons   = get(g:, 'crystalline_show_devicons', 0)
     let g:crystalline_show_vim_logo   = get(g:, 'crystalline_show_vim_logo', 1)
 
     " Theme mappings
