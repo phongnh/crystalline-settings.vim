@@ -23,9 +23,9 @@ endfunction
 function! s:RenderPluginSection(...) abort
     let l:winwidth = winwidth(get(a:, 1, 0))
 
-    if g:crystalline_show_git_branch && l:winwidth >= g:crystalline_winwidth_config.default
+    if l:winwidth >= g:crystalline_winwidth_config.default
         return crystalline_settings#Concatenate([
-                    \ crystalline_settings#git#Branch(l:winwidth),
+                    \ crystalline_settings#parts#GitBranch(l:winwidth),
                     \ crystalline_settings#parts#FileName(l:winwidth - 2),
                     \ ])
     endif
@@ -85,7 +85,11 @@ function! crystalline_settings#sections#Info(...) abort
 endfunction
 
 function! s:RenderInfoSection(...) abort
-    return ''
+    let l:winnr = get(a:, 1, 0)
+    if winwidth(l:winnr) <= g:crystalline_winwidth_config.compact
+        return ''
+    endif
+    return crystalline_settings#parts#LineInfo()
 endfunction
 
 function! crystalline_settings#sections#InactiveMode(...) abort

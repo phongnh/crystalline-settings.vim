@@ -61,6 +61,7 @@ function! crystalline_settings#Setup() abort
     let g:crystalline_shorten_path    = get(g:, 'crystalline_shorten_path', 0)
     let g:crystalline_show_short_mode = get(g:, 'crystalline_show_short_mode', 0)
     let g:crystalline_show_git_branch = get(g:, 'crystalline_show_git_branch', 0)
+    let g:crystalline_show_linenr     = get(g:, 'crystalline_show_linenr', 0)
     let g:crystalline_show_devicons   = get(g:, 'crystalline_show_devicons', 0)
     let g:crystalline_show_vim_logo   = get(g:, 'crystalline_show_vim_logo', 1)
 
@@ -174,6 +175,7 @@ endfunction
 function! crystalline_settings#Init() abort
     setglobal noshowmode
 
+    call crystalline_settings#parts#Init()
     call crystalline_settings#theme#Init()
 
     " CtrlP Integration
