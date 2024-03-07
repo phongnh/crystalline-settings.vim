@@ -111,6 +111,7 @@ let g:crystalline_filename_modes = {
             \ 'ControlP':             'CtrlP',
             \ '__CtrlSF__':           'CtrlSF',
             \ '__CtrlSFPreview__':    'Preview',
+            \ '__flygrep__':          'FlyGrep',
             \ '__Tagbar__':           'Tagbar',
             \ '__Gundo__':            'Gundo',
             \ '__Gundo_Preview__':    'Gundo Preview',
@@ -158,6 +159,7 @@ let g:crystalline_filetype_modes = {
             \ 'agit':              'Agit',
             \ 'agit_diff':         'Agit Diff',
             \ 'agit_stat':         'Agit Stat',
+            \ 'SpaceVimFlyGrep':   'FlyGrep',
             \ }
 
 let g:crystalline_plugin_modes = {
@@ -177,6 +179,7 @@ let g:crystalline_plugin_modes = {
             \ 'help':            'crystalline_settings#help#Mode',
             \ 'qf':              'crystalline_settings#quickfix#Mode',
             \ 'gitcommit':       'crystalline_settings#gitcommit#Mode',
+            \ 'SpaceVimFlyGrep': 'crystalline_settings#flygrep#Mode',
             \ }
 
 function! crystalline_settings#parts#Integration() abort
@@ -187,9 +190,10 @@ function! crystalline_settings#parts#Integration() abort
 
         let l:plugin_modes = {
                     \ 'ControlP':          'crystalline_settings#ctrlp#Mode',
-                    \ '__Tagbar__':        'crystalline_settings#tagbar#Mode',
                     \ '__CtrlSF__':        'crystalline_settings#ctrlsf#Mode',
                     \ '__CtrlSFPreview__': 'crystalline_settings#ctrlsf#PreviewMode',
+                    \ '__flygrep__':       'crystalline_settings#flygrep#Mode',
+                    \ '__Tagbar__':        'crystalline_settings#tagbar#Mode',
                     \ }
 
         if has_key(l:plugin_modes, fname)
