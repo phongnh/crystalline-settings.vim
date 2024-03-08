@@ -116,16 +116,8 @@ function! crystalline_settings#parts#Integration() abort
     if has_key(g:crystalline_filename_modes, fname)
         let result = { 'name': g:crystalline_filename_modes[fname] }
 
-        let l:plugin_modes = {
-                    \ 'ControlP':          'crystalline_settings#ctrlp#Mode',
-                    \ '__CtrlSF__':        'crystalline_settings#ctrlsf#Mode',
-                    \ '__CtrlSFPreview__': 'crystalline_settings#ctrlsf#PreviewMode',
-                    \ '__flygrep__':       'crystalline_settings#flygrep#Mode',
-                    \ '__Tagbar__':        'crystalline_settings#tagbar#Mode',
-                    \ }
-
-        if has_key(l:plugin_modes, fname)
-            return extend(result, function(l:plugin_modes[fname])())
+        if has_key(g:crystalline_filename_integrations, fname)
+            return extend(result, function(g:crystalline_filename_integrations)())
         endif
 
         return result
@@ -139,8 +131,8 @@ function! crystalline_settings#parts#Integration() abort
     if has_key(g:crystalline_filetype_modes, ft)
         let result = { 'name': g:crystalline_filetype_modes[ft] }
 
-        if has_key(g:crystalline_plugin_modes, ft)
-            return extend(result, function(g:crystalline_plugin_modes[ft])())
+        if has_key(g:crystalline_filetype_integrations, ft)
+            return extend(result, function(g:crystalline_filetype_integrations[ft])())
         endif
 
         return result

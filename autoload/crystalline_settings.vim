@@ -227,7 +227,15 @@ function! crystalline_settings#Setup() abort
                 \ 'SpaceVimFlyGrep':   'FlyGrep',
                 \ }
 
-    let g:crystalline_plugin_modes = {
+    let g:crystalline_filename_integrations = {
+                \ 'ControlP':          'crystalline_settings#ctrlp#Mode',
+                \ '__CtrlSF__':        'crystalline_settings#ctrlsf#Mode',
+                \ '__CtrlSFPreview__': 'crystalline_settings#ctrlsf#PreviewMode',
+                \ '__flygrep__':       'crystalline_settings#flygrep#Mode',
+                \ '__Tagbar__':        'crystalline_settings#tagbar#Mode',
+                \ }
+
+    let g:crystalline_filetype_integrations = {
                 \ 'ctrlp':           'crystalline_settings#ctrlp#Mode',
                 \ 'netrw':           'crystalline_settings#netrw#Mode',
                 \ 'dirvish':         'crystalline_settings#dirvish#Mode',
