@@ -96,7 +96,7 @@ function! g:CrystallineTablineFn()
     let l:right .= crystalline#Sep(1, 'TabFill', 'TabType')
     let l:max_width -= 1
 
-    let l:vimlabel = g:crystalline_vimlabel
+    let l:vimlabel = g:crystalline_symbols.logo
     let l:right .= l:vimlabel
     let l:max_width -= strchars(l:vimlabel)
 

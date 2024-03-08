@@ -62,8 +62,7 @@ function! crystalline_settings#Setup() abort
     let g:crystalline_show_short_mode = get(g:, 'crystalline_show_short_mode', 0)
     let g:crystalline_show_git_branch = get(g:, 'crystalline_show_git_branch', 0)
     let g:crystalline_show_linenr     = get(g:, 'crystalline_show_linenr', 0)
-    let g:crystalline_show_devicons   = get(g:, 'crystalline_show_devicons', 0)
-    let g:crystalline_show_vim_logo   = get(g:, 'crystalline_show_vim_logo', 1)
+    let g:crystalline_show_devicons   = get(g:, 'crystalline_show_devicons', 0) && crystalline_settings#devicons#Detect()
 
     " Theme mappings
     let g:crystalline_theme_mappings = extend({
@@ -119,6 +118,7 @@ function! crystalline_settings#Setup() abort
 
     " Symbols: https://en.wikipedia.org/wiki/Enclosed_Alphanumerics
     let g:crystalline_symbols = {
+                \ 'logo':      '',
                 \ 'dos':       '[dos]',
                 \ 'mac':       '[mac]',
                 \ 'unix':      '[unix]',
@@ -131,8 +131,6 @@ function! crystalline_settings#Setup() abort
                 \ 'paste':     '🅟 ',
                 \ 'ellipsis':  '…',
                 \ }
-
-    let g:crystalline_show_devicons = g:crystalline_show_devicons && crystalline_settings#devicons#Detect()
 
     if g:crystalline_powerline_fonts || g:crystalline_show_devicons
         call extend(g:crystalline_symbols, {
@@ -156,6 +154,7 @@ function! crystalline_settings#Setup() abort
 
     if g:crystalline_show_devicons
         call extend(g:crystalline_symbols, {
+                    \ 'logo':  " \ue7c5  ",
                     \ 'bomb':  "\ue287 ",
                     \ 'noeol': "\ue293 ",
                     \ 'dos':   "\ue70f",
@@ -163,12 +162,6 @@ function! crystalline_settings#Setup() abort
                     \ 'unix':  "\ue712",
                     \ })
         let g:crystalline_symbols.unix = '[unix]'
-    endif
-
-    let g:crystalline_vimlabel = has('nvim') ? ' NVIM ' : ' VIM '
-    if g:crystalline_show_devicons && g:crystalline_show_vim_logo
-        " Show Vim Logo in Tabline
-        let g:crystalline_vimlabel = " \ue7c5  "
     endif
 
     " Alternate status dictionaries
