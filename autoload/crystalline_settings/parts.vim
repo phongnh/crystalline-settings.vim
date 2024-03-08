@@ -117,7 +117,7 @@ function! crystalline_settings#parts#Integration() abort
         let result = { 'name': g:crystalline_filename_modes[fname] }
 
         if has_key(g:crystalline_filename_integrations, fname)
-            return extend(result, function(g:crystalline_filename_integrations)())
+            return extend(result, function(g:crystalline_filename_integrations[fname])())
         endif
 
         return result
