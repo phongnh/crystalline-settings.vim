@@ -156,12 +156,12 @@ function! crystalline_settings#Setup() abort
 
     if g:crystalline_show_devicons
         call extend(g:crystalline_symbols, {
-                   \ 'bomb':  "\ue287 ",
-                   \ 'noeol': "\ue293 ",
-                   \ 'dos':   "\ue70f",
-                   \ 'mac':   "\ue711",
-                   \ 'unix':  "\ue712",
-                   \ })
+                    \ 'bomb':  "\ue287 ",
+                    \ 'noeol': "\ue293 ",
+                    \ 'dos':   "\ue70f",
+                    \ 'mac':   "\ue711",
+                    \ 'unix':  "\ue712",
+                    \ })
         let g:crystalline_symbols.unix = '[unix]'
     endif
 
@@ -170,6 +170,83 @@ function! crystalline_settings#Setup() abort
         " Show Vim Logo in Tabline
         let g:crystalline_vimlabel = " \ue7c5  "
     endif
+
+    " Alternate status dictionaries
+    let g:crystalline_filename_modes = {
+                \ 'ControlP':             'CtrlP',
+                \ '__CtrlSF__':           'CtrlSF',
+                \ '__CtrlSFPreview__':    'Preview',
+                \ '__flygrep__':          'FlyGrep',
+                \ '__Tagbar__':           'Tagbar',
+                \ '__Gundo__':            'Gundo',
+                \ '__Gundo_Preview__':    'Gundo Preview',
+                \ '__Mundo__':            'Mundo',
+                \ '__Mundo_Preview__':    'Mundo Preview',
+                \ '[BufExplorer]':        'BufExplorer',
+                \ '[Command Line]':       'Command Line',
+                \ '[Plugins]':            'Plugins',
+                \ '__committia_status__': 'Committia Status',
+                \ '__committia_diff__':   'Committia Diff',
+                \ '__doc__':              'Document',
+                \ '__LSP_SETTINGS__':     'LSP Settings',
+                \ }
+
+    let g:crystalline_filetype_modes = {
+                \ 'netrw':             'Netrw',
+                \ 'molder':            'Molder',
+                \ 'dirvish':           'Dirvish',
+                \ 'vaffle':            'Vaffle',
+                \ 'nerdtree':          'NERDTree',
+                \ 'fern':              'Fern',
+                \ 'neo-tree':          'NeoTree',
+                \ 'carbon.explorer':   'Carbon',
+                \ 'oil':               'Oil',
+                \ 'NvimTree':          'NvimTree',
+                \ 'CHADTree':          'CHADTree',
+                \ 'LuaTree':           'LuaTree',
+                \ 'Mundo':             'Mundo',
+                \ 'MundoDiff':         'Mundo Preview',
+                \ 'startify':          'Startify',
+                \ 'alpha':             'Alpha',
+                \ 'tagbar':            'Tagbar',
+                \ 'vista':             'Vista',
+                \ 'vista_kind':        'Vista',
+                \ 'vim-plug':          'Plugins',
+                \ 'terminal':          'TERMINAL',
+                \ 'help':              'HELP',
+                \ 'qf':                'Quickfix',
+                \ 'godoc':             'GoDoc',
+                \ 'gedoc':             'GeDoc',
+                \ 'gitcommit':         'Commit Message',
+                \ 'fugitiveblame':     'FugitiveBlame',
+                \ 'gitmessengerpopup': 'Git Messenger',
+                \ 'GV':                'GV',
+                \ 'agit':              'Agit',
+                \ 'agit_diff':         'Agit Diff',
+                \ 'agit_stat':         'Agit Stat',
+                \ 'SpaceVimFlyGrep':   'FlyGrep',
+                \ }
+
+    let g:crystalline_plugin_modes = {
+                \ 'ctrlp':           'crystalline_settings#ctrlp#Mode',
+                \ 'netrw':           'crystalline_settings#netrw#Mode',
+                \ 'dirvish':         'crystalline_settings#dirvish#Mode',
+                \ 'molder':          'crystalline_settings#molder#Mode',
+                \ 'vaffle':          'crystalline_settings#vaffle#Mode',
+                \ 'fern':            'crystalline_settings#fern#Mode',
+                \ 'carbon.explorer': 'crystalline_settings#carbon#Mode',
+                \ 'neo-tree':        'crystalline_settings#neotree#Mode',
+                \ 'oil':             'crystalline_settings#oil#Mode',
+                \ 'tagbar':          'crystalline_settings#tagbar#Mode',
+                \ 'vista_kind':      'crystalline_settings#vista#Mode',
+                \ 'vista':           'crystalline_settings#vista#Mode',
+                \ 'terminal':        'crystalline_settings#terminal#Mode',
+                \ 'help':            'crystalline_settings#help#Mode',
+                \ 'qf':              'crystalline_settings#quickfix#Mode',
+                \ 'gitcommit':       'crystalline_settings#gitcommit#Mode',
+                \ 'SpaceVimFlyGrep': 'crystalline_settings#flygrep#Mode',
+                \ }
+
 endfunction
 
 function! crystalline_settings#Init() abort
