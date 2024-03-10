@@ -14,7 +14,7 @@ function! crystalline_settings#theme#Detect() abort
 endfunction
 
 function! crystalline_settings#theme#Set() abort
-    let g:crystalline_theme = tolower(substitute(g:colors_name, '[ -]', '_', 'g'))
+    let g:crystalline_theme = tolower(substitute(get(g:, 'colors_name', 'default'), '[ -]', '_', 'g'))
     if index(s:crystalline_themes, g:crystalline_theme) > -1
         return
     endif
