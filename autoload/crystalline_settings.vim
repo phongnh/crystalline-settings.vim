@@ -185,6 +185,7 @@ function! crystalline_settings#Setup() abort
                 \ }
 
     let g:crystalline_filetype_modes = {
+                \ 'simplebuffer':      'SimpleBuffer',
                 \ 'netrw':             'Netrw',
                 \ 'molder':            'Molder',
                 \ 'dirvish':           'Dirvish',
