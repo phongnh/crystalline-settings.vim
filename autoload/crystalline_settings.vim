@@ -68,6 +68,8 @@ function! crystalline_settings#Setup() abort
     let g:crystalline_theme_mappings = extend({
                 \ '^\(solarized\|soluarized\|flattened\|neosolarized\)': 'solarized8',
                 \ '^gruvbox': 'gruvbox',
+                \ '^habamax$': 'onehalfdark',
+                \ '^retrobox$': 'gruvbox',
                 \  }, get(g:, 'crystalline_theme_mappings', {}))
 
     " Improved Model Labels
