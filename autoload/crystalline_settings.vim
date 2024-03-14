@@ -66,7 +66,7 @@ function! crystalline_settings#Setup() abort
 
     " Theme mappings
     let g:crystalline_theme_mappings = extend({
-                \ '^\(solarized\|soluarized\|flattened\)': 'solarized8',
+                \ '^\(solarized\|soluarized\|flattened\|neosolarized\)': 'solarized8',
                 \ '^gruvbox': 'gruvbox',
                 \  }, get(g:, 'crystalline_theme_mappings', {}))
 
