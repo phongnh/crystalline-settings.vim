@@ -202,6 +202,8 @@ function! crystalline_settings#Setup() abort
                 \ 'LuaTree':           'LuaTree',
                 \ 'Mundo':             'Mundo',
                 \ 'MundoDiff':         'Mundo Preview',
+                \ 'undotree':          'Undo',
+                \ 'diff':              'Diff',
                 \ 'startify':          'Startify',
                 \ 'alpha':             'Alpha',
                 \ 'tagbar':            'Tagbar',
