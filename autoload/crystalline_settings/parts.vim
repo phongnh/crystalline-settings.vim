@@ -65,6 +65,10 @@ function! s:ModifiedStatus(...) abort
     endif
 endfunction
 
+function! s:ZoomedStatus(...) abort
+    return g:crystalline_zoomed ? '[Z]' : ''
+endfunction
+
 function! s:SimpleLineInfo(...) abort
     return printf('%3d:%-3d', line('.'), col('.'))
 endfunction
@@ -103,7 +107,7 @@ endfunction
 
 function! crystalline_settings#parts#FileName(...) abort
     let winwidth = get(a:, 1, 100)
-    return s:ReadonlyStatus() . crystalline_settings#FormatFileName(s:FileName(), winwidth, 50) . s:ModifiedStatus()
+    return s:ReadonlyStatus() . crystalline_settings#FormatFileName(s:FileName(), winwidth, 50) . s:ModifiedStatus() . s:ZoomedStatus()
 endfunction
 
 function! crystalline_settings#parts#InactiveFileName(...) abort

@@ -276,6 +276,8 @@ function! crystalline_settings#Init() abort
     endif
 
     " ZoomWin Integration
+    let g:crystalline_zoomed = 0
+
     if exists(':ZoomWin') == 2
         let g:crystalline_zoomwin_funcref = []
 

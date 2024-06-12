@@ -4,4 +4,5 @@ function! crystalline_settings#zoomwin#Status(zoomstate) abort
             call F(a:zoomstate)
         endif
     endfor
+    let g:crystalline_zoomed = a:zoomstate
 endfunction
