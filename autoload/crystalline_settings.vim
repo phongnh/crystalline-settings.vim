@@ -258,7 +258,7 @@ function! crystalline_settings#Setup() abort
 endfunction
 
 function! crystalline_settings#Init() abort
-    setglobal noshowmode
+    setglobal noshowmode laststatus=2
 
     call crystalline_settings#parts#Init()
     call crystalline_settings#theme#Init()
