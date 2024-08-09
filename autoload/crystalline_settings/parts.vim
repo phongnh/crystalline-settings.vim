@@ -1,3 +1,93 @@
+" Alternate status dictionaries
+let s:crystalline_filename_modes = {
+            \ 'ControlP':             'CtrlP',
+            \ '__CtrlSF__':           'CtrlSF',
+            \ '__CtrlSFPreview__':    'Preview',
+            \ '__flygrep__':          'FlyGrep',
+            \ '__Tagbar__':           'Tagbar',
+            \ '__Gundo__':            'Gundo',
+            \ '__Gundo_Preview__':    'Gundo Preview',
+            \ '__Mundo__':            'Mundo',
+            \ '__Mundo_Preview__':    'Mundo Preview',
+            \ '[BufExplorer]':        'BufExplorer',
+            \ '[Command Line]':       'Command Line',
+            \ '[Plugins]':            'Plugins',
+            \ '__committia_status__': 'Committia Status',
+            \ '__committia_diff__':   'Committia Diff',
+            \ '__doc__':              'Document',
+            \ '__LSP_SETTINGS__':     'LSP Settings',
+            \ }
+
+let s:crystalline_filetype_modes = {
+            \ 'simplebuffer':      'SimpleBuffer',
+            \ 'netrw':             'Netrw',
+            \ 'molder':            'Molder',
+            \ 'dirvish':           'Dirvish',
+            \ 'vaffle':            'Vaffle',
+            \ 'nerdtree':          'NERDTree',
+            \ 'fern':              'Fern',
+            \ 'neo-tree':          'NeoTree',
+            \ 'carbon.explorer':   'Carbon',
+            \ 'oil':               'Oil',
+            \ 'NvimTree':          'NvimTree',
+            \ 'CHADTree':          'CHADTree',
+            \ 'LuaTree':           'LuaTree',
+            \ 'Mundo':             'Mundo',
+            \ 'MundoDiff':         'Mundo Preview',
+            \ 'undotree':          'Undo',
+            \ 'diff':              'Diff',
+            \ 'startify':          'Startify',
+            \ 'alpha':             'Alpha',
+            \ 'dashboard':         'Dashboard',
+            \ 'ministarter':       'Starter',
+            \ 'tagbar':            'Tagbar',
+            \ 'vista':             'Vista',
+            \ 'vista_kind':        'Vista',
+            \ 'vim-plug':          'Plugins',
+            \ 'terminal':          'TERMINAL',
+            \ 'help':              'HELP',
+            \ 'qf':                'Quickfix',
+            \ 'godoc':             'GoDoc',
+            \ 'gedoc':             'GeDoc',
+            \ 'gitcommit':         'Commit Message',
+            \ 'fugitiveblame':     'FugitiveBlame',
+            \ 'gitmessengerpopup': 'Git Messenger',
+            \ 'GV':                'GV',
+            \ 'agit':              'Agit',
+            \ 'agit_diff':         'Agit Diff',
+            \ 'agit_stat':         'Agit Stat',
+            \ 'SpaceVimFlyGrep':   'FlyGrep',
+            \ 'startuptime':       'StartupTime',
+            \ }
+
+let s:crystalline_filename_integrations = {
+            \ 'ControlP':          'crystalline_settings#ctrlp#Mode',
+            \ '__CtrlSF__':        'crystalline_settings#ctrlsf#Mode',
+            \ '__CtrlSFPreview__': 'crystalline_settings#ctrlsf#PreviewMode',
+            \ '__flygrep__':       'crystalline_settings#flygrep#Mode',
+            \ '__Tagbar__':        'crystalline_settings#tagbar#Mode',
+            \ }
+
+let s:crystalline_filetype_integrations = {
+            \ 'ctrlp':           'crystalline_settings#ctrlp#Mode',
+            \ 'netrw':           'crystalline_settings#netrw#Mode',
+            \ 'dirvish':         'crystalline_settings#dirvish#Mode',
+            \ 'molder':          'crystalline_settings#molder#Mode',
+            \ 'vaffle':          'crystalline_settings#vaffle#Mode',
+            \ 'fern':            'crystalline_settings#fern#Mode',
+            \ 'carbon.explorer': 'crystalline_settings#carbon#Mode',
+            \ 'neo-tree':        'crystalline_settings#neotree#Mode',
+            \ 'oil':             'crystalline_settings#oil#Mode',
+            \ 'tagbar':          'crystalline_settings#tagbar#Mode',
+            \ 'vista_kind':      'crystalline_settings#vista#Mode',
+            \ 'vista':           'crystalline_settings#vista#Mode',
+            \ 'terminal':        'crystalline_settings#terminal#Mode',
+            \ 'help':            'crystalline_settings#help#Mode',
+            \ 'qf':              'crystalline_settings#quickfix#Mode',
+            \ 'gitcommit':       'crystalline_settings#gitcommit#Mode',
+            \ 'SpaceVimFlyGrep': 'crystalline_settings#flygrep#Mode',
+            \ }
+
 function! s:BufferType() abort
     return strlen(&filetype) ? &filetype : &buftype
 endfunction
@@ -91,6 +181,16 @@ function! crystalline_settings#parts#LineInfo(...) abort
     return ''
 endfunction
 
+if g:crystalline_show_linenr > 1
+    function! crystalline_settings#parts#LineInfo(...) abort
+        return call('s:FullLineInfo', a:000)
+    endfunction
+elseif g:crystalline_show_linenr > 0
+    function! crystalline_settings#parts#LineInfo(...) abort
+        return call('s:SimpleLineInfo', a:000)
+    endfunction
+endif
+
 function! crystalline_settings#parts#FileEncodingAndFormat() abort
     let l:encoding = strlen(&fileencoding) ? &fileencoding : &encoding
     let l:encoding = (l:encoding ==# 'utf-8') ? '' : l:encoding . ' '
@@ -117,11 +217,11 @@ endfunction
 function! crystalline_settings#parts#Integration() abort
     let fname = expand('%:t')
 
-    if has_key(g:crystalline_filename_modes, fname)
-        let result = { 'name': g:crystalline_filename_modes[fname] }
+    if has_key(s:crystalline_filename_modes, fname)
+        let result = { 'name': s:crystalline_filename_modes[fname] }
 
-        if has_key(g:crystalline_filename_integrations, fname)
-            return extend(result, function(g:crystalline_filename_integrations[fname])())
+        if has_key(s:crystalline_filename_integrations, fname)
+            return extend(result, function(s:crystalline_filename_integrations[fname])())
         endif
 
         return result
@@ -141,11 +241,11 @@ function! crystalline_settings#parts#Integration() abort
         return crystalline_settings#undotree#DiffStatus()
     endif
 
-    if has_key(g:crystalline_filetype_modes, ft)
-        let result = { 'name': g:crystalline_filetype_modes[ft] }
+    if has_key(s:crystalline_filetype_modes, ft)
+        let result = { 'name': s:crystalline_filetype_modes[ft] }
 
-        if has_key(g:crystalline_filetype_integrations, ft)
-            return extend(result, function(g:crystalline_filetype_integrations[ft])())
+        if has_key(s:crystalline_filetype_integrations, ft)
+            return extend(result, function(s:crystalline_filetype_integrations[ft])())
         endif
 
         return result
@@ -158,20 +258,8 @@ function! crystalline_settings#parts#GitBranch(...) abort
     return ''
 endfunction
 
-function! crystalline_settings#parts#Init() abort
-    if g:crystalline_show_git_branch > 0
-        function! crystalline_settings#parts#GitBranch(...) abort
-            return call('crystalline_settings#git#Branch', a:000)
-        endfunction
-    endif
-
-    if g:crystalline_show_linenr > 1
-        function! crystalline_settings#parts#LineInfo(...) abort
-            return call('s:FullLineInfo', a:000)
-        endfunction
-    elseif g:crystalline_show_linenr > 0
-        function! crystalline_settings#parts#LineInfo(...) abort
-            return call('s:SimpleLineInfo', a:000)
-        endfunction
-    endif
-endfunction
+if g:crystalline_show_git_branch > 0
+    function! crystalline_settings#parts#GitBranch(...) abort
+        return call('crystalline_settings#git#Branch', a:000)
+    endfunction
+endif

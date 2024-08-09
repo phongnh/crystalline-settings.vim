@@ -11,7 +11,108 @@ let g:loaded_vim_crystalline_settings = 1
 let s:save_cpo = &cpo
 set cpo&vim
 
-call crystalline_settings#Setup()
+" Crystalline Settings
+let g:crystalline_powerline_fonts = get(g:, 'crystalline_powerline_fonts', 0)
+let g:crystalline_shorten_path    = get(g:, 'crystalline_shorten_path', 0)
+let g:crystalline_show_short_mode = get(g:, 'crystalline_show_short_mode', 0)
+let g:crystalline_show_git_branch = get(g:, 'crystalline_show_git_branch', 0)
+let g:crystalline_show_linenr     = get(g:, 'crystalline_show_linenr', 0)
+let g:crystalline_show_devicons   = get(g:, 'crystalline_show_devicons', 0) && crystalline_settings#devicons#Detect()
+
+" Window width
+let g:crystalline_winwidth_config = extend({
+            \ 'compact': 60,
+            \ 'default': 90,
+            \ 'normal':  120,
+            \ }, get(g:, 'crystalline_winwidth_config', {}))
+
+" Improved Model Labels
+let g:crystalline_mode_labels = {
+            \ 'n':  ' NORMAL ',
+            \ 'c':  ' COMMAND ',
+            \ 'r':  ' NORMAL ',
+            \ '!':  ' NORMAL ',
+            \ 'i':  ' INSERT ',
+            \ 't':  ' TERMINAL ',
+            \ 'v':  ' VISUAL ',
+            \ 'V':  ' V-LINE ',
+            \ '': ' V-BLOCK ',
+            \ 's':  ' SELECT ',
+            \ 'S':  ' S-LINE ',
+            \ '': ' S-BLOCK ',
+            \ 'R':  ' REPLACE ',
+            \ '':   '',
+            \ }
+
+" Short Modes
+let g:crystalline_short_mode_labels = {
+            \ 'n':  ' N ',
+            \ 'c':  ' C ',
+            \ 'r':  ' N ',
+            \ '!':  ' N ',
+            \ 'i':  ' I ',
+            \ 't':  ' T ',
+            \ 'v':  ' V ',
+            \ 'V':  ' L ',
+            \ '': ' B ',
+            \ 's':  ' S ',
+            \ 'S':  ' S-L ',
+            \ '': ' S-B ',
+            \ 'R':  ' R ',
+            \ '':   '',
+            \ }
+
+if g:crystalline_show_short_mode
+    let g:crystalline_mode_labels = copy(g:crystalline_short_mode_labels)
+endif
+
+" Symbols: https://en.wikipedia.org/wiki/Enclosed_Alphanumerics
+let g:crystalline_symbols = {
+            \ 'logo':      '',
+            \ 'dos':       '[dos]',
+            \ 'mac':       '[mac]',
+            \ 'unix':      '[unix]',
+            \ 'linenr':    '☰',
+            \ 'branch':    '⎇ ',
+            \ 'readonly':  '',
+            \ 'bomb':      '🅑 ',
+            \ 'noeol':     '∉ ',
+            \ 'clipboard': '🅒 ',
+            \ 'paste':     '🅟 ',
+            \ 'ellipsis':  '…',
+            \ }
+
+if g:crystalline_powerline_fonts || g:crystalline_show_devicons
+    call extend(g:crystalline_symbols, {
+                \ 'linenr':   "\ue0a1",
+                \ 'branch':   "\ue0a0",
+                \ 'readonly': "\ue0a2",
+                \ })
+    call crystalline_settings#powerline#SetSeparators(get(g:, 'crystalline_powerline_style', 'default'))
+else
+    let g:crystalline_separators = [
+                \ { 'ch': '', 'alt_ch': '|', 'dir': '>' },
+                \ { 'ch': '', 'alt_ch': '|', 'dir': '<' },
+                \ ]
+    let g:crystalline_symbols = extend(g:crystalline_symbols, {
+                \ 'left':      '',
+                \ 'right':     '',
+                \ 'left_sep':  '|',
+                \ 'right_sep': '|',
+                \ })
+endif
+
+if g:crystalline_show_devicons
+    call extend(g:crystalline_symbols, {
+                \ 'logo':  " \ue7c5  ",
+                \ 'bomb':  "\ue287 ",
+                \ 'noeol': "\ue293 ",
+                \ 'dos':   "\ue70f",
+                \ 'mac':   "\ue711",
+                \ 'unix':  "\ue712",
+                \ })
+    let g:crystalline_symbols.unix = '[unix]'
+endif
 
 function! g:CrystallineStatuslineFn(winnr) abort
     let g:crystalline_group_suffix = g:GroupSuffix()
@@ -103,7 +204,7 @@ function! g:CrystallineTablineFn()
     let l:max_tabs = 10
 
     return crystalline#DefaultTabline({
-                \ 'enable_sep': g:crystalline_enable_sep,
+                \ 'enable_sep': 1,
                 \ 'max_tabs': l:max_tabs,
                 \ 'max_width': l:max_width
                 \ }) . l:right
@@ -113,9 +214,9 @@ command! -nargs=1 -complete=custom,crystalline_settings#theme#List CrystallineTh
 
 augroup CrystallineSettings
     autocmd!
-    autocmd User CrystallineSetTheme ++once call crystalline_settings#theme#Detect()
-    autocmd ColorScheme * call crystalline_settings#theme#Set()
     autocmd VimEnter * call crystalline_settings#Init()
+    autocmd User CrystallineSetTheme ++once call crystalline_settings#theme#Detect()
+    autocmd ColorScheme * call crystalline_settings#theme#Find()
 augroup END
 
 let &cpo = s:save_cpo
