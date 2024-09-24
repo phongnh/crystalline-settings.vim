@@ -1,3 +1,4 @@
+" https://github.com/lambdalisue/fern.vim
 function! crystalline_settings#fern#Mode(...) abort
     let result = {}
 
