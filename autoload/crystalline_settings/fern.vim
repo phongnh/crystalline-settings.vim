@@ -1,9 +1,8 @@
 function! crystalline_settings#fern#Mode(...) abort
     let result = {}
 
-    let fern_name = get(a:, 1, expand('%'))
-    let pattern = '^fern://\(.\+\)/file://\(.\+\)\$'
-    let data = matchlist(fern_name, pattern)
+    let bufname = get(a:, 1, expand('%'))
+    let data = matchlist(bufname, '^fern://\(.\+\)/file://\(.\+\)\$')
 
     if len(data)
         let fern_mode = get(data, 1, '')
