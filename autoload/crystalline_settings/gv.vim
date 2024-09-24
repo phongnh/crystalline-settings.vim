@@ -1,7 +1,7 @@
 " https://github.com/junegunn/gv.vim
 function! crystalline_settings#gv#Mode(...) abort
     return {
-                \ 'plugin': crystalline#concatenate(
+                \ 'plugin': crystalline_settings#Concatenate(
                 \   [
                 \       'o: open split',
                 \       'O: open tab',
