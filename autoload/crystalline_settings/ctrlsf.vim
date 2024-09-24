@@ -1,9 +1,8 @@
+" https://github.com/dyng/ctrlsf.vim
 function! crystalline_settings#ctrlsf#Mode() abort
-    let pattern = substitute(ctrlsf#utils#SectionB(), 'Pattern: ', '', '')
-
     return {
-                \ 'plugin':   pattern,
-                \ 'filename': fnamemodify(ctrlsf#utils#SectionC(), ':~:.'),
+                \ 'plugin':   substitute(ctrlsf#utils#SectionB(), 'Pattern: ', '', ''),
+                \ 'filename': fnamemodify(ctrlsf#utils#SectionC(), ':p:~:.'),
                 \ 'buffer':   ctrlsf#utils#SectionX(),
                 \ }
 endfunction
