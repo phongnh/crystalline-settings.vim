@@ -159,35 +159,17 @@ function! s:ZoomedStatus(...) abort
     return get(g:, 'crystalline_zoomed', 0) ? '[Z]' : ''
 endfunction
 
-function! s:SimpleLineInfo(...) abort
-    return printf('%3d:%-3d', line('.'), col('.'))
-endfunction
-
-function! s:FullLineInfo(...) abort
-    if line('w0') == 1 && line('w$') == line('$')
-        let l:percent = 'All'
-    elseif line('w0') == 1
-        let l:percent = 'Top'
-    elseif line('w$') == line('$')
-        let l:percent = 'Bot'
-    else
-        let l:percent = printf('%d%%', line('.') * 100 / line('$'))
-    endif
-
-    return printf('%4d:%-3d %3s', line('.'), col('.'), l:percent)
-endfunction
-
 function! crystalline_settings#parts#LineInfo(...) abort
     return ''
 endfunction
 
 if g:crystalline_show_linenr > 1
     function! crystalline_settings#parts#LineInfo(...) abort
-        return call('s:FullLineInfo', a:000)
+        return call('crystalline_settings#lineinfo#Full', a:000)
     endfunction
 elseif g:crystalline_show_linenr > 0
     function! crystalline_settings#parts#LineInfo(...) abort
-        return call('s:SimpleLineInfo', a:000)
+        return call('crystalline_settings#lineinfo#Simple', a:000)
     endfunction
 endif
 
