@@ -85,6 +85,7 @@ let s:crystalline_filetype_integrations = {
             \ 'help':            'crystalline_settings#help#Mode',
             \ 'qf':              'crystalline_settings#quickfix#Mode',
             \ 'gitcommit':       'crystalline_settings#gitcommit#Mode',
+            \ 'GV':              'crystalline_settings#gv#Mode',
             \ 'SpaceVimFlyGrep': 'crystalline_settings#flygrep#Mode',
             \ }
 
