@@ -1,8 +1,10 @@
+" https://github.com/ctrlpvim/ctrlp.vim
 let s:crystalline_ctrlp = {}
 
 function! s:GetCurrentDir() abort
     let dir = fnamemodify(getcwd(), ':~:.')
-    return empty(dir) ? getcwd() : dir
+    let dir = empty(dir) ? getcwd() : dir
+    return strlen(dir) > 30 ? crystalline_settings#ShortenPath(dir) : dir
 endfunction
 
 function! crystalline_settings#ctrlp#MainStatus(focus, byfname, regex, prev, item, next, marked) abort
@@ -36,7 +38,7 @@ function! crystalline_settings#ctrlp#Mode() abort
     if s:crystalline_ctrlp.main
         let plugin = crystalline_settings#Concatenate([
                     \ s:crystalline_ctrlp.prev,
-                    \ printf(' %s %s %s ', '«', s:crystalline_ctrlp.item, '»'),
+                    \ printf('%s %s %s', '«', s:crystalline_ctrlp.item, '»'),
                     \ s:crystalline_ctrlp.next,
                     \ ])
 
