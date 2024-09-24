@@ -50,6 +50,7 @@ let s:crystalline_filetype_modes = {
             \ 'godoc':             'GoDoc',
             \ 'gedoc':             'GeDoc',
             \ 'gitcommit':         'Commit Message',
+            \ 'fugitive':          'Fugitive',
             \ 'fugitiveblame':     'FugitiveBlame',
             \ 'gitmessengerpopup': 'Git Messenger',
             \ 'GV':                'GV',
@@ -85,6 +86,7 @@ let s:crystalline_filetype_integrations = {
             \ 'help':            'crystalline_settings#help#Mode',
             \ 'qf':              'crystalline_settings#quickfix#Mode',
             \ 'gitcommit':       'crystalline_settings#gitcommit#Mode',
+            \ 'fugitive':        'crystalline_settings#fugitive#Mode',
             \ 'GV':              'crystalline_settings#gv#Mode',
             \ 'SpaceVimFlyGrep': 'crystalline_settings#flygrep#Mode',
             \ }
