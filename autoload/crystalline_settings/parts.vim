@@ -57,6 +57,7 @@ let s:crystalline_filetype_modes = {
             \ 'agit':              'Agit',
             \ 'agit_diff':         'Agit Diff',
             \ 'agit_stat':         'Agit Stat',
+            \ 'GrepperSide':       'GrepperSide',
             \ 'SpaceVimFlyGrep':   'FlyGrep',
             \ 'startuptime':       'StartupTime',
             \ }
@@ -88,6 +89,7 @@ let s:crystalline_filetype_integrations = {
             \ 'gitcommit':       'crystalline_settings#gitcommit#Mode',
             \ 'fugitive':        'crystalline_settings#fugitive#Mode',
             \ 'GV':              'crystalline_settings#gv#Mode',
+            \ 'GrepperSide':     'crystalline_settings#grepper#Mode',
             \ 'SpaceVimFlyGrep': 'crystalline_settings#flygrep#Mode',
             \ }
 
