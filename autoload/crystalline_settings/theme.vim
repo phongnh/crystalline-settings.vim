@@ -1,6 +1,6 @@
 " Theme mappings
 let s:crystalline_theme_mappings = extend({
-            \ '^\(solarized\|soluarized\|flattened\|neosolarized\)': 'solarized8',
+            \ '^\(solarized\|soluarized\|flattened\|neosolarized\)': 'solarized',
             \ '^gruvbox': 'gruvbox',
             \ '^habamax$': 'onehalfdark',
             \ '^retrobox$': 'gruvbox',
@@ -14,6 +14,11 @@ endfunction
 
 function! s:FindTheme() abort
     let g:crystalline_theme = tolower(substitute(get(g:, 'colors_name', 'default'), '[ -]', '_', 'g'))
+
+    if g:crystalline_theme ==# 'solarized8'
+        let g:crystalline_theme = 'solarized'
+    endif
+
     if index(s:crystalline_themes, g:crystalline_theme) > -1
         return
     endif
