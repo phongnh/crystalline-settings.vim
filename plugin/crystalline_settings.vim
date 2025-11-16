@@ -214,7 +214,6 @@ command! -nargs=1 -complete=custom,crystalline_settings#theme#List CrystallineTh
 
 augroup CrystallineSettings
     autocmd!
-    autocmd VimEnter * call crystalline_settings#Init()
     autocmd User CrystallineSetTheme ++once call crystalline_settings#theme#Detect()
     autocmd ColorScheme * call crystalline_settings#theme#Find()
 augroup END
