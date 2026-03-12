@@ -119,16 +119,6 @@ function! crystalline_settings#parts#ClearWidthCache() abort
     let s:cached_winwidth_nr = 0
 endfunction
 
-" Cache for integration lookups - invalidated on buffer change
-let s:integration_cache = {}
-let s:integration_cache_bufnr = -1
-
-" Clear integration cache
-function! crystalline_settings#parts#ClearIntegrationCache() abort
-    let s:integration_cache = {}
-    let s:integration_cache_bufnr = -1
-endfunction
-
 function! s:BufferType() abort
     return strlen(&filetype) ? &filetype : &buftype
 endfunction
@@ -243,57 +233,42 @@ function! crystalline_settings#parts#InactiveFileName(...) abort
 endfunction
 
 function! crystalline_settings#parts#Integration() abort
-    " Return cached result if buffer hasn't changed
-    let l:bufnr = bufnr('%')
-    if s:integration_cache_bufnr == l:bufnr && !empty(s:integration_cache)
-        return s:integration_cache
-    endif
-
-    " Update cache buffer number
-    let s:integration_cache_bufnr = l:bufnr
-
     let l:fname = expand('%:t')
 
     if has_key(s:crystalline_filename_modes, l:fname)
         let l:result = { 'name': s:crystalline_filename_modes[l:fname] }
 
         if has_key(s:crystalline_filename_integrations, l:fname)
-            let l:result = extend(l:result, function(s:crystalline_filename_integrations[l:fname])())
+            return extend(l:result, function(s:crystalline_filename_integrations[l:fname])())
         endif
 
-        let s:integration_cache = l:result
         return l:result
     endif
 
     if l:fname =~# '^NrrwRgn_\zs.*\ze_\d\+$'
-        let s:integration_cache = crystalline_settings#nrrwrgn#Mode()
-        return s:integration_cache
+        return crystalline_settings#nrrwrgn#Mode()
     endif
 
     let l:ft = s:BufferType()
 
     if l:ft ==# 'undotree' && exists('*t:undotree.GetStatusLine')
-        let s:integration_cache = crystalline_settings#undotree#Mode()
-        return s:integration_cache
+        return crystalline_settings#undotree#Mode()
     endif
 
     if l:ft ==# 'diff' && exists('*t:diffpanel.GetStatusLine')
-        let s:integration_cache = crystalline_settings#undotree#DiffStatus()
-        return s:integration_cache
+        return crystalline_settings#undotree#DiffStatus()
     endif
 
     if has_key(s:crystalline_filetype_modes, l:ft)
         let l:result = { 'name': s:crystalline_filetype_modes[l:ft] }
 
         if has_key(s:crystalline_filetype_integrations, l:ft)
-            let l:result = extend(l:result, function(s:crystalline_filetype_integrations[l:ft])())
+            return extend(l:result, function(s:crystalline_filetype_integrations[l:ft])())
         endif
 
-        let s:integration_cache = l:result
         return l:result
     endif
 
-    let s:integration_cache = {}
     return {}
 endfunction
 

@@ -1,23 +1,5 @@
-" Store integration result once per statusline update
-let s:current_integration = {}
-let s:integration_loaded = 0
-
-function! s:GetIntegration() abort
-    if !s:integration_loaded
-        let s:current_integration = crystalline_settings#parts#Integration()
-        let s:integration_loaded = 1
-    endif
-    return s:current_integration
-endfunction
-
-function! crystalline_settings#sections#ClearCache() abort
-    let s:current_integration = {}
-    let s:integration_loaded = 0
-    call crystalline_settings#parts#ClearWidthCache()
-endfunction
-
 function! crystalline_settings#sections#Mode(...) abort
-    let l:mode = s:GetIntegration()
+    let l:mode = crystalline_settings#parts#Integration()
     if len(l:mode)
         return l:mode['name']
     endif
@@ -31,7 +13,7 @@ function! crystalline_settings#sections#Mode(...) abort
 endfunction
 
 function! crystalline_settings#sections#Plugin(...) abort
-    let l:mode = s:GetIntegration()
+    let l:mode = crystalline_settings#parts#Integration()
     if len(l:mode)
         return get(l:mode, 'plugin', '')
     endif
@@ -52,7 +34,7 @@ function! s:RenderPluginSection(...) abort
 endfunction
 
 function! crystalline_settings#sections#FileName(...) abort
-    let l:mode = s:GetIntegration()
+    let l:mode = crystalline_settings#parts#Integration()
     if len(l:mode)
         return get(l:mode, 'filename', '')
     endif
@@ -64,7 +46,7 @@ function! s:RenderFileNameSection(...) abort
 endfunction
 
 function! crystalline_settings#sections#Buffer(...) abort
-    let l:mode = s:GetIntegration()
+    let l:mode = crystalline_settings#parts#Integration()
     if len(l:mode)
         return get(l:mode, 'buffer', '')
     endif
@@ -76,7 +58,7 @@ function! s:RenderBufferSection(...) abort
 endfunction
 
 function! crystalline_settings#sections#Settings(...) abort
-    let l:mode = s:GetIntegration()
+    let l:mode = crystalline_settings#parts#Integration()
     if len(l:mode)
         return get(l:mode, 'settings', '')
     endif
@@ -95,7 +77,7 @@ function! s:RenderSettingsSection(...) abort
 endfunction
 
 function! crystalline_settings#sections#Info(...) abort
-    let l:mode = s:GetIntegration()
+    let l:mode = crystalline_settings#parts#Integration()
     if len(l:mode)
         return get(l:mode, 'info', '')
     endif
@@ -112,7 +94,7 @@ endfunction
 
 function! crystalline_settings#sections#InactiveMode(...) abort
     " Show only custom mode in inactive buffer
-    let l:mode = s:GetIntegration()
+    let l:mode = crystalline_settings#parts#Integration()
     if len(l:mode)
         return crystalline_settings#Concatenate([
                     \ l:mode['name'],
