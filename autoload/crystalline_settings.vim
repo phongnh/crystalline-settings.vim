@@ -19,36 +19,36 @@ if exists('*pathshorten')
 endif
 
 function! crystalline_settings#FormatFileName(fname, winwidth, max_width) abort
-    let fname = a:fname
+    let l:fname = a:fname
 
     if a:winwidth < g:crystalline_winwidth_config.default
-        return fnamemodify(fname, ':t')
+        return fnamemodify(l:fname, ':t')
     endif
 
-    if strlen(fname) > a:winwidth && (fname[0] =~ '\~\|/') && g:crystalline_shorten_path
-        let fname = crystalline_settings#ShortenPath(fname)
+    if strlen(l:fname) > a:winwidth && (l:fname =~# '^[~/]') && g:crystalline_shorten_path
+        let l:fname = crystalline_settings#ShortenPath(l:fname)
     endif
 
-    let max_width = min([a:winwidth, a:max_width])
+    let l:max_width = min([a:winwidth, a:max_width])
 
-    if strlen(fname) > max_width
-        let fname = fnamemodify(fname, ':t')
+    if strlen(l:fname) > l:max_width
+        let l:fname = fnamemodify(l:fname, ':t')
     endif
 
-    return fname
+    return l:fname
 endfunction
 
 function! crystalline_settings#Group(exp) abort
-    if a:exp =~ '^%'
-        return '%( ' . a:exp . ' %)'
+    if a:exp =~# '^%'
+        return '%( ' .. a:exp .. ' %)'
     else
-        return '%( %{' . a:exp . '} %)'
+        return '%( %{' .. a:exp .. '} %)'
     endif
 endfunction
 
 function! crystalline_settings#Concatenate(parts, ...) abort
-    let separator = get(a:, 1, 0) ? g:crystalline_symbols.right_sep : g:crystalline_symbols.left_sep
-    return join(filter(copy(a:parts), 'v:val !=# ""'), ' ' . separator . ' ')
+    let l:separator = get(a:, 1, 0) ? g:crystalline_symbols.right_sep : g:crystalline_symbols.left_sep
+    return join(filter(copy(a:parts), 'v:val !=# ""'), ' ' .. l:separator .. ' ')
 endfunction
 
 function! crystalline_settings#Init() abort

@@ -135,8 +135,8 @@ function! g:CrystallineStatuslineFn(winnr) abort
                     \ crystalline_settings#Group(printf('crystalline_settings#sections#Buffer(%d)', a:winnr)),
                     \ ], '')
     else
-        return crystalline#HiItem('InactiveFill') .
-                    \ '%<' .
+        return crystalline#HiItem('InactiveFill') ..
+                    \ '%<' ..
                     \ crystalline_settings#Group(printf('crystalline_settings#sections#InactiveMode(%d)', a:winnr))
     endif
 endfunction
@@ -180,7 +180,7 @@ function! g:CrystallineTabFn(tab, buf, max_width, is_sel) abort
         let l:tab = strcharpart(l:name, l:name_width - a:max_width)
         let l:tabwidth = min([l:name_width, a:max_width])
     else
-        let l:tab = l:left . strcharpart(l:name, l:name_width - l:max_name_width) . l:right
+        let l:tab = l:left .. strcharpart(l:name, l:name_width - l:max_name_width) .. l:right
         let l:tabwidth = l:lr_width + min([l:name_width, l:max_name_width])
     endif
 
@@ -194,11 +194,11 @@ function! g:CrystallineTablineFn()
 
     let l:right = '%='
 
-    let l:right .= crystalline#Sep(1, 'TabFill', 'TabType')
+    let l:right ..= crystalline#Sep(1, 'TabFill', 'TabType')
     let l:max_width -= 1
 
     let l:vimlabel = g:crystalline_symbols.logo
-    let l:right .= l:vimlabel
+    let l:right ..= l:vimlabel
     let l:max_width -= strchars(l:vimlabel)
 
     let l:max_tabs = 10
@@ -207,7 +207,7 @@ function! g:CrystallineTablineFn()
                 \ 'enable_sep': 1,
                 \ 'max_tabs': l:max_tabs,
                 \ 'max_width': l:max_width
-                \ }) . l:right
+                \ }) .. l:right
 endfunction
 
 command! -nargs=1 -complete=custom,crystalline_settings#theme#List CrystallineTheme call crystalline#SetTheme(<f-args>)

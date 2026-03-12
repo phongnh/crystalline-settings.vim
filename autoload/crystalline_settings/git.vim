@@ -8,31 +8,31 @@ function! s:GetGitBranch() abort
         return b:crystalline_git_branch
     endif
 
-    let branch = ''
+    let l:branch = ''
 
     if exists('*FugitiveHead')
-        let branch = FugitiveHead()
+        let l:branch = FugitiveHead()
 
-        if empty(branch) && exists('*FugitiveDetect') && !exists('b:git_dir')
+        if empty(l:branch) && exists('*FugitiveDetect') && !exists('b:git_dir')
             call FugitiveDetect(getcwd())
-            let branch = FugitiveHead()
+            let l:branch = FugitiveHead()
         endif
     elseif exists('*fugitive#head')
-        let branch = fugitive#head()
+        let l:branch = fugitive#head()
 
-        if empty(branch) && exists('*fugitive#detect') && !exists('b:git_dir')
+        if empty(l:branch) && exists('*fugitive#detect') && !exists('b:git_dir')
             call fugitive#detect(getcwd())
-            let branch = fugitive#head()
+            let l:branch = fugitive#head()
         endif
     elseif exists(':Gina') == 2
-        let branch = gina#component#repo#branch()
+        let l:branch = gina#component#repo#branch()
     endif
 
     " Caching
-    let b:crystalline_git_branch = branch
+    let b:crystalline_git_branch = l:branch
     let s:crystalline_last_finding_branch_time = reltime()
 
-    return branch
+    return l:branch
 endfunction
 
 function! s:ShortenBranch(branch, length) abort
@@ -59,21 +59,21 @@ function! s:FormatBranch(branch, winwidth) abort
         return s:ShortenBranch(a:branch, 50)
     endif
 
-    let branch = s:ShortenBranch(a:branch, 30)
+    let l:branch = s:ShortenBranch(a:branch, 30)
 
-    if strlen(branch) > 30
-        let branch = strcharpart(branch, 0, 29) . g:crystalline_symbols.ellipsis
+    if strlen(l:branch) > 30
+        let l:branch = strcharpart(l:branch, 0, 29) .. g:crystalline_symbols.ellipsis
     endif
 
-    return branch
+    return l:branch
 endfunction
 
 function! crystalline_settings#git#Branch(...) abort
-    let branch = s:FormatBranch(s:GetGitBranch(), get(a:, 1, winwidth(0)))
+    let l:branch = s:FormatBranch(s:GetGitBranch(), get(a:, 1, winwidth(0)))
 
-    if strlen(branch)
-        return g:crystalline_symbols.branch . ' ' . branch
+    if strlen(l:branch)
+        return g:crystalline_symbols.branch .. ' ' .. l:branch
     endif
 
-    return branch
+    return l:branch
 endfunction

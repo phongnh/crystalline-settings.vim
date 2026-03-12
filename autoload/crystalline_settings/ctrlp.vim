@@ -2,9 +2,9 @@
 let s:crystalline_ctrlp = {}
 
 function! s:GetCurrentDir() abort
-    let dir = fnamemodify(getcwd(), ':~:.')
-    let dir = empty(dir) ? getcwd() : dir
-    return strlen(dir) > 30 ? crystalline_settings#ShortenPath(dir) : dir
+    let l:dir = fnamemodify(getcwd(), ':~:.')
+    let l:dir = empty(l:dir) ? getcwd() : l:dir
+    return strlen(l:dir) > 30 ? crystalline_settings#ShortenPath(l:dir) : l:dir
 endfunction
 
 function! crystalline_settings#ctrlp#MainStatus(focus, byfname, regex, prev, item, next, marked) abort
@@ -30,32 +30,32 @@ function! crystalline_settings#ctrlp#ProgressStatus(len) abort
 endfunction
 
 function! crystalline_settings#ctrlp#Mode() abort
-    let result = {
+    let l:result = {
                 \ 'name': 'CtrlP',
                 \ 'buffer': s:crystalline_ctrlp.dir,
                 \ }
 
     if s:crystalline_ctrlp.main
-        let plugin = crystalline_settings#Concatenate([
+        let l:plugin = crystalline_settings#Concatenate([
                     \ s:crystalline_ctrlp.prev,
                     \ printf('%s %s %s', '«', s:crystalline_ctrlp.item, '»'),
                     \ s:crystalline_ctrlp.next,
                     \ ])
 
-        let settings = crystalline_settings#Concatenate([
+        let l:settings = crystalline_settings#Concatenate([
                     \ s:crystalline_ctrlp.focus,
                     \ s:crystalline_ctrlp.byfname,
                     \ ], 1)
 
-        call extend(result, {
-                \ 'plugin': plugin,
-                \ 'settings': settings,
+        call extend(l:result, {
+                \ 'plugin': l:plugin,
+                \ 'settings': l:settings,
                 \ })
     else
-        call extend(result, {
+        call extend(l:result, {
                     \ 'settings': s:crystalline_ctrlp.len,
                     \ })
     endif
 
-    return result
+    return l:result
 endfunction

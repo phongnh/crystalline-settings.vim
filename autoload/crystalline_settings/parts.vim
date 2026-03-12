@@ -98,8 +98,8 @@ function! s:BufferType() abort
 endfunction
 
 function! s:FileName() abort
-    let fname = expand('%')
-    return strlen(fname) ? fnamemodify(fname, ':~:.') : '[No Name]'
+    let l:fname = expand('%')
+    return strlen(l:fname) ? fnamemodify(l:fname, ':~:.') : '[No Name]'
 endfunction
 
 function! s:IsClipboardEnabled() abort
@@ -140,8 +140,8 @@ endfunction
 
 function! crystalline_settings#parts#Indentation(...) abort
     let l:shiftwidth = exists('*shiftwidth') ? shiftwidth() : &shiftwidth
-    let compact = get(a:, 1, s:IsCompact())
-    if compact
+    let l:compact = get(a:, 1, s:IsCompact())
+    if l:compact
         return printf(&expandtab ? 'SPC: %d' : 'TAB: %d', l:shiftwidth)
     else
         return printf(&expandtab ? 'Spaces: %d' : 'Tab Size: %d', l:shiftwidth)
@@ -149,7 +149,7 @@ function! crystalline_settings#parts#Indentation(...) abort
 endfunction
 
 function! s:ReadonlyStatus(...) abort
-    return &readonly ? g:crystalline_symbols.readonly . ' ' : ''
+    return &readonly ? g:crystalline_symbols.readonly .. ' ' : ''
 endfunction
 
 function! s:ModifiedStatus(...) abort
@@ -180,62 +180,62 @@ endif
 
 function! crystalline_settings#parts#FileEncodingAndFormat() abort
     let l:encoding = strlen(&fileencoding) ? &fileencoding : &encoding
-    let l:encoding = (l:encoding ==# 'utf-8') ? '' : l:encoding . ' '
-    let l:bomb     = &bomb ? g:crystalline_symbols.bomb . ' ' : ''
-    let l:noeol    = &eol ? '' : g:crystalline_symbols.noeol . ' '
+    let l:encoding = (l:encoding ==# 'utf-8') ? '' : l:encoding .. ' '
+    let l:bomb     = &bomb ? g:crystalline_symbols.bomb .. ' ' : ''
+    let l:noeol    = &eol ? '' : g:crystalline_symbols.noeol .. ' '
     let l:format   = get(g:crystalline_symbols, &fileformat, '[empty]')
-    let l:format   = (l:format ==# '[unix]') ? '' : l:format . ' '
-    return l:encoding . l:bomb . l:noeol . l:format
+    let l:format   = (l:format ==# '[unix]') ? '' : l:format .. ' '
+    return l:encoding .. l:bomb .. l:noeol .. l:format
 endfunction
 
 function! crystalline_settings#parts#FileType(...) abort
-    return s:BufferType() . crystalline_settings#devicons#FileType(expand('%'))
+    return s:BufferType() .. crystalline_settings#devicons#FileType(expand('%'))
 endfunction
 
 function! crystalline_settings#parts#FileName(...) abort
-    let winwidth = get(a:, 1, 100)
-    return s:ReadonlyStatus() . crystalline_settings#FormatFileName(s:FileName(), winwidth, 50) . s:ModifiedStatus() . s:ZoomedStatus()
+    let l:winwidth = get(a:, 1, 100)
+    return s:ReadonlyStatus() .. crystalline_settings#FormatFileName(s:FileName(), l:winwidth, 50) .. s:ModifiedStatus() .. s:ZoomedStatus()
 endfunction
 
 function! crystalline_settings#parts#InactiveFileName(...) abort
-    return s:ReadonlyStatus() . s:FileName() . s:ModifiedStatus()
+    return s:ReadonlyStatus() .. s:FileName() .. s:ModifiedStatus()
 endfunction
 
 function! crystalline_settings#parts#Integration() abort
-    let fname = expand('%:t')
+    let l:fname = expand('%:t')
 
-    if has_key(s:crystalline_filename_modes, fname)
-        let result = { 'name': s:crystalline_filename_modes[fname] }
+    if has_key(s:crystalline_filename_modes, l:fname)
+        let l:result = { 'name': s:crystalline_filename_modes[l:fname] }
 
-        if has_key(s:crystalline_filename_integrations, fname)
-            return extend(result, function(s:crystalline_filename_integrations[fname])())
+        if has_key(s:crystalline_filename_integrations, l:fname)
+            return extend(l:result, function(s:crystalline_filename_integrations[l:fname])())
         endif
 
-        return result
+        return l:result
     endif
 
-    if fname =~# '^NrrwRgn_\zs.*\ze_\d\+$'
+    if l:fname =~# '^NrrwRgn_\zs.*\ze_\d\+$'
         return crystalline_settings#nrrwrgn#Mode()
     endif
 
-    let ft = s:BufferType()
+    let l:ft = s:BufferType()
 
-    if ft ==# 'undotree' && exists('*t:undotree.GetStatusLine')
+    if l:ft ==# 'undotree' && exists('*t:undotree.GetStatusLine')
         return crystalline_settings#undotree#Mode()
     endif
 
-    if ft ==# 'diff' && exists('*t:diffpanel.GetStatusLine')
+    if l:ft ==# 'diff' && exists('*t:diffpanel.GetStatusLine')
         return crystalline_settings#undotree#DiffStatus()
     endif
 
-    if has_key(s:crystalline_filetype_modes, ft)
-        let result = { 'name': s:crystalline_filetype_modes[ft] }
+    if has_key(s:crystalline_filetype_modes, l:ft)
+        let l:result = { 'name': s:crystalline_filetype_modes[l:ft] }
 
-        if has_key(s:crystalline_filetype_integrations, ft)
-            return extend(result, function(s:crystalline_filetype_integrations[ft])())
+        if has_key(s:crystalline_filetype_integrations, l:ft)
+            return extend(l:result, function(s:crystalline_filetype_integrations[l:ft])())
         endif
 
-        return result
+        return l:result
     endif
 
     return {}
