@@ -69,7 +69,15 @@ function! s:FormatBranch(branch, winwidth) abort
 endfunction
 
 function! crystalline_settings#git#Branch(...) abort
-    let l:branch = s:FormatBranch(s:GetGitBranch(), get(a:, 1, winwidth(0)))
+    let l:winwidth = get(a:, 1, 0)
+    " Use cached winwidth if available and no explicit width passed
+    if l:winwidth == 0 && exists('*crystalline_settings#parts#GetWinWidth')
+        let l:winwidth = crystalline_settings#parts#GetWinWidth(0)
+    elseif l:winwidth == 0
+        let l:winwidth = winwidth(0)
+    endif
+
+    let l:branch = s:FormatBranch(s:GetGitBranch(), l:winwidth)
 
     if strlen(l:branch)
         return g:crystalline_symbols.branch .. ' ' .. l:branch

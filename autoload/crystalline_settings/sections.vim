@@ -1,5 +1,23 @@
+" Store integration result once per statusline update
+let s:current_integration = {}
+let s:integration_loaded = 0
+
+function! s:GetIntegration() abort
+    if !s:integration_loaded
+        let s:current_integration = crystalline_settings#parts#Integration()
+        let s:integration_loaded = 1
+    endif
+    return s:current_integration
+endfunction
+
+function! crystalline_settings#sections#ClearCache() abort
+    let s:current_integration = {}
+    let s:integration_loaded = 0
+    call crystalline_settings#parts#ClearWidthCache()
+endfunction
+
 function! crystalline_settings#sections#Mode(...) abort
-    let l:mode = crystalline_settings#parts#Integration()
+    let l:mode = s:GetIntegration()
     if len(l:mode)
         return l:mode['name']
     endif
@@ -13,7 +31,7 @@ function! crystalline_settings#sections#Mode(...) abort
 endfunction
 
 function! crystalline_settings#sections#Plugin(...) abort
-    let l:mode = crystalline_settings#parts#Integration()
+    let l:mode = s:GetIntegration()
     if len(l:mode)
         return get(l:mode, 'plugin', '')
     endif
@@ -21,7 +39,7 @@ function! crystalline_settings#sections#Plugin(...) abort
 endfunction
 
 function! s:RenderPluginSection(...) abort
-    let l:winwidth = winwidth(get(a:, 1, 0))
+    let l:winwidth = crystalline_settings#parts#GetWinWidth(get(a:, 1, 0))
 
     if l:winwidth >= g:crystalline_winwidth_config.default
         return crystalline_settings#Concatenate([
@@ -34,7 +52,7 @@ function! s:RenderPluginSection(...) abort
 endfunction
 
 function! crystalline_settings#sections#FileName(...) abort
-    let l:mode = crystalline_settings#parts#Integration()
+    let l:mode = s:GetIntegration()
     if len(l:mode)
         return get(l:mode, 'filename', '')
     endif
@@ -46,7 +64,7 @@ function! s:RenderFileNameSection(...) abort
 endfunction
 
 function! crystalline_settings#sections#Buffer(...) abort
-    let l:mode = crystalline_settings#parts#Integration()
+    let l:mode = s:GetIntegration()
     if len(l:mode)
         return get(l:mode, 'buffer', '')
     endif
@@ -58,7 +76,7 @@ function! s:RenderBufferSection(...) abort
 endfunction
 
 function! crystalline_settings#sections#Settings(...) abort
-    let l:mode = crystalline_settings#parts#Integration()
+    let l:mode = s:GetIntegration()
     if len(l:mode)
         return get(l:mode, 'settings', '')
     endif
@@ -67,7 +85,7 @@ endfunction
 
 function! s:RenderSettingsSection(...) abort
     let l:winnr = get(a:, 1, 0)
-    if winwidth(l:winnr) <= g:crystalline_winwidth_config.compact
+    if crystalline_settings#parts#GetWinWidth(l:winnr) <= g:crystalline_winwidth_config.compact
         return ''
     endif
     return crystalline_settings#Concatenate([
@@ -77,7 +95,7 @@ function! s:RenderSettingsSection(...) abort
 endfunction
 
 function! crystalline_settings#sections#Info(...) abort
-    let l:mode = crystalline_settings#parts#Integration()
+    let l:mode = s:GetIntegration()
     if len(l:mode)
         return get(l:mode, 'info', '')
     endif
@@ -86,7 +104,7 @@ endfunction
 
 function! s:RenderInfoSection(...) abort
     let l:winnr = get(a:, 1, 0)
-    if winwidth(l:winnr) <= g:crystalline_winwidth_config.compact
+    if crystalline_settings#parts#GetWinWidth(l:winnr) <= g:crystalline_winwidth_config.compact
         return ''
     endif
     return crystalline_settings#parts#LineInfo()
@@ -94,7 +112,7 @@ endfunction
 
 function! crystalline_settings#sections#InactiveMode(...) abort
     " Show only custom mode in inactive buffer
-    let l:mode = crystalline_settings#parts#Integration()
+    let l:mode = s:GetIntegration()
     if len(l:mode)
         return crystalline_settings#Concatenate([
                     \ l:mode['name'],

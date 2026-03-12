@@ -216,6 +216,10 @@ augroup CrystallineSettings
     autocmd!
     autocmd User CrystallineSetTheme ++once call crystalline_settings#theme#Detect()
     autocmd ColorScheme * call crystalline_settings#theme#Find()
+    " Clear integration cache on buffer changes for performance
+    autocmd BufEnter,FileType * call crystalline_settings#parts#ClearIntegrationCache()
+    " Clear all section caches on statusline updates
+    autocmd CursorMoved,CursorMovedI,WinEnter * call crystalline_settings#sections#ClearCache()
 augroup END
 
 let &cpo = s:save_cpo
