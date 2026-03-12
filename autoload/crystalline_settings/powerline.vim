@@ -67,7 +67,7 @@ function! crystalline_settings#powerline#SetSeparators(style) abort
 
     let l:style = 'default'
 
-    if type(a:style) == v:t_string && strlen(a:style)
+    if type(a:style) == v:t_string && !empty(a:style)
         let l:style = a:style
     endif
 

@@ -2,8 +2,9 @@
 let s:crystalline_ctrlp = {}
 
 function! s:GetCurrentDir() abort
-    let l:dir = fnamemodify(getcwd(), ':~:.')
-    let l:dir = empty(l:dir) ? getcwd() : l:dir
+    let l:cwd = getcwd()
+    let l:dir = fnamemodify(l:cwd, ':~:.')
+    let l:dir = empty(l:dir) ? l:cwd : l:dir
     return strlen(l:dir) > 30 ? crystalline_settings#ShortenPath(l:dir) : l:dir
 endfunction
 

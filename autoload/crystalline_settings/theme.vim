@@ -13,7 +13,7 @@ function! s:LoadThemes() abort
 endfunction
 
 function! s:FindTheme() abort
-    let g:crystalline_theme = tolower(substitute(get(g:, 'colors_name', 'default'), '[ -]', '_', 'g'))
+    let g:crystalline_theme = tolower(tr(get(g:, 'colors_name', 'default'), ' -', '__'))
     if index(s:crystalline_themes, g:crystalline_theme) > -1
         return
     endif

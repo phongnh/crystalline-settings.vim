@@ -76,7 +76,7 @@ function! crystalline_settings#Init() abort
         if exists('g:ZoomWin_funcref')
             if type(g:ZoomWin_funcref) == v:t_func
                 let g:crystalline_zoomwin_funcref = [g:ZoomWin_funcref]
-            elseif type(g:ZoomWin_funcref) == v:t_func
+            elseif type(g:ZoomWin_funcref) == v:t_list
                 let g:crystalline_zoomwin_funcref = g:ZoomWin_funcref
             endif
             let g:crystalline_zoomwin_funcref = uniq(copy(g:crystalline_zoomwin_funcref))

@@ -79,7 +79,7 @@ function! crystalline_settings#git#Branch(...) abort
 
     let l:branch = s:FormatBranch(s:GetGitBranch(), l:winwidth)
 
-    if strlen(l:branch)
+    if !empty(l:branch)
         return g:crystalline_symbols.branch .. ' ' .. l:branch
     endif
 
