@@ -39,7 +39,7 @@ function! crystalline_settings#ctrlp#Mode() abort
     if s:crystalline_ctrlp.main
         let l:plugin = crystalline_settings#Concatenate([
                     \ s:crystalline_ctrlp.prev,
-                    \ printf('%s %s %s', '«', s:crystalline_ctrlp.item, '»'),
+                    \ '« ' .. s:crystalline_ctrlp.item .. ' »',
                     \ s:crystalline_ctrlp.next,
                     \ ])
 

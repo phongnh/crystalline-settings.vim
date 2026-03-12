@@ -121,23 +121,23 @@ function! g:CrystallineStatuslineFn(winnr) abort
         return join([
                     \ '%<',
                     \ crystalline#ModeHiItem('A'),
-                    \ crystalline_settings#Group(printf('crystalline_settings#sections#Mode(%d)', a:winnr)),
+                    \ crystalline_settings#Group('crystalline_settings#sections#Mode(' .. a:winnr .. ')'),
                     \ crystalline#Sep(0, crystalline#ModeSepGroup('A'), 'B'),
-                    \ crystalline_settings#Group(printf('crystalline_settings#sections#Plugin(%d)', a:winnr)),
+                    \ crystalline_settings#Group('crystalline_settings#sections#Plugin(' .. a:winnr .. ')'),
                     \ crystalline#Sep(0, 'B', 'Fill'),
-                    \ crystalline_settings#Group(printf('crystalline_settings#sections#FileName(%d)', a:winnr)),
+                    \ crystalline_settings#Group('crystalline_settings#sections#FileName(' .. a:winnr .. ')'),
                     \ '%=',
                     \ '%<',
-                    \ crystalline_settings#Group(printf('crystalline_settings#sections#Info(%d)', a:winnr)),
+                    \ crystalline_settings#Group('crystalline_settings#sections#Info(' .. a:winnr .. ')'),
                     \ crystalline#Sep(1, 'Fill', 'B'),
-                    \ crystalline_settings#Group(printf('crystalline_settings#sections#Settings(%d)', a:winnr)),
+                    \ crystalline_settings#Group('crystalline_settings#sections#Settings(' .. a:winnr .. ')'),
                     \ crystalline#Sep(1, 'B', 'A'),
-                    \ crystalline_settings#Group(printf('crystalline_settings#sections#Buffer(%d)', a:winnr)),
+                    \ crystalline_settings#Group('crystalline_settings#sections#Buffer(' .. a:winnr .. ')'),
                     \ ], '')
     else
         return crystalline#HiItem('InactiveFill') ..
                     \ '%<' ..
-                    \ crystalline_settings#Group(printf('crystalline_settings#sections#InactiveMode(%d)', a:winnr))
+                    \ crystalline_settings#Group('crystalline_settings#sections#InactiveMode(' .. a:winnr .. ')')
     endif
 endfunction
 
@@ -167,13 +167,8 @@ function! g:CrystallineTabFn(tab, buf, max_width, is_sel) abort
 
     " Get name
     let l:name = bufname(a:buf)
-    if l:name ==# ''
-        let l:name = printf('%d: %s', l:nr, g:crystalline_tab_empty)
-        let l:name_width = strchars(l:name)
-    else
-        let l:name = printf('%d: %s', l:nr, fnamemodify(l:name, ':t'))
-        let l:name_width = strchars(l:name)
-    endif
+    let l:name = l:nr .. ' ' .. (!empty(l:name) ? fnamemodify(l:name, ':t') : g:crystalline_tab_empty)
+    let l:name_width = strchars(l:name)
 
     " Shorten tab
     if l:max_name_width <= 0

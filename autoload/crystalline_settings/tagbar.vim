@@ -11,7 +11,7 @@ function! crystalline_settings#tagbar#Mode(...) abort
     if empty(s:crystalline_tagbar.flags)
         let l:flags = ''
     else
-        let l:flags = printf('[%s]', join(s:crystalline_tagbar.flags, ''))
+        let l:flags = '[' .. join(s:crystalline_tagbar.flags, '') .. ']'
     endif
 
     return {
