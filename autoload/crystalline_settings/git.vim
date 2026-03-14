@@ -3,21 +3,29 @@ let s:crystalline_time_threshold = 0.50
 let s:crystalline_last_finding_branch_time = reltime()
 
 function! s:ShortenBranch(branch, length) abort
-    let l:branch = a:branch
-
-    if strlen(l:branch) > a:length
-        let l:branch = crystalline_settings#ShortenPath(l:branch)
+    let l:len = strlen(a:branch)
+    
+    " Early exit if already short enough
+    if l:len <= a:length
+        return a:branch
     endif
 
-    if strlen(l:branch) > a:length
-        let l:branch = fnamemodify(l:branch, ':t')
+    let l:branch = crystalline_settings#ShortenPath(a:branch)
+    let l:len = strlen(l:branch)
+
+    if l:len <= a:length
+        return l:branch
     endif
 
-    if strlen(l:branch) > a:length
-        " Show only JIRA ticket prefix
-        let l:branch = substitute(l:branch, '^\([A-Z]\{3,}-\d\{1,}\)-.\+', '\1', '')
+    let l:branch = fnamemodify(l:branch, ':t')
+    let l:len = strlen(l:branch)
+
+    if l:len <= a:length
+        return l:branch
     endif
 
+    " Show only JIRA ticket prefix
+    let l:branch = substitute(l:branch, '^\([A-Z]\{3,}-\d\{1,}\)-.\+', '\1', '')
     return l:branch
 endfunction
 
