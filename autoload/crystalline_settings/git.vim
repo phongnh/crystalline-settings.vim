@@ -1,6 +1,5 @@
 " Caching
-let s:crystalline_time_threshold = 0.50
-let s:crystalline_last_finding_branch_time = reltime()
+let s:crystalline_time_threshold = 2.0
 
 function! s:ShortenBranch(branch, length) abort
     let l:len = strlen(a:branch)
@@ -45,7 +44,7 @@ endfunction
 
 function! s:GetGitBranch() abort
     " Get branch from caching if it is available
-    if has_key(b:, 'crystalline_git_branch') && reltimefloat(reltime(s:crystalline_last_finding_branch_time)) < s:crystalline_time_threshold
+    if has_key(b:, 'crystalline_git_branch') && reltimefloat(reltime(get(b:, 'crystalline_last_finding_branch_time', -1))) < s:crystalline_time_threshold
         return b:crystalline_git_branch
     endif
 
@@ -54,15 +53,15 @@ function! s:GetGitBranch() abort
     if exists('*FugitiveHead')
         let l:branch = FugitiveHead()
 
-        if empty(l:branch) && exists('*FugitiveDetect') && !exists('b:git_dir')
-            call FugitiveDetect(getcwd())
+        if empty(l:branch) && !exists('b:git_dir')
+            call FugitiveDetect()
             let l:branch = FugitiveHead()
         endif
     endif
 
     " Caching
     let b:crystalline_git_branch = l:branch
-    let s:crystalline_last_finding_branch_time = reltime()
+    let b:crystalline_last_finding_branch_time = reltime()
 
     return l:branch
 endfunction
