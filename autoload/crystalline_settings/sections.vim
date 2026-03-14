@@ -5,11 +5,11 @@ function! crystalline_settings#sections#Mode(...) abort
     endif
 
     return crystalline_settings#Concatenate([
-                \ crystalline_settings#parts#Mode(),
-                \ crystalline_settings#parts#Clipboard(),
-                \ crystalline_settings#parts#Paste(),
-                \ crystalline_settings#parts#Spell(),
-                \ ])
+                \   crystalline_settings#parts#Mode(),
+                \   crystalline_settings#parts#Clipboard(),
+                \   crystalline_settings#parts#Paste(),
+                \   crystalline_settings#parts#Spell(),
+                \ ], 0)
 endfunction
 
 function! crystalline_settings#sections#Plugin(...) abort
@@ -25,9 +25,9 @@ function! s:RenderPluginSection(...) abort
 
     if l:winwidth >= g:crystalline_winwidth_config.default
         return crystalline_settings#Concatenate([
-                    \ crystalline_settings#parts#GitBranch(l:winwidth),
-                    \ crystalline_settings#parts#FileName(l:winwidth - 2),
-                    \ ])
+                    \   crystalline_settings#parts#GitBranch(l:winwidth),
+                    \   crystalline_settings#parts#FileName(l:winwidth - 2),
+                    \ ], 0)
     endif
 
     return crystalline_settings#parts#FileName(l:winwidth - 2)
@@ -71,8 +71,8 @@ function! s:RenderSettingsSection(...) abort
         return ''
     endif
     return crystalline_settings#Concatenate([
-                \ crystalline_settings#parts#Indentation(),
-                \ crystalline_settings#parts#FileEncodingAndFormat(),
+                \   crystalline_settings#parts#Indentation(),
+                \   crystalline_settings#parts#FileEncodingAndFormat(),
                 \ ], 1)
 endfunction
 
@@ -97,10 +97,10 @@ function! crystalline_settings#sections#InactiveMode(...) abort
     let l:mode = crystalline_settings#parts#Integration()
     if len(l:mode)
         return crystalline_settings#Concatenate([
-                    \ l:mode['name'],
-                    \ get(l:mode, 'plugin', ''),
-                    \ get(l:mode, 'filename', ''),
-                    \ ])
+                    \   l:mode['name'],
+                    \   get(l:mode, 'plugin', ''),
+                    \   get(l:mode, 'filename', ''),
+                    \ ], 0)
     endif
     return call('s:RenderInactiveModeSection', a:000)
 endfunction

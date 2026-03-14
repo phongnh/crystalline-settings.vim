@@ -38,14 +38,14 @@ function! crystalline_settings#ctrlp#Mode() abort
 
     if s:crystalline_ctrlp.main
         let l:plugin = crystalline_settings#Concatenate([
-                    \ s:crystalline_ctrlp.prev,
-                    \ '« ' .. s:crystalline_ctrlp.item .. ' »',
-                    \ s:crystalline_ctrlp.next,
-                    \ ])
+                    \   s:crystalline_ctrlp.prev,
+                    \   '« ' .. s:crystalline_ctrlp.item .. ' »',
+                    \   s:crystalline_ctrlp.next,
+                    \ ], 0)
 
         let l:settings = crystalline_settings#Concatenate([
-                    \ s:crystalline_ctrlp.focus,
-                    \ s:crystalline_ctrlp.byfname,
+                    \   s:crystalline_ctrlp.focus,
+                    \   s:crystalline_ctrlp.byfname,
                     \ ], 1)
 
         call extend(l:result, {

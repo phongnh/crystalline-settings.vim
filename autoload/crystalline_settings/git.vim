@@ -2,39 +2,6 @@
 let s:crystalline_time_threshold = 0.50
 let s:crystalline_last_finding_branch_time = reltime()
 
-function! s:GetGitBranch() abort
-    " Get branch from caching if it is available
-    if has_key(b:, 'crystalline_git_branch') && reltimefloat(reltime(s:crystalline_last_finding_branch_time)) < s:crystalline_time_threshold
-        return b:crystalline_git_branch
-    endif
-
-    let l:branch = ''
-
-    if exists('*FugitiveHead')
-        let l:branch = FugitiveHead()
-
-        if empty(l:branch) && exists('*FugitiveDetect') && !exists('b:git_dir')
-            call FugitiveDetect(getcwd())
-            let l:branch = FugitiveHead()
-        endif
-    elseif exists('*fugitive#head')
-        let l:branch = fugitive#head()
-
-        if empty(l:branch) && exists('*fugitive#detect') && !exists('b:git_dir')
-            call fugitive#detect(getcwd())
-            let l:branch = fugitive#head()
-        endif
-    elseif exists(':Gina') == 2
-        let l:branch = gina#component#repo#branch()
-    endif
-
-    " Caching
-    let b:crystalline_git_branch = l:branch
-    let s:crystalline_last_finding_branch_time = reltime()
-
-    return l:branch
-endfunction
-
 function! s:ShortenBranch(branch, length) abort
     let l:branch = a:branch
 
@@ -64,6 +31,39 @@ function! s:FormatBranch(branch, winwidth) abort
     if strlen(l:branch) > 30
         let l:branch = strcharpart(l:branch, 0, 29) .. g:crystalline_symbols.ellipsis
     endif
+
+    return l:branch
+endfunction
+
+function! s:GetGitBranch() abort
+    " Get branch from caching if it is available
+    if has_key(b:, 'crystalline_git_branch') && reltimefloat(reltime(s:crystalline_last_finding_branch_time)) < s:crystalline_time_threshold
+        return b:crystalline_git_branch
+    endif
+
+    let l:branch = ''
+
+    if exists('*FugitiveHead')
+        let l:branch = FugitiveHead()
+
+        if empty(l:branch) && exists('*FugitiveDetect') && !exists('b:git_dir')
+            call FugitiveDetect(getcwd())
+            let l:branch = FugitiveHead()
+        endif
+    elseif exists('*fugitive#head')
+        let l:branch = fugitive#head()
+
+        if empty(l:branch) && exists('*fugitive#detect') && !exists('b:git_dir')
+            call fugitive#detect(getcwd())
+            let l:branch = fugitive#head()
+        endif
+    elseif exists(':Gina') == 2
+        let l:branch = gina#component#repo#branch()
+    endif
+
+    " Caching
+    let b:crystalline_git_branch = l:branch
+    let s:crystalline_last_finding_branch_time = reltime()
 
     return l:branch
 endfunction

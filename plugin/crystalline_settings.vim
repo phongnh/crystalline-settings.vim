@@ -211,6 +211,7 @@ augroup CrystallineSettings
     autocmd!
     autocmd User CrystallineSetTheme ++once call crystalline_settings#theme#Detect()
     autocmd ColorScheme * call crystalline_settings#theme#Find()
+    autocmd CmdwinEnter * set filetype=cmdline syntax=vim
 augroup END
 
 let &cpo = s:save_cpo
