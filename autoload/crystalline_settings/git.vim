@@ -65,8 +65,6 @@ function! s:GetGitBranch() abort
             call fugitive#detect(getcwd())
             let l:branch = fugitive#head()
         endif
-    elseif exists(':Gina') == 2
-        let l:branch = gina#component#repo#branch()
     endif
 
     " Caching
