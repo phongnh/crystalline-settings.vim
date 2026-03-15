@@ -196,7 +196,7 @@ function! s:ModifiedStatus(...) abort
 endfunction
 
 function! s:ZoomedStatus(...) abort
-    return get(g:, 'crystalline_zoomed', 0) ? '[Z]' : ''
+    return get(b:, 'crystalline_zoomstate', 0) ? '[Z]' : ''
 endfunction
 
 function! crystalline_settings#parts#LineInfo(...) abort
