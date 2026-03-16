@@ -90,6 +90,7 @@ let s:crystalline_filetype_integrations = {
             \ 'vista_kind':      'crystalline_settings#vista#Mode',
             \ 'vista':           'crystalline_settings#vista#Mode',
             \ 'NrrwRgn':         'crystalline_settings#nrrwrgn#Mode',
+            \ 'git':             'crystalline_settings#git#Mode',
             \ 'gitcommit':       'crystalline_settings#gitcommit#Mode',
             \ 'gitrebase':       'crystalline_settings#gitrebase#Mode',
             \ 'fugitive':        'crystalline_settings#fugitive#Mode',

@@ -83,3 +83,15 @@ function! crystalline_settings#git#Branch(...) abort
 
     return l:branch
 endfunction
+
+function! crystalline_settings#git#Mode(...) abort
+    let l:result = { 'name': 'Git', 'info': crystalline_settings#lineinfo#Simple() }
+    if exists('b:fugitive_type') && b:fugitive_type ==# 'commit'
+        if crystalline_settings#parts#GetWinWidth(0) >= g:crystalline_winwidth_config.compact
+            let l:result['plugin'] = expand('%:t')
+        else
+            let l:result['plugin'] = expand('%:t')[0:8]
+        endif
+    endif
+    return l:result
+endfunction
