@@ -76,6 +76,7 @@ let s:crystalline_filename_integrations = {
 let s:crystalline_filetype_integrations = {
             \ 'cmdline':         'crystalline_settings#cmdline#Mode',
             \ 'ctrlp':           'crystalline_settings#ctrlp#Mode',
+            \ 'nerdtree':        'crystalline_settings#nerdtree#Mode',
             \ 'netrw':           'crystalline_settings#netrw#Mode',
             \ 'dirvish':         'crystalline_settings#dirvish#Mode',
             \ 'molder':          'crystalline_settings#molder#Mode',
