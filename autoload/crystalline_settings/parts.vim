@@ -184,9 +184,9 @@ enddef
 
 export def LineInfo(...args: list<any>): string
     if g:crystalline_show_linenr > 1
-        return call('crystalline_settings#lineinfo#Full', args)
+        return crystalline_settings#lineinfo#Full()
     elseif g:crystalline_show_linenr > 0
-        return call('crystalline_settings#lineinfo#Simple', args)
+        return crystalline_settings#lineinfo#Simple()
     endif
     return ''
 enddef
