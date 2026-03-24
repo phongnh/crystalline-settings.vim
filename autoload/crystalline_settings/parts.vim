@@ -256,7 +256,7 @@ enddef
 
 export def GitBranch(...args: list<any>): string
     if g:crystalline_show_git_branch > 0
-        return call('crystalline_settings#gitbranch#Name', args)
+        return crystalline_settings#gitbranch#Name()
     endif
     return ''
 enddef
