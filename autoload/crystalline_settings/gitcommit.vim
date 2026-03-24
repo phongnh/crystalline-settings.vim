@@ -1,10 +1,8 @@
 function! crystalline_settings#gitcommit#Mode(...) abort
     return {
-                \ 'name': crystalline_settings#Concatenate([
-                \   'Commit Message',
-                \   crystalline_settings#parts#Spell(),
-                \ ], 0),
-                \ 'plugin': crystalline_settings#git#Branch(),
-                \ 'info': crystalline_settings#lineinfo#Simple(),
+                \ 'section_a': 'Commit Message',
+                \ 'section_b': crystalline_settings#git#Branch(),
+                \ 'section_x': crystalline_settings#lineinfo#Simple(),
+                \ 'section_y': crystalline_settings#parts#Spell(),
                 \ }
 endfunction

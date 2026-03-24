@@ -6,4 +6,3 @@ endfunction
 function! crystalline_settings#goyo#OnLeave() abort
     call crystalline#InitStatusline()
 endfunction
-

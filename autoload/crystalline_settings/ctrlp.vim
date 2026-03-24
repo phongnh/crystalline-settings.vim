@@ -32,29 +32,25 @@ endfunction
 
 function! crystalline_settings#ctrlp#Mode() abort
     let l:result = {
-                \ 'name': 'CtrlP',
-                \ 'buffer': s:crystalline_ctrlp.dir,
+                \ 'section_a': 'CtrlP',
+                \ 'section_z': s:crystalline_ctrlp.dir,
                 \ }
 
     if s:crystalline_ctrlp.main
-        let l:plugin = crystalline_settings#Concatenate([
+        call extend(l:result, {
+                    \ 'section_b': crystalline_settings#Concatenate([
                     \   s:crystalline_ctrlp.prev,
                     \   '« ' .. s:crystalline_ctrlp.item .. ' »',
                     \   s:crystalline_ctrlp.next,
-                    \ ], 0)
-
-        let l:settings = crystalline_settings#Concatenate([
+                    \ ], 0),
+                    \ 'section_y': crystalline_settings#Concatenate([
                     \   s:crystalline_ctrlp.focus,
                     \   s:crystalline_ctrlp.byfname,
                     \ ], 1)
-
-        call extend(l:result, {
-                \ 'plugin': l:plugin,
-                \ 'settings': l:settings,
-                \ })
+                    \ })
     else
         call extend(l:result, {
-                    \ 'settings': s:crystalline_ctrlp.len,
+                    \ 'section_y': s:crystalline_ctrlp.len,
                     \ })
     endif
 

@@ -1,6 +1,6 @@
 " crystalline_settings.vim
 " Maintainer: Phong Nguyen
-" Version:    0.1.0
+" Version:    1.0.0
 
 if exists('g:loaded_vim_crystalline_settings') || v:version < 700
     finish
@@ -111,7 +111,6 @@ if g:crystalline_show_devicons
                 \ 'mac':   "\ue711",
                 \ 'unix':  "\ue712",
                 \ })
-    let g:crystalline_symbols.unix = '[unix]'
 endif
 
 function! g:CrystallineStatuslineFn(winnr) abort
@@ -121,23 +120,25 @@ function! g:CrystallineStatuslineFn(winnr) abort
         return join([
                     \ '%<',
                     \ crystalline#ModeHiItem('A'),
-                    \ crystalline_settings#Group('crystalline_settings#sections#Mode(' .. a:winnr .. ')'),
+                    \ crystalline_settings#Group('crystalline_settings#sections#SectionA(' .. a:winnr .. ')'),
                     \ crystalline#Sep(0, crystalline#ModeSepGroup('A'), 'B'),
-                    \ crystalline_settings#Group('crystalline_settings#sections#Plugin(' .. a:winnr .. ')'),
-                    \ crystalline#Sep(0, 'B', 'Fill'),
-                    \ crystalline_settings#Group('crystalline_settings#sections#FileName(' .. a:winnr .. ')'),
+                    \ crystalline_settings#Group('crystalline_settings#sections#SectionB(' .. a:winnr .. ')'),
+                    \ crystalline#Sep(0, 'B', 'Fill1'),
+                    \ crystalline_settings#Group('crystalline_settings#sections#SectionC(' .. a:winnr .. ')'),
                     \ '%=',
                     \ '%<',
-                    \ crystalline_settings#Group('crystalline_settings#sections#Info(' .. a:winnr .. ')'),
-                    \ crystalline#Sep(1, 'Fill', 'B'),
-                    \ crystalline_settings#Group('crystalline_settings#sections#Settings(' .. a:winnr .. ')'),
+                    \ crystalline_settings#Group('crystalline_settings#sections#SectionX(' .. a:winnr .. ')'),
+                    \ crystalline#Sep(1, 'Fill1', 'B'),
+                    \ crystalline_settings#Group('crystalline_settings#sections#SectionY(' .. a:winnr .. ')'),
                     \ crystalline#Sep(1, 'B', 'A'),
-                    \ crystalline_settings#Group('crystalline_settings#sections#Buffer(' .. a:winnr .. ')'),
+                    \ crystalline_settings#Group('crystalline_settings#sections#SectionZ(' .. a:winnr .. ')'),
                     \ ], '')
     else
-        return crystalline#HiItem('InactiveFill') ..
-                    \ '%<' ..
-                    \ crystalline_settings#Group('crystalline_settings#sections#InactiveMode(' .. a:winnr .. ')')
+        return join([
+                    \ '%<',
+                    \ crystalline#HiItem('Fill'),
+                    \ crystalline_settings#Group('crystalline_settings#sections#InactiveSectionA(' .. a:winnr .. ')'),
+                    \ ], '')
     endif
 endfunction
 

@@ -1,5 +1,5 @@
 " https://github.com/nvim-neo-tree/neo-tree.nvim
 function! crystalline_settings#neotree#Mode(...) abort
-    return { 'name': 'NeoTree', 'plugin': exists('b:neo_tree_source') ? b:neo_tree_source : '' }
+    return { 'section_a': 'NeoTree', 'section_c': exists('b:neo_tree_source') ? b:neo_tree_source : '' }
 endfunction
 

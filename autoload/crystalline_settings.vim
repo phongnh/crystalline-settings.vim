@@ -18,6 +18,32 @@ if exists('*pathshorten')
     endfunction
 endif
 
+" Cache window width to avoid repeated winwidth() calls
+let s:cached_winwidth = 0
+let s:cached_winwidth_nr = 0
+
+function! s:GetWinWidth(...) abort
+    let l:winnr = get(a:, 1, 0)
+    " Cache is only valid for current window in current update
+    if l:winnr == s:cached_winwidth_nr && s:cached_winwidth > 0
+        return s:cached_winwidth
+    endif
+    let s:cached_winwidth = winwidth(l:winnr)
+    let s:cached_winwidth_nr = l:winnr
+    return s:cached_winwidth
+endfunction
+
+" Expose for use in other modules
+function! crystalline_settings#GetWinWidth(...) abort
+    return call('s:GetWinWidth', a:000)
+endfunction
+
+" Clear width cache
+function! crystalline_settings#ClearWidthCache() abort
+    let s:cached_winwidth = 0
+    let s:cached_winwidth_nr = 0
+endfunction
+
 function! crystalline_settings#FormatFileName(fname, winwidth, max_width) abort
     let l:fname = a:fname
 

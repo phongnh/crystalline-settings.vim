@@ -1,7 +1,7 @@
 function! crystalline_settings#help#Mode(...) abort
     return {
-                \ 'name': 'HELP',
-                \ 'plugin': expand('%:~:.'),
-                \ 'info': crystalline_settings#lineinfo#Full(),
+                \ 'section_a': 'HELP',
+                \ 'section_c': expand('%:~:.'),
+                \ 'section_x': crystalline_settings#lineinfo#Full(),
                 \ }
 endfunction

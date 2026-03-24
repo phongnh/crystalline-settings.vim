@@ -1,8 +1,17 @@
 " https://github.com/mhinz/vim-grepper
-function! crystalline_settings#grepper#Mode(...) abort
-    let l:result = { 'name': 'GrepperSide' }
-    if exists('b:grepper_side_statusline')
-        let l:result['plugin'] = b:grepper_side_statusline
+function! s:GrepperSideStatus() abort
+    if !empty(b:grepper_side_status)
+        return printf(
+                    \ 'Found %d %s in %d %s.',
+                    \ b:grepper_side_status.matches,
+                    \ b:grepper_side_status.matches == 1 ? 'match' : 'matches',
+                    \ b:grepper_side_status.files,
+                    \ b:grepper_side_status.files == 1 ? 'file' : 'files'
+                    \ )
     endif
-    return l:result
+    return ''
+endfunction
+
+function! crystalline_settings#grepper#Mode(...) abort
+    return { 'section_a': 'GrepperSide', 'section_b': s:GrepperSideStatus() }
 endfunction

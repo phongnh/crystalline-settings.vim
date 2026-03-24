@@ -15,7 +15,8 @@ function! crystalline_settings#tagbar#Mode(...) abort
     endif
 
     return {
-                \ 'name': s:crystalline_tagbar.sort,
-                \ 'plugin': crystalline_settings#Concatenate([s:crystalline_tagbar.fname, l:flags], 0),
+                \ 'section_a': s:crystalline_tagbar.sort,
+                \ 'section_b': l:flags,
+                \ 'section_c': s:crystalline_tagbar.fname,
                 \ }
 endfunction

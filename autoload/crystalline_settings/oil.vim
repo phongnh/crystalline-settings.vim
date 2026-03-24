@@ -10,5 +10,5 @@ function! s:GetCurrentDir(bufname) abort
 endfunction
 
 function! crystalline_settings#oil#Mode(...) abort
-    return { 'name': 'Oil', 'plugin': s:GetCurrentDir(get(a:, 1, expand('%'))) }
+    return { 'section_a': 'Oil', 'section_c': s:GetCurrentDir(get(a:, 1, expand('%'))) }
 endfunction

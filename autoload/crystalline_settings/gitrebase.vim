@@ -1,10 +1,8 @@
 function! crystalline_settings#gitrebase#Mode(...) abort
     return {
-                \ 'name': crystalline_settings#Concatenate([
-                \   'Git Rebase',
-                \   crystalline_settings#parts#Spell(),
-                \ ], 0),
-                \ 'plugin': crystalline_settings#git#Branch(),
-                \ 'info': crystalline_settings#lineinfo#Simple(),
+                \ 'section_a': 'Git Rebase',
+                \ 'section_b': crystalline_settings#git#Branch(),
+                \ 'section_x': crystalline_settings#lineinfo#Simple(),
+                \ 'section_y': crystalline_settings#parts#Spell(),
                 \ }
 endfunction
