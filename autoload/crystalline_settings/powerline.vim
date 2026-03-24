@@ -60,7 +60,7 @@ def InitPowerlineStyles()
     crystalline_separator_styles = {}
 
     for [style, separator] in items(separator_styles)
-        var subseparator = subseparator_styles[style]
+        const subseparator = subseparator_styles[style]
         crystalline_separator_styles[style] = [
             {ch: separator['left'],  alt_ch: subseparator['left'],  dir: '>'},
             {ch: separator['right'], alt_ch: subseparator['right'], dir: '<'},
@@ -78,7 +78,7 @@ export def SetSeparators(style: any)
     endif
 
     if style_str ==? 'random'
-        var rand = str2nr(matchstr(reltimestr(reltime()), '\v\.@<=\d+')[1 :])
+        const rand = str2nr(matchstr(reltimestr(reltime()), '\v\.@<=\d+')[1 :])
         style_str = keys(crystalline_separator_styles)[rand % len(crystalline_separator_styles)]
     endif
 

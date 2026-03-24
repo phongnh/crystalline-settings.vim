@@ -1,7 +1,7 @@
 vim9script
 
 # Alternate status dictionaries
-var crystalline_filename_modes = {
+const crystalline_filename_modes = {
     ControlP:             'CtrlP',
     '__CtrlSF__':           'CtrlSF',
     '__CtrlSFPreview__':    'Preview',
@@ -20,7 +20,7 @@ var crystalline_filename_modes = {
     '__LSP_SETTINGS__':     'LSP Settings',
 }
 
-var crystalline_filetype_modes = {
+const crystalline_filetype_modes = {
     bufexplorer:       'BufExplorer',
     simplebuffer:      'SimpleBuffer',
     netrw:             'Netrw',
@@ -68,7 +68,7 @@ var crystalline_filetype_modes = {
     startuptime:       'StartupTime',
 }
 
-var crystalline_filename_integrations = {
+const crystalline_filename_integrations = {
     ControlP:          'crystalline_settings#ctrlp#Mode',
     '__CtrlSF__':        'crystalline_settings#ctrlsf#Mode',
     '__CtrlSFPreview__': 'crystalline_settings#ctrlsf#PreviewMode',
@@ -76,7 +76,7 @@ var crystalline_filename_integrations = {
     '__Tagbar__':        'crystalline_settings#tagbar#Mode',
 }
 
-var crystalline_filetype_integrations = {
+const crystalline_filetype_integrations = {
     cmdline:         'crystalline_settings#cmdline#Mode',
     ctrlp:           'crystalline_settings#ctrlp#Mode',
     nerdtree:        'crystalline_settings#nerdtree#Mode',
@@ -113,7 +113,7 @@ def BufferType(): string
 enddef
 
 def FileNameImpl(): string
-    var fname = expand('%')
+    const fname = expand('%')
     return !empty(fname) ? fnamemodify(fname, ':~:.') : '[No Name]'
 enddef
 
@@ -122,7 +122,7 @@ def IsClipboardEnabled(): bool
 enddef
 
 def IsCompact(...args: list<any>): bool
-    var winnr = get(args, 0, 0)
+    const winnr = get(args, 0, 0)
     return crystalline_settings#GetWinWidth(winnr) <= g:crystalline_winwidth_config.compact ||
         count([
             IsClipboardEnabled(),
@@ -158,7 +158,7 @@ def Shiftwidth(): number
 enddef
 
 export def Indentation(...args: list<any>): string
-    var compact = get(args, 0, IsCompact())
+    const compact = get(args, 0, IsCompact())
     if &expandtab
         return (compact ? 'SPC' : 'Spaces') .. ': ' .. Shiftwidth()
     else
@@ -199,7 +199,7 @@ export def FileEncodingAndFormat(): string
 
     var parts: list<string> = []
 
-    var encoding = !empty(&fileencoding) ? &fileencoding : &encoding
+    const encoding = !empty(&fileencoding) ? &fileencoding : &encoding
     if !empty(encoding) && encoding !=# 'utf-8'
         add(parts, encoding)
     endif
@@ -219,7 +219,7 @@ export def FileType(...args: list<any>): string
 enddef
 
 export def FileName(...args: list<any>): string
-    var winwidth = crystalline_settings#GetWinWidth(get(args, 0, 0))
+    const winwidth = crystalline_settings#GetWinWidth(get(args, 0, 0))
     return ReadonlyStatus() .. crystalline_settings#FormatFileName(FileNameImpl(), winwidth, 50) .. ZoomedStatus() .. ModifiedStatus()
 enddef
 
@@ -228,13 +228,13 @@ export def InactiveFileName(...args: list<any>): string
 enddef
 
 export def Integration(): dict<any>
-    var ft = BufferType()
+    const ft = BufferType()
 
     if has_key(crystalline_filetype_integrations, ft)
         return function(crystalline_filetype_integrations[ft])()
     endif
 
-    var fname = expand('%:t')
+    const fname = expand('%:t')
 
     if has_key(crystalline_filename_integrations, fname)
         return function(crystalline_filename_integrations[fname])()

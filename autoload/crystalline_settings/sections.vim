@@ -1,7 +1,7 @@
 vim9script
 
 export def SectionA(...args: list<any>): string
-    var integration = crystalline_settings#parts#Integration()
+    const integration = crystalline_settings#parts#Integration()
     if !empty(integration)
         return integration['section_a']
     endif
@@ -14,12 +14,12 @@ export def SectionA(...args: list<any>): string
 enddef
 
 export def SectionB(...args: list<any>): string
-    var integration = crystalline_settings#parts#Integration()
+    const integration = crystalline_settings#parts#Integration()
     if !empty(integration)
         return get(integration, 'section_b', '')
     endif
 
-    var winwidth = crystalline_settings#GetWinWidth(get(args, 0, 0))
+    const winwidth = crystalline_settings#GetWinWidth(get(args, 0, 0))
     if winwidth >= g:crystalline_winwidth_config.default
         return crystalline_settings#parts#GitBranch(winwidth)
     endif
@@ -28,22 +28,22 @@ export def SectionB(...args: list<any>): string
 enddef
 
 export def SectionC(...args: list<any>): string
-    var integration = crystalline_settings#parts#Integration()
+    const integration = crystalline_settings#parts#Integration()
     if !empty(integration)
         return get(integration, 'section_c', '')
     endif
 
-    var winwidth = crystalline_settings#GetWinWidth(get(args, 0, 0))
+    const winwidth = crystalline_settings#GetWinWidth(get(args, 0, 0))
     return crystalline_settings#parts#FileName(winwidth - 2)
 enddef
 
 export def SectionX(...args: list<any>): string
-    var integration = crystalline_settings#parts#Integration()
+    const integration = crystalline_settings#parts#Integration()
     if !empty(integration)
         return get(integration, 'section_x', '')
     endif
 
-    var winnr = get(args, 0, 0)
+    const winnr = get(args, 0, 0)
     if crystalline_settings#GetWinWidth(winnr) <= g:crystalline_winwidth_config.compact
         return ''
     endif
@@ -52,7 +52,7 @@ export def SectionX(...args: list<any>): string
 enddef
 
 export def SectionY(...args: list<any>): string
-    var integration = crystalline_settings#parts#Integration()
+    const integration = crystalline_settings#parts#Integration()
     if !empty(integration)
         return get(integration, 'section_y', '')
     endif
@@ -65,7 +65,7 @@ export def SectionY(...args: list<any>): string
 enddef
 
 export def SectionZ(...args: list<any>): string
-    var integration = crystalline_settings#parts#Integration()
+    const integration = crystalline_settings#parts#Integration()
     if !empty(integration)
         return get(integration, 'section_z', '')
     endif
@@ -75,7 +75,7 @@ enddef
 
 export def InactiveSectionA(...args: list<any>): string
     # Show only custom mode in inactive buffer
-    var integration = crystalline_settings#parts#Integration()
+    const integration = crystalline_settings#parts#Integration()
     if !empty(integration)
         return crystalline_settings#Concatenate([
             integration['section_a'],

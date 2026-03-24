@@ -1,7 +1,7 @@
 vim9script
 
 # Theme mappings
-var crystalline_theme_mappings = extend({
+const crystalline_theme_mappings = extend({
     '^\(solarized\|soluarized\|flattened\|neosolarized\)': 'solarized8',
     '^gruvbox': 'gruvbox',
     '^habamax$': 'onehalfdark',
