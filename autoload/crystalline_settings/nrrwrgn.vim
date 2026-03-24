@@ -12,15 +12,15 @@ def GetMode(): string
         prefix = status.multi ? 'Multi' : ''
         visual = visual_mode_indicators[status.visual]
     endif
-    return '[' .. prefix .. name .. ']' .. visual
+    return $'[{prefix}{name}]{visual}'
 enddef
 
 def GetBufName(): string
     const status = nrrwrgn#NrrwRgnStatus()
-    var bufname = !empty(status) ? status.fullname : bufname(get(b:, 'orig_buf', '%'))
+    var bufname = !empty(status) && !empty(status.fullname) ? status.fullname : bufname(get(b:, 'orig_buf', '%'))
     bufname = fnamemodify(bufname, ':~:.')
     if !empty(status) && !status.multi
-        bufname = bufname .. printf(' [%d-%d]', status.start[1], status.end[1])
+        bufname = $'{buffer} [{status.start[1]}-{status.end[1]}]'
     endif
     return bufname
 enddef
