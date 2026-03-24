@@ -21,7 +21,7 @@ export def MainStatus(focus: string, byfname: string, regex: number, prev: strin
     crystalline_ctrlp.marked  = marked
     crystalline_ctrlp.dir     = GetCurrentDir()
 
-    return call('g:CrystallineStatuslineFn', [winnr()])
+    return g:CrystallineStatuslineFn(winnr())
 enddef
 
 export def ProgressStatus(len: string): string
@@ -29,7 +29,7 @@ export def ProgressStatus(len: string): string
     crystalline_ctrlp.len  = len
     crystalline_ctrlp.dir  = GetCurrentDir()
 
-    return call('g:CrystallineStatuslineFn', [winnr()])
+    return g:CrystallineStatuslineFn(winnr())
 enddef
 
 export def Mode(...args: list<any>): dict<any>
