@@ -1,7 +1,7 @@
 vim9script
 
 # https://github.com/ctrlpvim/ctrlp.vim
-var crystalline_ctrlp = {}
+var crystalline_ctrlp: dict<any> = {}
 
 def GetCurrentDir(): string
     var cwd = getcwd()
@@ -11,7 +11,7 @@ def GetCurrentDir(): string
 enddef
 
 export def MainStatus(focus: string, byfname: string, regex: string, prev: string, item: string, next: string, marked: string): string
-    crystalline_ctrlp.main    = 1
+    crystalline_ctrlp.main    = true
     crystalline_ctrlp.focus   = focus
     crystalline_ctrlp.byfname = byfname
     crystalline_ctrlp.regex   = regex
@@ -25,7 +25,7 @@ export def MainStatus(focus: string, byfname: string, regex: string, prev: strin
 enddef
 
 export def ProgressStatus(len: string): string
-    crystalline_ctrlp.main = 0
+    crystalline_ctrlp.main = false
     crystalline_ctrlp.len  = len
     crystalline_ctrlp.dir  = GetCurrentDir()
 
@@ -38,7 +38,7 @@ export def Mode(...args: list<any>): dict<any>
         section_z: crystalline_ctrlp.dir,
     }
 
-    if crystalline_ctrlp.main != 0
+    if crystalline_ctrlp.main
         extend(result, {
             section_b: crystalline_settings#Concatenate([
                 crystalline_ctrlp.prev,
