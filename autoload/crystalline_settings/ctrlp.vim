@@ -52,7 +52,7 @@ export def Mode(...args: list<any>): dict<any>
         })
     else
         extend(result, {
-            section_y: crystalline_ctrlp.len,
+            section_y: 'Files: ' .. crystalline_ctrlp.len,
         })
     endif
 
