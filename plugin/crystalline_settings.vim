@@ -21,8 +21,8 @@ let g:crystalline_show_devicons   = get(g:, 'crystalline_show_devicons', 0) && c
 
 " Window width
 let g:crystalline_winwidth_config = extend({
-            \ 'compact': 60,
-            \ 'default': 90,
+            \ 'compact': 80,
+            \ 'default': 100,
             \ 'normal':  120,
             \ }, get(g:, 'crystalline_winwidth_config', {}))
 
