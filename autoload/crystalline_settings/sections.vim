@@ -20,8 +20,8 @@ export def SectionB(...args: list<any>): string
     endif
 
     const winwidth = crystalline_settings#GetWinWidth(get(args, 0, 0))
-    if winwidth >= g:crystalline_winwidth_config.default
-        return crystalline_settings#components#GitBranch(winwidth)
+    if g:crystalline_show_git_branch > 0 && winwidth >= g:crystalline_winwidth_config.default
+        return crystalline_settings#components#Branch()
     endif
 
     return ''

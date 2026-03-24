@@ -250,9 +250,6 @@ export def Integration(): dict<any>
     return {}
 enddef
 
-export def GitBranch(...args: list<any>): string
-    if g:crystalline_show_git_branch > 0
-        return crystalline_settings#gitbranch#Component()
-    endif
-    return ''
+export def Branch(...args: list<any>): string
+    return crystalline_settings#gitbranch#Component()
 enddef
