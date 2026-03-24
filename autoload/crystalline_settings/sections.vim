@@ -48,7 +48,12 @@ export def SectionX(...args: list<any>): string
         return ''
     endif
 
-    return crystalline_settings#components#LineInfo()
+    if g:crystalline_show_linenr > 1
+        return crystalline_settings#components#Ruler()
+    elseif g:crystalline_show_linenr > 0
+        return crystalline_settings#components#Position()
+    endif
+    return ''
 enddef
 
 export def SectionY(...args: list<any>): string
