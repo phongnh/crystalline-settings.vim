@@ -37,7 +37,7 @@ const crystalline_filetype_modes = {
     startify:          'Startify',
     dashboard:         'Dashboard',
     tagbar:            'Tagbar',
-    'vim-plug':          'Plugins',
+    'vim-plug':        'Plugins',
     terminal:          'TERMINAL',
     help:              'HELP',
     man:               'MAN',
@@ -59,7 +59,7 @@ const crystalline_filetype_modes = {
 }
 
 const crystalline_filename_integrations = {
-    ControlP:          'crystalline_settings#ctrlp#Mode',
+    ControlP:            'crystalline_settings#ctrlp#Mode',
     '__CtrlSF__':        'crystalline_settings#ctrlsf#Mode',
     '__CtrlSFPreview__': 'crystalline_settings#ctrlsf#PreviewMode',
     '__flygrep__':       'crystalline_settings#flygrep#Mode',
