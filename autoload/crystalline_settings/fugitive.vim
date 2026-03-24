@@ -1,19 +1,21 @@
-" https://github.com/tpope/vim-fugitive
-let s:names = { 'staged': 'Staged', 'unstaged': 'Unstaged', 'untracked': 'Untracked' }
+vim9script
 
-function! s:FugitiveStatus() abort
+# https://github.com/tpope/vim-fugitive
+var names = {staged: 'Staged', unstaged: 'Unstaged', untracked: 'Untracked'}
+
+def FugitiveStatus(): list<string>
     if exists('b:fugitive_status')
         return ['staged', 'unstaged', 'untracked']
-                    \ ->filter('len(b:fugitive_status[v:val]) > 0')
-                    \ ->map('s:names[v:val] .. ": " .. len(b:fugitive_status[v:val])')
+            ->filter('len(b:fugitive_status[v:val]) > 0')
+            ->map('names[v:val] .. ": " .. len(b:fugitive_status[v:val])')
     endif
     return []
-endfunction
+enddef
 
-function! crystalline_settings#fugitive#Mode(...) abort
+export def Mode(...args: list<any>): dict<any>
     return {
-                \ 'section_a': 'Fugitive',
-                \ 'section_b': crystalline_settings#git#Branch(),
-                \ 'section_c': crystalline_settings#Concatenate(s:FugitiveStatus(), 0),
-                \ }
-endfunction
+        section_a: 'Fugitive',
+        section_b: crystalline_settings#git#Branch(),
+        section_c: crystalline_settings#Concatenate(FugitiveStatus(), 0),
+    }
+enddef

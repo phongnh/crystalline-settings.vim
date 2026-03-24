@@ -1,27 +1,28 @@
-function! crystalline_settings#devicons#FileType(filename) abort
-    return ''
-endfunction
+vim9script
 
-function! crystalline_settings#devicons#Detect() abort
-    if !empty(findfile('autoload/nerdfont.vim', &rtp))
-        function! crystalline_settings#devicons#FileType(filename) abort
-            return ' ' .. nerdfont#find(a:filename) .. ' '
-        endfunction
+var icon_type = 0  # 0: none, 1: nerdfont, 2: webdevicons, 3: custom
 
-        return 1
-    elseif !empty(findfile('plugin/webdevicons.vim', &rtp))
-        function! crystalline_settings#devicons#FileType(filename) abort
-            return ' ' .. WebDevIconsGetFileTypeSymbol(a:filename) .. ' '
-        endfunction
-
-        return 1
-    elseif exists("g:CrystallineWebDevIconsFind")
-        function! crystalline_settings#devicons#FileType(filename) abort
-            return ' ' .. g:CrystallineWebDevIconsFind(a:filename) .. ' '
-        endfunction
-
-        return 1
+export def FileType(filename: string): string
+    if icon_type == 1
+        return ' ' .. call('nerdfont#find', [filename]) .. ' '
+    elseif icon_type == 2
+        return ' ' .. call('WebDevIconsGetFileTypeSymbol', [filename]) .. ' '
+    elseif icon_type == 3
+        return ' ' .. call(g:CrystallineWebDevIconsFind, [filename]) .. ' '
     endif
+    return ''
+enddef
 
-    return 0
-endfunction
+export def Detect(): bool
+    if !empty(findfile('autoload/nerdfont.vim', &rtp))
+        icon_type = 1
+        return true
+    elseif !empty(findfile('plugin/webdevicons.vim', &rtp))
+        icon_type = 2
+        return true
+    elseif exists("g:CrystallineWebDevIconsFind")
+        icon_type = 3
+        return true
+    endif
+    return false
+enddef
