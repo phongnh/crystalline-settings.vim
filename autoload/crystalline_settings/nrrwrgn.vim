@@ -4,10 +4,10 @@ vim9script
 const visual_mode_indicators = {'': '', 'v': ' [C]', 'V': '', "\<C-v>": ' [B]'}
 
 def GetMode(): string
-    const name = exists('b:nrrw_instn') ? 'NrrwRgn#' .. b:nrrw_instn : 'NrrwRgn'
+    const name = exists('b:nrrw_instn') ? $'NrrwRgn#{b:nrrw_instn}' : 'NrrwRgn'
     var prefix = stridx(bufname('%'), 'NrrwRgn_multi') == 0 ? 'Multi' : ''
     var visual = ''
-    const status = call('nrrwrgn#NrrwRgnStatus', [])
+    const status = nrrwrgn#NrrwRgnStatus()
     if !empty(status)
         prefix = status.multi ? 'Multi' : ''
         visual = visual_mode_indicators[status.visual]
@@ -16,7 +16,7 @@ def GetMode(): string
 enddef
 
 def GetBufName(): string
-    const status = call('nrrwrgn#NrrwRgnStatus', [])
+    const status = nrrwrgn#NrrwRgnStatus()
     var bufname = !empty(status) ? status.fullname : bufname(get(b:, 'orig_buf', '%'))
     bufname = fnamemodify(bufname, ':~:.')
     if !empty(status) && !status.multi
