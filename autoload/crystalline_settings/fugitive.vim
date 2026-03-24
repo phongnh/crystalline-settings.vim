@@ -14,8 +14,8 @@ enddef
 
 export def Mode(...args: list<any>): dict<any>
     return {
-        section_a: 'Fugitive',
-        section_b: crystalline_settings#git#Branch(),
+        section_a: 'Git Status',
+        section_b: crystalline_settings#gitbranch#Name(),
         section_c: crystalline_settings#Concatenate(FugitiveStatus(), 0),
     }
 enddef
