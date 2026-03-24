@@ -137,7 +137,7 @@ export def Mode(): string
     if IsCompact()
         return trim(get(g:crystalline_short_mode_labels, mode(), ''))
     else
-        return trim(call('crystalline#ModeLabel', []))
+        return trim(crystalline#ModeLabel())
     endif
 enddef
 
