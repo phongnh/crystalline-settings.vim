@@ -16,7 +16,7 @@ def GetGitBranch(): string
             endif
         else
             branch = system('git branch --show-current 2>/dev/null')
-            branch = crystalline_settings#Trim(branch)
+            branch = trim(branch)
         endif
         # Caching
         git_branch_cache = branch
@@ -86,7 +86,7 @@ enddef
 
 var shorten_branch_rules: list<any> = [
     (branch) => branch,
-    (branch) => g:crystalline_shorten_path ? crystalline_settings#ShortenPath(branch) : branch,
+    (branch) => g:crystalline_shorten_path ? pathshorten(branch) : branch,
     (branch) => fnamemodify(branch, ':t'),
     (branch) => ExtractNestedTicketNumbers(branch),
     (branch) => ExtractTicketNumber(branch),

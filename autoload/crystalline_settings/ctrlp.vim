@@ -7,7 +7,7 @@ def GetCurrentDir(): string
     var cwd = getcwd()
     var dir = fnamemodify(cwd, ':~:.')
     dir = empty(dir) ? cwd : dir
-    return strlen(dir) > 30 ? crystalline_settings#ShortenPath(dir) : dir
+    return strlen(dir) > 30 ? pathshorten(dir) : dir
 enddef
 
 export def MainStatus(focus: string, byfname: string, regex: string, prev: string, item: string, next: string, marked: string): string
