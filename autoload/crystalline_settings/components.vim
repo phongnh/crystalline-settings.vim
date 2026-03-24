@@ -236,7 +236,7 @@ export def Integration(): dict<any>
         return function(crystalline_filename_integrations[fname])()
     elseif fname =~# '^NrrwRgn_\zs.*\ze_\d\+$'
         # Fallback to filename check if NrrwRgn buffer's filetype is not set
-        return crystalline_settings#nrrwrgn#Mode()
+        return crystalline_settings#nrrwrgn#Statusline()
     endif
 
     if has_key(crystalline_filetype_modes, ft)

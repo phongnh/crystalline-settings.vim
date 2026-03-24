@@ -9,7 +9,7 @@ export def Status(current: bool, sort: string, fname: string, flags: list<string
     return crystalline#GetStatusline(current ? win_getid() : 0)
 enddef
 
-export def Mode(...args: list<any>): dict<any>
+export def Statusline(...args: list<any>): dict<any>
     var flags = ''
     if !empty(crystalline_tagbar.flags)
         flags = '[' .. join(crystalline_tagbar.flags, '') .. ']'
