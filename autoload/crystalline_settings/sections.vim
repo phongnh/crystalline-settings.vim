@@ -1,44 +1,44 @@
 vim9script
 
 export def SectionA(...args: list<any>): string
-    const integration = crystalline_settings#parts#Integration()
+    const integration = crystalline_settings#components#Integration()
     if !empty(integration)
         return integration['section_a']
     endif
 
     return crystalline_settings#Concatenate([
-        crystalline_settings#parts#Mode(),
-        crystalline_settings#parts#Clipboard(),
-        crystalline_settings#parts#Paste(),
+        crystalline_settings#components#Mode(),
+        crystalline_settings#components#Clipboard(),
+        crystalline_settings#components#Paste(),
     ], 0)
 enddef
 
 export def SectionB(...args: list<any>): string
-    const integration = crystalline_settings#parts#Integration()
+    const integration = crystalline_settings#components#Integration()
     if !empty(integration)
         return get(integration, 'section_b', '')
     endif
 
     const winwidth = crystalline_settings#GetWinWidth(get(args, 0, 0))
     if winwidth >= g:crystalline_winwidth_config.default
-        return crystalline_settings#parts#GitBranch(winwidth)
+        return crystalline_settings#components#GitBranch(winwidth)
     endif
 
     return ''
 enddef
 
 export def SectionC(...args: list<any>): string
-    const integration = crystalline_settings#parts#Integration()
+    const integration = crystalline_settings#components#Integration()
     if !empty(integration)
         return get(integration, 'section_c', '')
     endif
 
     const winwidth = crystalline_settings#GetWinWidth(get(args, 0, 0))
-    return crystalline_settings#parts#FileName(winwidth - 2)
+    return crystalline_settings#components#FileName(winwidth - 2)
 enddef
 
 export def SectionX(...args: list<any>): string
-    const integration = crystalline_settings#parts#Integration()
+    const integration = crystalline_settings#components#Integration()
     if !empty(integration)
         return get(integration, 'section_x', '')
     endif
@@ -48,34 +48,34 @@ export def SectionX(...args: list<any>): string
         return ''
     endif
 
-    return crystalline_settings#parts#LineInfo()
+    return crystalline_settings#components#LineInfo()
 enddef
 
 export def SectionY(...args: list<any>): string
-    const integration = crystalline_settings#parts#Integration()
+    const integration = crystalline_settings#components#Integration()
     if !empty(integration)
         return get(integration, 'section_y', '')
     endif
 
     return crystalline_settings#Concatenate([
-        crystalline_settings#parts#Spell(),
-        crystalline_settings#parts#Indentation(),
-        crystalline_settings#parts#FileEncodingAndFormat(),
+        crystalline_settings#components#Spell(),
+        crystalline_settings#components#Indentation(),
+        crystalline_settings#components#FileEncodingAndFormat(),
     ], 1)
 enddef
 
 export def SectionZ(...args: list<any>): string
-    const integration = crystalline_settings#parts#Integration()
+    const integration = crystalline_settings#components#Integration()
     if !empty(integration)
         return get(integration, 'section_z', '')
     endif
 
-    return crystalline_settings#parts#FileType()
+    return crystalline_settings#components#FileType()
 enddef
 
 export def InactiveSectionA(...args: list<any>): string
     # Show only custom mode in inactive buffer
-    const integration = crystalline_settings#parts#Integration()
+    const integration = crystalline_settings#components#Integration()
     if !empty(integration)
         return crystalline_settings#Concatenate([
             integration['section_a'],
@@ -85,5 +85,5 @@ export def InactiveSectionA(...args: list<any>): string
     endif
 
     # plugin/statusline.vim[+]
-    return crystalline_settings#parts#InactiveFileName()
+    return crystalline_settings#components#InactiveFileName()
 enddef
