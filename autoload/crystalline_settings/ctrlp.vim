@@ -10,7 +10,7 @@ def GetCurrentDir(): string
     return strlen(dir) > 30 ? pathshorten(dir) : dir
 enddef
 
-export def MainStatus(focus: string, byfname: string, regex: string, prev: string, item: string, next: string, marked: string): string
+export def MainStatus(focus: string, byfname: string, regex: number, prev: string, item: string, next: string, marked: string): string
     crystalline_ctrlp.main    = true
     crystalline_ctrlp.focus   = focus
     crystalline_ctrlp.byfname = byfname
@@ -52,7 +52,7 @@ export def Mode(...args: list<any>): dict<any>
         })
     else
         extend(result, {
-            section_y: 'Files: ' .. crystalline_ctrlp.len,
+            section_y: crystalline_ctrlp.len,
         })
     endif
 
