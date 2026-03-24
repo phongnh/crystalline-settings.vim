@@ -38,7 +38,7 @@ export def Mode(...args: list<any>): dict<any>
         section_z: crystalline_ctrlp.dir,
     }
 
-    if crystalline_ctrlp.main
+    if crystalline_ctrlp.main != 0
         extend(result, {
             section_b: crystalline_settings#Concatenate([
                 crystalline_ctrlp.prev,
