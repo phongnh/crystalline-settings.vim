@@ -97,7 +97,7 @@ def BufferType(): string
     return !empty(&filetype) ? &filetype : &buftype
 enddef
 
-def FileNameImpl(): string
+def GetFileName(): string
     const fname = expand('%')
     return !empty(fname) ? fnamemodify(fname, ':~:.') : '[No Name]'
 enddef
@@ -205,11 +205,11 @@ enddef
 
 export def FileName(...args: list<any>): string
     const winwidth = crystalline_settings#GetWinWidth(get(args, 0, 0))
-    return ReadonlyStatus() .. crystalline_settings#FormatFileName(FileNameImpl(), winwidth, 50) .. ZoomedStatus() .. ModifiedStatus()
+    return ReadonlyStatus() .. crystalline_settings#FormatFileName(GetFileName(), winwidth, 50) .. ZoomedStatus() .. ModifiedStatus()
 enddef
 
 export def InactiveFileName(...args: list<any>): string
-    return ReadonlyStatus() .. FileNameImpl() .. ModifiedStatus()
+    return ReadonlyStatus() .. GetFileName() .. ModifiedStatus()
 enddef
 
 export def Integration(): dict<any>
