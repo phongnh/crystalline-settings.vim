@@ -13,7 +13,7 @@ endfunction
 function! crystalline_settings#fugitive#Mode(...) abort
     return {
                 \ 'section_a': 'Fugitive',
-                \ 'section_b': crystalline_settings#git#Branch(),
+                \ 'section_b': crystalline_settings#gitbranch#Name(),
                 \ 'section_c': crystalline_settings#Concatenate(s:FugitiveStatus(), 0),
                 \ }
 endfunction
