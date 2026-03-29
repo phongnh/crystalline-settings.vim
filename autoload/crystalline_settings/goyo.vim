@@ -1,8 +1,10 @@
-function! crystalline_settings#goyo#OnEnter() abort
-    call crystalline#ClearStatusline()
-    let &l:statusline = ' '
-endfunction
+vim9script
 
-function! crystalline_settings#goyo#OnLeave() abort
-    call crystalline#InitStatusline()
-endfunction
+export def OnEnter()
+    crystalline#ClearStatusline()
+    &l:statusline = ' '
+enddef
+
+export def OnLeave()
+    crystalline#InitStatusline()
+enddef
