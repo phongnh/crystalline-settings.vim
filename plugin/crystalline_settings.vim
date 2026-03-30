@@ -219,11 +219,18 @@ enddef
 
 command! -nargs=1 -complete=custom,crystalline_settings#theme#List CrystallineTheme crystalline#SetTheme(<f-args>)
 
+import autoload 'crystalline_settings/theme.vim'
+
 augroup CrystallineSettings
     autocmd!
+    autocmd CmdwinEnter * set filetype=cmdline syntax=vim
     autocmd User GoyoEnter ++nested crystalline_settings#goyo#OnEnter()
     autocmd User GoyoLeave ++nested crystalline_settings#goyo#OnLeave()
-    autocmd User CrystallineSetTheme ++once crystalline_settings#theme#Detect()
-    autocmd ColorScheme * crystalline_settings#theme#Find()
-    autocmd CmdwinEnter * set filetype=cmdline syntax=vim
+    autocmd User CrystallineSetTheme ++once theme.Detect()
+    autocmd ColorScheme * theme.Find()
+    if v:vim_did_enter
+        theme.Detect()
+    else
+        autocmd VimEnter * ++once theme.Detect()
+    endif
 augroup END
