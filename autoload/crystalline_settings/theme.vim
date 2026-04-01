@@ -1,50 +1,54 @@
-" Theme mappings
-let s:crystalline_theme_mappings = extend({
-            \ '^\(solarized\|soluarized\|flattened\|neosolarized\)': 'solarized8',
-            \ '^gruvbox': 'gruvbox',
-            \ '^habamax$': 'onehalfdark',
-            \ '^retrobox$': 'gruvbox',
-            \  }, get(g:, 'crystalline_theme_mappings', {}))
+vim9script
 
-function! s:LoadThemes() abort
-    if !exists('s:crystalline_themes')
-        let s:crystalline_themes = map(split(globpath(&rtp, 'autoload/crystalline/theme/*.vim')), "fnamemodify(v:val, ':t:r')")
+# Theme mappings
+const crystalline_theme_mappings = extend({
+    '^\(solarized\|flattened\|NeoSolarized\)': 'solarized8',
+    '^gruvbox': 'gruvbox',
+    '^habamax$': 'onehalfdark',
+    '^retrobox$': 'gruvbox',
+}, get(g:, 'crystalline_theme_mappings', {}))
+
+var crystalline_themes: list<string>
+
+def LoadThemes()
+    if empty(crystalline_themes)
+        crystalline_themes = map(split(globpath(&rtp, 'autoload/crystalline/theme/*.vim')), "fnamemodify(v:val, ':t:r')")
     endif
-endfunction
+enddef
 
-function! s:FindTheme() abort
-    let g:crystalline_theme = tolower(tr(get(g:, 'colors_name', 'default'), ' -', '__'))
-    if index(s:crystalline_themes, g:crystalline_theme) > -1
+def FindTheme()
+    g:crystalline_theme = tolower(tr(get(g:, 'colors_name', 'default'), ' -', '__'))
+    if index(crystalline_themes, g:crystalline_theme) > -1
         return
     endif
 
-    for [l:pattern, l:theme] in items(s:crystalline_theme_mappings)
-        if match(g:crystalline_theme, l:pattern) > -1 && index(s:crystalline_themes, l:theme) > -1
-            let g:crystalline_theme = l:theme
+    for [pattern, theme] in items(crystalline_theme_mappings)
+        if match(g:crystalline_theme, pattern) > -1 && index(crystalline_themes, theme) > -1
+            g:crystalline_theme = theme
             return
         endif
     endfor
 
-    let g:crystalline_theme = 'default'
-endfunction
+    g:crystalline_theme = 'default'
+enddef
 
-function! crystalline_settings#theme#List(...) abort
-    return join(s:crystalline_themes, "\n")
-endfunction
+export def List(...args: list<any>): string
+    return join(crystalline_themes, "\n")
+enddef
 
-function! crystalline_settings#theme#Find() abort
-    call s:LoadThemes()
-    call s:FindTheme()
-endfunction
+export def Find()
+    LoadThemes()
+    FindTheme()
+enddef
 
-function! crystalline_settings#theme#Detect() abort
+export def Detect()
     if has('vim_starting') && exists('g:crystalline_theme') && g:crystalline_theme ==# 'default'
-        call crystalline_settings#theme#Find()
+        Find()
         if g:crystalline_theme !=# 'default'
-            call crystalline#SetTheme(g:crystalline_theme)
+            crystalline#SetTheme(g:crystalline_theme)
         endif
     elseif !exists('g:crystalline_theme')
-        call crystalline_settings#theme#Find()
-        call crystalline#SetTheme(g:crystalline_theme)
+        Find()
+        crystalline#SetTheme(g:crystalline_theme)
     endif
-endfunction
+enddef

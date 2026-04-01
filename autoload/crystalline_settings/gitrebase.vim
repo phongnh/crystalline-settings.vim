@@ -1,8 +1,10 @@
-function! crystalline_settings#gitrebase#Mode(...) abort
+vim9script
+
+export def Statusline(...args: list<any>): dict<any>
     return {
-                \ 'section_a': 'Git Rebase',
-                \ 'section_b': crystalline_settings#gitbranch#Name(),
-                \ 'section_x': crystalline_settings#lineinfo#Simple(),
-                \ 'section_y': crystalline_settings#parts#Spell(),
-                \ }
-endfunction
+        section_a: 'Git Rebase',
+        section_b: crystalline_settings#gitbranch#Component(),
+        section_x: crystalline_settings#components#Position(),
+        section_y: crystalline_settings#components#Spell(),
+    }
+enddef
