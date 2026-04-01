@@ -1,5 +1,5 @@
 " https://github.com/wsdjeg/FlyGrep.vim
-function! crystalline_settings#flygrep#Mode(...) abort
+function! crystalline_settings#flygrep#Statusline(...) abort
     return {
                 \ 'section_a': 'FlyGrep',
                 \ 'section_b': SpaceVim#plugins#flygrep#mode(),

@@ -1,5 +1,5 @@
 " https://github.com/dyng/ctrlsf.vim
-function! crystalline_settings#ctrlsf#Mode() abort
+function! crystalline_settings#ctrlsf#Statusline() abort
     return {
                 \ 'section_a': 'CtrlSF',
                 \ 'section_b': substitute(ctrlsf#utils#SectionB(), 'Pattern: ', '', ''),

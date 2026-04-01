@@ -107,7 +107,7 @@ function! s:FormatBranch(branch) abort
     return s:ShortenBranch(a:branch, 30)
 endfunction
 
-function! crystalline_settings#gitbranch#Name(...) abort
+function! crystalline_settings#gitbranch#Component(...) abort
     let l:branch = s:FormatBranch(s:GetGitBranch())
 
     if !empty(l:branch)

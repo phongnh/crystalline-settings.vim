@@ -12,6 +12,6 @@ function! s:GrepperSideStatus() abort
     return ''
 endfunction
 
-function! crystalline_settings#grepper#Mode(...) abort
+function! crystalline_settings#grepper#Statusline(...) abort
     return { 'section_a': 'GrepperSide', 'section_b': s:GrepperSideStatus() }
 endfunction

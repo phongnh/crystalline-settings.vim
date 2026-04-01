@@ -1,3 +1,3 @@
-function! crystalline_settings#terminal#Mode(...) abort
+function! crystalline_settings#terminal#Statusline(...) abort
     return { 'section_a': 'TERMINAL', 'section_c': expand('%') }
 endfunction

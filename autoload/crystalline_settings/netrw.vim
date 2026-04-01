@@ -1,4 +1,4 @@
-function! crystalline_settings#netrw#Mode(...) abort
+function! crystalline_settings#netrw#Statusline(...) abort
     return {
                 \ 'section_a': 'Netrw',
                 \ 'section_c': exists('b:netrw_curdir') ? fnamemodify(b:netrw_curdir, ':p:~:.:h') : '',

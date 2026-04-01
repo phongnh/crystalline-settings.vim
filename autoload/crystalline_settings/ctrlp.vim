@@ -30,7 +30,7 @@ function! crystalline_settings#ctrlp#ProgressStatus(len) abort
     return g:CrystallineStatuslineFn(winnr())
 endfunction
 
-function! crystalline_settings#ctrlp#Mode() abort
+function! crystalline_settings#ctrlp#Statusline() abort
     let l:result = {
                 \ 'section_a': 'CtrlP',
                 \ 'section_z': s:crystalline_ctrlp.dir,

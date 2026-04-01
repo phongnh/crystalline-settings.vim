@@ -7,7 +7,7 @@ function! crystalline_settings#tagbar#Status(current, sort, fname, flags, ...) a
     return crystalline#GetStatusline(a:current ? win_getid() : 0)
 endfunction
 
-function! crystalline_settings#tagbar#Mode(...) abort
+function! crystalline_settings#tagbar#Statusline(...) abort
     if empty(s:crystalline_tagbar.flags)
         let l:flags = ''
     else

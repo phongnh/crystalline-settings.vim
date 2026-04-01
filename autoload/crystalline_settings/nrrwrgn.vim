@@ -23,7 +23,7 @@ function! s:GetBufName() abort
     return l:bufname
 endfunction
 
-function! crystalline_settings#nrrwrgn#Mode(...) abort
+function! crystalline_settings#nrrwrgn#Statusline(...) abort
     return {
                 \ 'section_a': s:GetMode(),
                 \ 'section_c': s:GetBufName(),

@@ -10,10 +10,10 @@ function! s:FugitiveStatus() abort
     return []
 endfunction
 
-function! crystalline_settings#fugitive#Mode(...) abort
+function! crystalline_settings#fugitive#Statusline(...) abort
     return {
                 \ 'section_a': 'Fugitive',
-                \ 'section_b': crystalline_settings#gitbranch#Name(),
+                \ 'section_b': crystalline_settings#gitbranch#Component(),
                 \ 'section_c': crystalline_settings#Concatenate(s:FugitiveStatus(), 0),
                 \ }
 endfunction

@@ -1,4 +1,4 @@
 " https://github.com/mattn/vim-molder
-function! crystalline_settings#molder#Mode(...) abort
+function! crystalline_settings#molder#Statusline(...) abort
     return { 'section_a': 'Molder', 'section_c': exists('b:molder_dir') ? fnamemodify(b:molder_dir, ':p:~:.:h') : '' }
 endfunction

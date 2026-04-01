@@ -1,4 +1,4 @@
-function! crystalline_settings#diff#Mode(...) abort
+function! crystalline_settings#diff#Statusline(...) abort
     let l:result = { 'section_a': 'Diff' }
     let l:bufname = expand('%:t')
     if exists('t:diffpanel') && t:diffpanel.bufname ==# l:bufname

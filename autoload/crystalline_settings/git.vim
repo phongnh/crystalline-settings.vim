@@ -1,7 +1,7 @@
-function! crystalline_settings#git#Mode(...) abort
+function! crystalline_settings#git#Statusline(...) abort
     return {
                 \ 'section_a': 'Git',
-                \ 'section_b': expand('%:t'),
-                \ 'section_x': crystalline_settings#lineinfo#Simple(),
+                \ 'section_c': expand('%:t'),
+                \ 'section_x': crystalline_settings#components#Position(),
                 \ }
 endfunction

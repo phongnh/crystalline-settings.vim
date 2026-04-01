@@ -43,11 +43,10 @@ let s:crystalline_filetype_modes = {
             \ 'dashboard':         'Dashboard',
             \ 'ministarter':       'Starter',
             \ 'tagbar':            'Tagbar',
-            \ 'vista':             'Vista',
-            \ 'vista_kind':        'Vista',
             \ 'vim-plug':          'Plugins',
             \ 'terminal':          'TERMINAL',
             \ 'help':              'HELP',
+            \ 'man':               'MAN',
             \ 'qf':                'Quickfix',
             \ 'godoc':             'GoDoc',
             \ 'gedoc':             'GeDoc',
@@ -66,42 +65,41 @@ let s:crystalline_filetype_modes = {
             \ }
 
 let s:crystalline_filename_integrations = {
-            \ 'ControlP':          'crystalline_settings#ctrlp#Mode',
-            \ '__CtrlSF__':        'crystalline_settings#ctrlsf#Mode',
+            \ 'ControlP':          'crystalline_settings#ctrlp#Statusline',
+            \ '__CtrlSF__':        'crystalline_settings#ctrlsf#Statusline',
             \ '__CtrlSFPreview__': 'crystalline_settings#ctrlsf#PreviewMode',
-            \ '__flygrep__':       'crystalline_settings#flygrep#Mode',
-            \ '__Tagbar__':        'crystalline_settings#tagbar#Mode',
+            \ '__flygrep__':       'crystalline_settings#flygrep#Statusline',
+            \ '__Tagbar__':        'crystalline_settings#tagbar#Statusline',
             \ }
 
 let s:crystalline_filetype_integrations = {
-            \ 'cmdline':         'crystalline_settings#cmdline#Mode',
-            \ 'ctrlp':           'crystalline_settings#ctrlp#Mode',
-            \ 'nerdtree':        'crystalline_settings#nerdtree#Mode',
-            \ 'netrw':           'crystalline_settings#netrw#Mode',
-            \ 'dirvish':         'crystalline_settings#dirvish#Mode',
-            \ 'molder':          'crystalline_settings#molder#Mode',
-            \ 'vaffle':          'crystalline_settings#vaffle#Mode',
-            \ 'fern':            'crystalline_settings#fern#Mode',
-            \ 'carbon.explorer': 'crystalline_settings#carbon#Mode',
-            \ 'neo-tree':        'crystalline_settings#neotree#Mode',
-            \ 'oil':             'crystalline_settings#oil#Mode',
-            \ 'undotree':        'crystalline_settings#undotree#Mode',
-            \ 'diff':            'crystalline_settings#diff#Mode',
-            \ 'tagbar':          'crystalline_settings#tagbar#Mode',
-            \ 'vista_kind':      'crystalline_settings#vista#Mode',
-            \ 'vista':           'crystalline_settings#vista#Mode',
-            \ 'NrrwRgn':         'crystalline_settings#nrrwrgn#Mode',
-            \ 'git':             'crystalline_settings#git#Mode',
-            \ 'gitcommit':       'crystalline_settings#gitcommit#Mode',
-            \ 'gitrebase':       'crystalline_settings#gitrebase#Mode',
-            \ 'fugitive':        'crystalline_settings#fugitive#Mode',
-            \ 'GV':              'crystalline_settings#gv#Mode',
-            \ 'terminal':        'crystalline_settings#terminal#Mode',
-            \ 'help':            'crystalline_settings#help#Mode',
-            \ 'qf':              'crystalline_settings#quickfix#Mode',
-            \ 'ctrlsf':          'crystalline_settings#ctrlsf#Mode',
-            \ 'GrepperSide':     'crystalline_settings#grepper#Mode',
-            \ 'SpaceVimFlyGrep': 'crystalline_settings#flygrep#Mode',
+            \ 'cmdline':         'crystalline_settings#cmdline#Statusline',
+            \ 'ctrlp':           'crystalline_settings#ctrlp#Statusline',
+            \ 'nerdtree':        'crystalline_settings#nerdtree#Statusline',
+            \ 'netrw':           'crystalline_settings#netrw#Statusline',
+            \ 'dirvish':         'crystalline_settings#dirvish#Statusline',
+            \ 'molder':          'crystalline_settings#molder#Statusline',
+            \ 'vaffle':          'crystalline_settings#vaffle#Statusline',
+            \ 'fern':            'crystalline_settings#fern#Statusline',
+            \ 'carbon.explorer': 'crystalline_settings#carbon#Statusline',
+            \ 'neo-tree':        'crystalline_settings#neotree#Statusline',
+            \ 'oil':             'crystalline_settings#oil#Statusline',
+            \ 'undotree':        'crystalline_settings#undotree#Statusline',
+            \ 'diff':            'crystalline_settings#diff#Statusline',
+            \ 'tagbar':          'crystalline_settings#tagbar#Statusline',
+            \ 'NrrwRgn':         'crystalline_settings#nrrwrgn#Statusline',
+            \ 'git':             'crystalline_settings#git#Statusline',
+            \ 'gitcommit':       'crystalline_settings#gitcommit#Statusline',
+            \ 'gitrebase':       'crystalline_settings#gitrebase#Statusline',
+            \ 'fugitive':        'crystalline_settings#fugitive#Statusline',
+            \ 'GV':              'crystalline_settings#gv#Statusline',
+            \ 'terminal':        'crystalline_settings#terminal#Statusline',
+            \ 'help':            'crystalline_settings#help#Statusline',
+            \ 'man':             'crystalline_settings#man#Statusline',
+            \ 'qf':              'crystalline_settings#quickfix#Statusline',
+            \ 'ctrlsf':          'crystalline_settings#ctrlsf#Statusline',
+            \ 'GrepperSide':     'crystalline_settings#grepper#Statusline',
+            \ 'SpaceVimFlyGrep': 'crystalline_settings#flygrep#Statusline',
             \ }
 
 function! s:BufferType() abort
@@ -129,7 +127,7 @@ function! s:IsCompact(...) abort
                 \ ], 1) > 1
 endfunction
 
-function! crystalline_settings#parts#Mode() abort
+function! crystalline_settings#components#Mode() abort
     if s:IsCompact()
         return crystalline_settings#Trim(get(g:crystalline_short_mode_labels, mode(), ''))
     else
@@ -137,15 +135,15 @@ function! crystalline_settings#parts#Mode() abort
     endif
 endfunction
 
-function! crystalline_settings#parts#Clipboard() abort
+function! crystalline_settings#components#Clipboard() abort
     return s:IsClipboardEnabled() ? g:crystalline_symbols.clipboard : ''
 endfunction
 
-function! crystalline_settings#parts#Paste() abort
+function! crystalline_settings#components#Paste() abort
     return &paste ? g:crystalline_symbols.paste : ''
 endfunction
 
-function! crystalline_settings#parts#Spell() abort
+function! crystalline_settings#components#Spell() abort
     return &spell ? toupper(tr(&spelllang, ',', '/')) : ''
 endfunction
 
@@ -153,7 +151,7 @@ function! s:Shiftwidth() abort
     return exists('*shiftwidth') ? shiftwidth() : &shiftwidth
 endfunction
 
-function! crystalline_settings#parts#Indentation(...) abort
+function! crystalline_settings#components#Indentation(...) abort
     let l:compact = get(a:, 1, s:IsCompact())
     if &expandtab
         return (l:compact ? 'SPC' : 'Spaces') .. ': ' .. s:Shiftwidth()
@@ -178,21 +176,27 @@ function! s:ZoomedStatus(...) abort
     return get(g:, 'crystalline_zoomstate', 0) ? '[Z]' : ''
 endfunction
 
-function! crystalline_settings#parts#LineInfo(...) abort
-    return ''
+function! crystalline_settings#components#Progress(...) abort
+    if line('w0') == 1 && line('w$') == line('$')
+        return 'All'
+    elseif line('w0') == 1
+        return 'Top'
+    elseif line('w$') == line('$')
+        return 'Bot'
+    else
+        return (line('.') * 100 / line('$')) .. '%'
+    endif
 endfunction
 
-if g:crystalline_show_linenr > 1
-    function! crystalline_settings#parts#LineInfo(...) abort
-        return call('crystalline_settings#lineinfo#Full', a:000)
-    endfunction
-elseif g:crystalline_show_linenr > 0
-    function! crystalline_settings#parts#LineInfo(...) abort
-        return call('crystalline_settings#lineinfo#Simple', a:000)
-    endfunction
-endif
+function! crystalline_settings#components#Position(...) abort
+    return printf('%4d:%-3d', line('.'), charcol('.'))
+endfunction
 
-function! crystalline_settings#parts#FileEncodingAndFormat() abort
+function! crystalline_settings#components#Ruler(...) abort
+    return printf('%4d:%-3d %3s', line('.'), charcol('.'), crystalline_settings#components#Progress())
+endfunction
+
+function! crystalline_settings#components#FileEncodingAndFormat() abort
     " Skip encoding check if it's utf-8 and format is unix (common case)
     if &fileencoding ==# 'utf-8' && &fileformat ==# 'unix' && !&bomb && &eol
         return ''
@@ -215,20 +219,20 @@ function! crystalline_settings#parts#FileEncodingAndFormat() abort
     return join(l:parts, ' ')
 endfunction
 
-function! crystalline_settings#parts#FileType(...) abort
+function! crystalline_settings#components#FileType(...) abort
     return s:BufferType() .. crystalline_settings#devicons#FileType(expand('%'))
 endfunction
 
-function! crystalline_settings#parts#FileName(...) abort
+function! crystalline_settings#components#FileName(...) abort
     let l:winwidth = crystalline_settings#GetWinWidth(get(a:, 1, 0))
     return s:ReadonlyStatus() .. crystalline_settings#FormatFileName(s:FileName(), l:winwidth, 50) .. s:ZoomedStatus() .. s:ModifiedStatus()
 endfunction
 
-function! crystalline_settings#parts#InactiveFileName(...) abort
+function! crystalline_settings#components#InactiveFileName(...) abort
     return s:ReadonlyStatus() .. s:FileName() .. s:ModifiedStatus()
 endfunction
 
-function! crystalline_settings#parts#Integration() abort
+function! crystalline_settings#components#Integration() abort
     let l:ft = s:BufferType()
 
     if has_key(s:crystalline_filetype_integrations, l:ft)
@@ -241,7 +245,7 @@ function! crystalline_settings#parts#Integration() abort
         return function(s:crystalline_filename_integrations[l:fname])()
     elseif l:fname =~# '^NrrwRgn_\zs.*\ze_\d\+$'
         " Fallback to filename check if NrrwRgn buffer's filetype is not set
-        return crystalline_settings#nrrwrgn#Mode()
+        return crystalline_settings#nrrwrgn#Statusline()
     endif
 
     if has_key(s:crystalline_filetype_modes, l:ft)
@@ -255,12 +259,6 @@ function! crystalline_settings#parts#Integration() abort
     return {}
 endfunction
 
-function! crystalline_settings#parts#GitBranch(...) abort
-    return ''
+function! crystalline_settings#components#Branch(...) abort
+    return crystalline_settings#gitbranch#Component()
 endfunction
-
-if g:crystalline_show_git_branch > 0
-    function! crystalline_settings#parts#GitBranch(...) abort
-        return call('crystalline_settings#gitbranch#Name', a:000)
-    endfunction
-endif

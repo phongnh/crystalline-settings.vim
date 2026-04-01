@@ -1,5 +1,5 @@
 " https://github.com/junegunn/gv.vim
-function! crystalline_settings#gv#Mode(...) abort
+function! crystalline_settings#gv#Statusline(...) abort
     return {
                 \ 'section_a': 'GV',
                 \ 'section_b': crystalline_settings#Concatenate([
@@ -8,6 +8,6 @@ function! crystalline_settings#gv#Mode(...) abort
                 \   'gb: GBrowse',
                 \   'q: quit',
                 \ ], 0),
-                \ 'section_x': crystalline_settings#lineinfo#Simple(),
+                \ 'section_x': crystalline_settings#components#Position(),
                 \ }
 endfunction
