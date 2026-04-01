@@ -1,113 +1,95 @@
-function! crystalline_settings#Trim(str) abort
-    return substitute(a:str, '^\s*\(.\{-}\)\s*$', '\1', '')
-endfunction
+vim9script
 
-if exists('*trim')
-    function! crystalline_settings#Trim(str) abort
-        return trim(a:str)
-    endfunction
-endif
+# Cache window width to avoid repeated winwidth() calls
+var cached_winwidth = 0
+var cached_winwidth_nr = 0
 
-function! crystalline_settings#ShortenPath(filename) abort
-    return substitute(a:filename, '\v\w\zs.{-}\ze(\\|/)', '', 'g')
-endfunction
-
-if exists('*pathshorten')
-    function! crystalline_settings#ShortenPath(filename) abort
-        return pathshorten(a:filename)
-    endfunction
-endif
-
-" Cache window width to avoid repeated winwidth() calls
-let s:cached_winwidth = 0
-let s:cached_winwidth_nr = 0
-
-function! s:GetWinWidth(...) abort
-    let l:winnr = get(a:, 1, 0)
-    " Cache is only valid for current window in current update
-    if l:winnr == s:cached_winwidth_nr && s:cached_winwidth > 0
-        return s:cached_winwidth
+def GetWinWidthImpl(winnr: number = 0): number
+    # Cache is only valid for current window in current update
+    if winnr == cached_winwidth_nr && cached_winwidth > 0
+        return cached_winwidth
     endif
-    let s:cached_winwidth = winwidth(l:winnr)
-    let s:cached_winwidth_nr = l:winnr
-    return s:cached_winwidth
-endfunction
+    cached_winwidth = winwidth(winnr)
+    cached_winwidth_nr = winnr
+    return cached_winwidth
+enddef
 
-" Expose for use in other modules
-function! crystalline_settings#GetWinWidth(...) abort
-    return call('s:GetWinWidth', a:000)
-endfunction
+# Expose for use in other modules
+export def GetWinWidth(...args: list<any>): number
+    var winnr = get(args, 0, 0)
+    return GetWinWidthImpl(winnr)
+enddef
 
-" Clear width cache
-function! crystalline_settings#ClearWidthCache() abort
-    let s:cached_winwidth = 0
-    let s:cached_winwidth_nr = 0
-endfunction
+# Clear width cache
+export def ClearWidthCache()
+    cached_winwidth = 0
+    cached_winwidth_nr = 0
+enddef
 
-function! crystalline_settings#FormatFileName(fname, winwidth, max_width) abort
-    let l:fname = a:fname
+export def FormatFileName(fname: string, winwidth: number, max_width: number): string
+    var filename = fname
 
-    if a:winwidth < g:crystalline_winwidth_config.default
-        return fnamemodify(l:fname, ':t')
+    if winwidth < g:crystalline_winwidth_config.default
+        return fnamemodify(filename, ':t')
     endif
 
-    if strlen(l:fname) > a:winwidth && (l:fname =~# '^[~/]') && g:crystalline_shorten_path
-        let l:fname = crystalline_settings#ShortenPath(l:fname)
+    if strlen(filename) > winwidth && (filename =~# '^[~/]') && g:crystalline_shorten_path
+        filename = pathshorten(filename)
     endif
 
-    let l:max_width = min([a:winwidth, a:max_width])
+    var max_w = min([winwidth, max_width])
 
-    if strlen(l:fname) > l:max_width
-        let l:fname = fnamemodify(l:fname, ':t')
+    if strlen(filename) > max_w
+        filename = fnamemodify(filename, ':t')
     endif
 
-    return l:fname
-endfunction
+    return filename
+enddef
 
-function! crystalline_settings#Group(exp) abort
-    if a:exp =~# '^%'
-        return '%( ' .. a:exp .. ' %)'
+export def Group(exp: string): string
+    if exp =~# '^%'
+        return '%( ' .. exp .. ' %)'
     else
-        return '%( %{' .. a:exp .. '} %)'
+        return '%( %{' .. exp .. '} %)'
     endif
-endfunction
+enddef
 
-function! crystalline_settings#Concatenate(parts, ...) abort
-    let l:separator = get(a:, 1, 0) ? g:crystalline_symbols.right_sep : g:crystalline_symbols.left_sep
-    return join(filter(copy(a:parts), 'v:val !=# ""'), ' ' .. l:separator .. ' ')
-endfunction
+export def Concatenate(parts: list<string>, ...args: list<any>): string
+    var separator = get(args, 0, 0) ? g:crystalline_symbols.right_sep : g:crystalline_symbols.left_sep
+    return join(filter(copy(parts), 'v:val !=# ""'), ' ' .. separator .. ' ')
+enddef
 
-function! crystalline_settings#Init() abort
+export def Init()
     setglobal noshowmode laststatus=2
 
-    " Disable NERDTree statusline
-    let g:NERDTreeStatusline = -1
+    # Disable NERDTree statusline
+    g:NERDTreeStatusline = -1
 
-    " CtrlP Integration
+    # CtrlP Integration
     if exists(':CtrlP') == 2
-        let g:ctrlp_status_func = {
-                    \ 'main': 'crystalline_settings#ctrlp#MainStatus',
-                    \ 'prog': 'crystalline_settings#ctrlp#ProgressStatus',
-                    \ }
+        g:ctrlp_status_func = {
+            main: 'crystalline_settings#ctrlp#MainStatus',
+            prog: 'crystalline_settings#ctrlp#ProgressStatus',
+        }
     endif
 
-    " Tagbar Integration
+    # Tagbar Integration
     if exists(':Tagbar') == 2
-        let g:tagbar_status_func = 'crystalline_settings#tagbar#Status'
+        g:tagbar_status_func = 'crystalline_settings#tagbar#Status'
     endif
 
     if exists(':ZoomWin') == 2
-        let g:crystalline_zoomwin_funcref = []
+        g:crystalline_zoomwin_funcref = []
 
         if exists('g:ZoomWin_funcref')
             if type(g:ZoomWin_funcref) == v:t_func
-                let g:crystalline_zoomwin_funcref = [g:ZoomWin_funcref]
+                g:crystalline_zoomwin_funcref = [g:ZoomWin_funcref]
             elseif type(g:ZoomWin_funcref) == v:t_list
-                let g:crystalline_zoomwin_funcref = g:ZoomWin_funcref
+                g:crystalline_zoomwin_funcref = g:ZoomWin_funcref
             endif
-            let g:crystalline_zoomwin_funcref = uniq(copy(g:crystalline_zoomwin_funcref))
+            g:crystalline_zoomwin_funcref = uniq(copy(g:crystalline_zoomwin_funcref))
         endif
 
-        let g:ZoomWin_funcref = function('crystalline_settings#zoomwin#Status')
+        g:ZoomWin_funcref = function('crystalline_settings#zoomwin#Status')
     endif
-endfunction
+enddef

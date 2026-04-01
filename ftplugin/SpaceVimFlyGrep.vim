@@ -1,1 +1,3 @@
-call crystalline#UpdateStatusline(win_getid())
+vim9script
+
+crystalline#UpdateStatusline(win_getid())
