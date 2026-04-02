@@ -219,6 +219,41 @@ enddef
 
 command! -nargs=1 -complete=custom,crystalline_settings#theme#List CrystallineTheme crystalline#SetTheme(<f-args>)
 
+def Init()
+    setglobal noshowmode laststatus=2
+
+    # Disable NERDTree statusline
+    g:NERDTreeStatusline = -1
+
+    # CtrlP Integration
+    if exists(':CtrlP') == 2
+        g:ctrlp_status_func = {
+            main: 'crystalline_settings#ctrlp#MainStatus',
+            prog: 'crystalline_settings#ctrlp#ProgressStatus',
+        }
+    endif
+
+    # Tagbar Integration
+    if exists(':Tagbar') == 2
+        g:tagbar_status_func = 'crystalline_settings#tagbar#Status'
+    endif
+
+    if exists(':ZoomWin') == 2
+        g:crystalline_zoomwin_funcref = []
+
+        if exists('g:ZoomWin_funcref')
+            if type(g:ZoomWin_funcref) == v:t_func
+                g:crystalline_zoomwin_funcref = [g:ZoomWin_funcref]
+            elseif type(g:ZoomWin_funcref) == v:t_list
+                g:crystalline_zoomwin_funcref = g:ZoomWin_funcref
+            endif
+            g:crystalline_zoomwin_funcref = uniq(copy(g:crystalline_zoomwin_funcref))
+        endif
+
+        g:ZoomWin_funcref = function('crystalline_settings#zoomwin#Status')
+    endif
+enddef
+
 augroup CrystallineSettings
     autocmd!
     autocmd CmdwinEnter * set filetype=cmdline syntax=vim
@@ -227,8 +262,8 @@ augroup CrystallineSettings
     autocmd User CrystallineSetTheme ++once crystalline_settings#theme#Detect()
     autocmd ColorScheme * crystalline_settings#theme#Find()
     if v:vim_did_enter
-        crystalline_settings#theme#Detect()
+        Init()
     else
-        autocmd VimEnter * ++once crystalline_settings#theme#Detect()
+        autocmd VimEnter * ++once Init()
     endif
 augroup END
