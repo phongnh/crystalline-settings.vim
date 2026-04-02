@@ -6,6 +6,19 @@ if exists('g:loaded_vim_crystalline_settings') || v:version < 700
     finish
 endif
 
+" Use Vim9script implementation if available, otherwise fall back to legacy
+if has('vim9script')
+    " Add vim9/ subdirectory to runtimepath so vim9/autoload/crystalline_settings.vim
+    " is found when the Vim9script plugin sources it via 'import autoload'
+    let s:vim9dir = fnamemodify(resolve(expand('<sfile>:p')), ':h:h') .. '/vim9'
+    if &runtimepath !~# s:vim9dir
+        execute 'set runtimepath^=' . fnameescape(s:vim9dir)
+    endif
+    unlet! s:vim9dir
+    source <sfile>:p:h:h/vim9/plugin/crystalline_settings.vim
+    finish
+endif
+
 let g:loaded_vim_crystalline_settings = 1
 
 let s:save_cpo = &cpo
@@ -208,13 +221,52 @@ endfunction
 
 command! -nargs=1 -complete=custom,crystalline_settings#theme#List CrystallineTheme call crystalline#SetTheme(<f-args>)
 
+function! s:init() abort
+    setglobal noshowmode laststatus=2
+
+    " Disable NERDTree statusline
+    let g:NERDTreeStatusline = -1
+
+    " CtrlP Integration
+    if exists(':CtrlP') == 2
+        let g:ctrlp_status_func = {
+                    \ 'main': 'crystalline_settings#ctrlp#MainStatus',
+                    \ 'prog': 'crystalline_settings#ctrlp#ProgressStatus',
+                    \ }
+    endif
+
+    " Tagbar Integration
+    if exists(':Tagbar') == 2
+        let g:tagbar_status_func = 'crystalline_settings#tagbar#Status'
+    endif
+
+    if exists(':ZoomWin') == 2
+        let g:crystalline_zoomwin_funcref = []
+
+        if exists('g:ZoomWin_funcref')
+            if type(g:ZoomWin_funcref) == v:t_func
+                let g:crystalline_zoomwin_funcref = [g:ZoomWin_funcref]
+            elseif type(g:ZoomWin_funcref) == v:t_list
+                let g:crystalline_zoomwin_funcref = g:ZoomWin_funcref
+            endif
+        endif
+
+        let g:ZoomWin_funcref = function('crystalline_settings#zoomwin#Status')
+    endif
+endfunction
+
 augroup CrystallineSettings
     autocmd!
+    autocmd CmdwinEnter * set filetype=cmdline syntax=vim
     autocmd User GoyoEnter ++nested call crystalline_settings#goyo#OnEnter()
     autocmd User GoyoLeave ++nested call crystalline_settings#goyo#OnLeave()
     autocmd User CrystallineSetTheme ++once call crystalline_settings#theme#Detect()
     autocmd ColorScheme * call crystalline_settings#theme#Find()
-    autocmd CmdwinEnter * set filetype=cmdline syntax=vim
+    if v:vim_did_enter
+        call s:init()
+    else
+        autocmd VimEnter * ++once call s:init()
+    endif
 augroup END
 
 let &cpo = s:save_cpo

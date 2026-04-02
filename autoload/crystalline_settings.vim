@@ -76,38 +76,3 @@ function! crystalline_settings#Concatenate(parts, ...) abort
     let l:separator = get(a:, 1, 0) ? g:crystalline_symbols.right_sep : g:crystalline_symbols.left_sep
     return join(filter(copy(a:parts), 'v:val !=# ""'), ' ' .. l:separator .. ' ')
 endfunction
-
-function! crystalline_settings#Init() abort
-    setglobal noshowmode laststatus=2
-
-    " Disable NERDTree statusline
-    let g:NERDTreeStatusline = -1
-
-    " CtrlP Integration
-    if exists(':CtrlP') == 2
-        let g:ctrlp_status_func = {
-                    \ 'main': 'crystalline_settings#ctrlp#MainStatus',
-                    \ 'prog': 'crystalline_settings#ctrlp#ProgressStatus',
-                    \ }
-    endif
-
-    " Tagbar Integration
-    if exists(':Tagbar') == 2
-        let g:tagbar_status_func = 'crystalline_settings#tagbar#Status'
-    endif
-
-    if exists(':ZoomWin') == 2
-        let g:crystalline_zoomwin_funcref = []
-
-        if exists('g:ZoomWin_funcref')
-            if type(g:ZoomWin_funcref) == v:t_func
-                let g:crystalline_zoomwin_funcref = [g:ZoomWin_funcref]
-            elseif type(g:ZoomWin_funcref) == v:t_list
-                let g:crystalline_zoomwin_funcref = g:ZoomWin_funcref
-            endif
-            let g:crystalline_zoomwin_funcref = uniq(copy(g:crystalline_zoomwin_funcref))
-        endif
-
-        let g:ZoomWin_funcref = function('crystalline_settings#zoomwin#Status')
-    endif
-endfunction
