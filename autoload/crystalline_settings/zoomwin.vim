@@ -1,11 +1,9 @@
-vim9script
-
-export def Status(zoomstate: any)
-    var Z = function('crystalline_settings#zoomwin#Status')
-    for F in g:crystalline_zoomwin_funcref
-        if type(F) == v:t_func && F != Z
-            call(F, [zoomstate])
+function! crystalline_settings#zoomwin#Status(zoomstate) abort
+    let l:Z = function('crystalline_settings#zoomwin#Status')
+    for l:F in g:crystalline_zoomwin_funcref
+        if type(l:F) == v:t_func && l:F != l:Z
+            call l:F(a:zoomstate)
         endif
     endfor
-    g:crystalline_zoomstate = zoomstate
-enddef
+    let g:crystalline_zoomstate = a:zoomstate
+endfunction

@@ -1,173 +1,182 @@
-vim9script
+" Alternate status dictionaries
+let s:crystalline_filename_modes = {
+            \ 'ControlP':             'CtrlP',
+            \ '__CtrlSF__':           'CtrlSF',
+            \ '__CtrlSFPreview__':    'Preview',
+            \ '__flygrep__':          'FlyGrep',
+            \ '__Tagbar__':           'Tagbar',
+            \ '__Gundo__':            'Gundo',
+            \ '__Gundo_Preview__':    'Gundo Preview',
+            \ '__Mundo__':            'Mundo',
+            \ '__Mundo_Preview__':    'Mundo Preview',
+            \ '[BufExplorer]':        'BufExplorer',
+            \ '[Command Line]':       'Command Line',
+            \ '[Plugins]':            'Plugins',
+            \ '__committia_status__': 'Git Status',
+            \ '__committia_diff__':   'Git Diff',
+            \ '__doc__':              'Document',
+            \ '__LSP_SETTINGS__':     'LSP Settings',
+            \ }
 
-# Alternate status dictionaries
-const crystalline_filename_modes = {
-    ControlP:             'CtrlP',
-    '__CtrlSF__':           'CtrlSF',
-    '__CtrlSFPreview__':    'Preview',
-    '__flygrep__':          'FlyGrep',
-    '__Tagbar__':           'Tagbar',
-    '__Gundo__':            'Gundo',
-    '__Gundo_Preview__':    'Gundo Preview',
-    '__Mundo__':            'Mundo',
-    '__Mundo_Preview__':    'Mundo Preview',
-    '[BufExplorer]':        'BufExplorer',
-    '[Command Line]':       'Command Line',
-    '[Plugins]':            'Plugins',
-    '__committia_status__': 'Git Status',
-    '__committia_diff__':   'Git Diff',
-    '__doc__':              'Document',
-    '__LSP_SETTINGS__':     'LSP Settings',
-}
+let s:crystalline_filetype_modes = {
+            \ 'bufexplorer':       'BufExplorer',
+            \ 'simplebuffer':      'SimpleBuffer',
+            \ 'netrw':             'Netrw',
+            \ 'molder':            'Molder',
+            \ 'dirvish':           'Dirvish',
+            \ 'vaffle':            'Vaffle',
+            \ 'nerdtree':          'NERDTree',
+            \ 'fern':              'Fern',
+            \ 'neo-tree':          'NeoTree',
+            \ 'carbon.explorer':   'Carbon',
+            \ 'oil':               'Oil',
+            \ 'NvimTree':          'NvimTree',
+            \ 'CHADTree':          'CHADTree',
+            \ 'LuaTree':           'LuaTree',
+            \ 'Mundo':             'Mundo',
+            \ 'MundoDiff':         'Mundo Preview',
+            \ 'undotree':          'Undo',
+            \ 'diff':              'Diff',
+            \ 'gundo':             'Gundo',
+            \ 'startify':          'Startify',
+            \ 'alpha':             'Alpha',
+            \ 'dashboard':         'Dashboard',
+            \ 'ministarter':       'Starter',
+            \ 'tagbar':            'Tagbar',
+            \ 'vim-plug':          'Plugins',
+            \ 'terminal':          'TERMINAL',
+            \ 'help':              'HELP',
+            \ 'man':               'MAN',
+            \ 'qf':                'Quickfix',
+            \ 'godoc':             'GoDoc',
+            \ 'gedoc':             'GeDoc',
+            \ 'gitcommit':         'Commit Message',
+            \ 'gitrebase':         'Git Rebase',
+            \ 'fugitive':          'Git Status',
+            \ 'fugitiveblame':     'FugitiveBlame',
+            \ 'gitmessengerpopup': 'Git Messenger',
+            \ 'GV':                'GV',
+            \ 'agit':              'Agit',
+            \ 'agit_diff':         'Git Diff',
+            \ 'agit_stat':         'Git Stat',
+            \ 'GrepperSide':       'GrepperSide',
+            \ 'SpaceVimFlyGrep':   'FlyGrep',
+            \ 'startuptime':       'StartupTime',
+            \ }
 
-const crystalline_filetype_modes = {
-    bufexplorer:       'BufExplorer',
-    simplebuffer:      'SimpleBuffer',
-    netrw:             'Netrw',
-    molder:            'Molder',
-    dirvish:           'Dirvish',
-    vaffle:            'Vaffle',
-    nerdtree:          'NERDTree',
-    fern:              'Fern',
-    Mundo:             'Mundo',
-    MundoDiff:         'Mundo Preview',
-    undotree:          'Undo',
-    diff:              'Diff',
-    gundo:             'Gundo',
-    startify:          'Startify',
-    dashboard:         'Dashboard',
-    tagbar:            'Tagbar',
-    'vim-plug':        'Plugins',
-    terminal:          'TERMINAL',
-    help:              'HELP',
-    man:               'MAN',
-    qf:                'Quickfix',
-    godoc:             'GoDoc',
-    gedoc:             'GeDoc',
-    gitcommit:         'Commit Message',
-    gitrebase:         'Git Rebase',
-    fugitive:          'Git Status',
-    fugitiveblame:     'FugitiveBlame',
-    gitmessengerpopup: 'Git Messenger',
-    GV:                'GV',
-    agit:              'Agit',
-    agit_diff:         'Git Diff',
-    agit_stat:         'Git Stat',
-    GrepperSide:       'GrepperSide',
-    SpaceVimFlyGrep:   'FlyGrep',
-    startuptime:       'StartupTime',
-}
+let s:crystalline_filename_integrations = {
+            \ 'ControlP':          'crystalline_settings#ctrlp#Statusline',
+            \ '__CtrlSF__':        'crystalline_settings#ctrlsf#Statusline',
+            \ '__CtrlSFPreview__': 'crystalline_settings#ctrlsf#PreviewMode',
+            \ '__flygrep__':       'crystalline_settings#flygrep#Statusline',
+            \ '__Tagbar__':        'crystalline_settings#tagbar#Statusline',
+            \ }
 
-const crystalline_filename_integrations = {
-    ControlP:            'crystalline_settings#ctrlp#Statusline',
-    '__CtrlSF__':        'crystalline_settings#ctrlsf#Statusline',
-    '__CtrlSFPreview__': 'crystalline_settings#ctrlsf#PreviewStatusline',
-    '__flygrep__':       'crystalline_settings#flygrep#Statusline',
-    '__Tagbar__':        'crystalline_settings#tagbar#Statusline',
-}
+let s:crystalline_filetype_integrations = {
+            \ 'cmdline':         'crystalline_settings#cmdline#Statusline',
+            \ 'ctrlp':           'crystalline_settings#ctrlp#Statusline',
+            \ 'nerdtree':        'crystalline_settings#nerdtree#Statusline',
+            \ 'netrw':           'crystalline_settings#netrw#Statusline',
+            \ 'dirvish':         'crystalline_settings#dirvish#Statusline',
+            \ 'molder':          'crystalline_settings#molder#Statusline',
+            \ 'vaffle':          'crystalline_settings#vaffle#Statusline',
+            \ 'fern':            'crystalline_settings#fern#Statusline',
+            \ 'carbon.explorer': 'crystalline_settings#carbon#Statusline',
+            \ 'neo-tree':        'crystalline_settings#neotree#Statusline',
+            \ 'oil':             'crystalline_settings#oil#Statusline',
+            \ 'undotree':        'crystalline_settings#undotree#Statusline',
+            \ 'diff':            'crystalline_settings#diff#Statusline',
+            \ 'tagbar':          'crystalline_settings#tagbar#Statusline',
+            \ 'NrrwRgn':         'crystalline_settings#nrrwrgn#Statusline',
+            \ 'git':             'crystalline_settings#git#Statusline',
+            \ 'gitcommit':       'crystalline_settings#gitcommit#Statusline',
+            \ 'gitrebase':       'crystalline_settings#gitrebase#Statusline',
+            \ 'fugitive':        'crystalline_settings#fugitive#Statusline',
+            \ 'GV':              'crystalline_settings#gv#Statusline',
+            \ 'terminal':        'crystalline_settings#terminal#Statusline',
+            \ 'help':            'crystalline_settings#help#Statusline',
+            \ 'man':             'crystalline_settings#man#Statusline',
+            \ 'qf':              'crystalline_settings#quickfix#Statusline',
+            \ 'ctrlsf':          'crystalline_settings#ctrlsf#Statusline',
+            \ 'GrepperSide':     'crystalline_settings#grepper#Statusline',
+            \ 'SpaceVimFlyGrep': 'crystalline_settings#flygrep#Statusline',
+            \ }
 
-const crystalline_filetype_integrations = {
-    cmdline:         'crystalline_settings#cmdline#Statusline',
-    ctrlp:           'crystalline_settings#ctrlp#Statusline',
-    nerdtree:        'crystalline_settings#nerdtree#Statusline',
-    netrw:           'crystalline_settings#netrw#Statusline',
-    dirvish:         'crystalline_settings#dirvish#Statusline',
-    molder:          'crystalline_settings#molder#Statusline',
-    vaffle:          'crystalline_settings#vaffle#Statusline',
-    fern:            'crystalline_settings#fern#Statusline',
-    undotree:        'crystalline_settings#undotree#Statusline',
-    diff:            'crystalline_settings#diff#Statusline',
-    tagbar:          'crystalline_settings#tagbar#Statusline',
-    NrrwRgn:         'crystalline_settings#nrrwrgn#Statusline',
-    git:             'crystalline_settings#git#Statusline',
-    gitcommit:       'crystalline_settings#gitcommit#Statusline',
-    gitrebase:       'crystalline_settings#gitrebase#Statusline',
-    fugitive:        'crystalline_settings#fugitive#Statusline',
-    GV:              'crystalline_settings#gv#Statusline',
-    terminal:        'crystalline_settings#terminal#Statusline',
-    help:            'crystalline_settings#help#Statusline',
-    man:             'crystalline_settings#man#Statusline',
-    qf:              'crystalline_settings#quickfix#Statusline',
-    ctrlsf:          'crystalline_settings#ctrlsf#Statusline',
-    GrepperSide:     'crystalline_settings#grepper#Statusline',
-    SpaceVimFlyGrep: 'crystalline_settings#flygrep#Statusline',
-}
-
-def BufferType(): string
+function! s:BufferType() abort
     return !empty(&filetype) ? &filetype : &buftype
-enddef
+endfunction
 
-def GetFileName(): string
-    const fname = expand('%')
-    return !empty(fname) ? fnamemodify(fname, ':~:.') : '[No Name]'
-enddef
+function! s:FileName() abort
+    let l:fname = expand('%')
+    return !empty(l:fname) ? fnamemodify(l:fname, ':~:.') : '[No Name]'
+endfunction
 
-def IsClipboardEnabled(): bool
+function! s:IsClipboardEnabled() abort
     return stridx(&clipboard, 'unnamed') > -1
-enddef
+endfunction
 
-def IsCompact(...args: list<any>): bool
-    const winnr = get(args, 0, 0)
-    return crystalline_settings#GetWinWidth(winnr) <= g:crystalline_winwidth_config.compact ||
-        count([
-            IsClipboardEnabled(),
-            &paste,
-            &spell,
-            &bomb,
-            !&eol,
-        ], 1) > 1
-enddef
+function! s:IsCompact(...) abort
+    let l:winnr = get(a:, 1, 0)
+    return crystalline_settings#GetWinWidth(l:winnr) <= g:crystalline_winwidth_config.compact ||
+                \ count([
+                \   s:IsClipboardEnabled(),
+                \   &paste,
+                \   &spell,
+                \   &bomb,
+                \   !&eol,
+                \ ], 1) > 1
+endfunction
 
-export def Mode(): string
-    if IsCompact()
-        return trim(get(g:crystalline_short_mode_labels, mode(), ''))
+function! crystalline_settings#components#Mode() abort
+    if s:IsCompact()
+        return crystalline_settings#Trim(get(g:crystalline_short_mode_labels, mode(), ''))
     else
-        return trim(crystalline#ModeLabel())
+        return crystalline_settings#Trim(crystalline#ModeLabel())
     endif
-enddef
+endfunction
 
-export def Clipboard(): string
-    return IsClipboardEnabled() ? g:crystalline_symbols.clipboard : ''
-enddef
+function! crystalline_settings#components#Clipboard() abort
+    return s:IsClipboardEnabled() ? g:crystalline_symbols.clipboard : ''
+endfunction
 
-export def Paste(): string
+function! crystalline_settings#components#Paste() abort
     return &paste ? g:crystalline_symbols.paste : ''
-enddef
+endfunction
 
-export def Spell(): string
+function! crystalline_settings#components#Spell() abort
     return &spell ? toupper(tr(&spelllang, ',', '/')) : ''
-enddef
+endfunction
 
-def Shiftwidth(): number
+function! s:Shiftwidth() abort
     return exists('*shiftwidth') ? shiftwidth() : &shiftwidth
-enddef
+endfunction
 
-export def Indentation(...args: list<any>): string
-    const compact = get(args, 0, IsCompact())
+function! crystalline_settings#components#Indentation(...) abort
+    let l:compact = get(a:, 1, s:IsCompact())
     if &expandtab
-        return (compact ? 'SPC' : 'Spaces') .. ': ' .. Shiftwidth()
+        return (l:compact ? 'SPC' : 'Spaces') .. ': ' .. s:Shiftwidth()
     else
-        return (compact ? 'TAB' : 'Tab Size') .. ': ' .. &tabstop
+        return (l:compact ? 'TAB' : 'Tab Size') .. ': ' .. &tabstop
     endif
-enddef
+endfunction
 
-def ReadonlyStatus(...args: list<any>): string
+function! s:ReadonlyStatus(...) abort
     return &readonly ? g:crystalline_symbols.readonly .. ' ' : ''
-enddef
+endfunction
 
-def ModifiedStatus(...args: list<any>): string
+function! s:ModifiedStatus(...) abort
     if &modified
         return !&modifiable ? '[+-]' : '[+]'
     else
         return !&modifiable ? '[-]' : ''
     endif
-enddef
+endfunction
 
-def ZoomedStatus(...args: list<any>): string
+function! s:ZoomedStatus(...) abort
     return get(g:, 'crystalline_zoomstate', 0) ? '[Z]' : ''
-enddef
+endfunction
 
-export def Progress(...args: list<any>): string
+function! crystalline_settings#components#Progress(...) abort
     if line('w0') == 1 && line('w$') == line('$')
         return 'All'
     elseif line('w0') == 1
@@ -177,79 +186,79 @@ export def Progress(...args: list<any>): string
     else
         return (line('.') * 100 / line('$')) .. '%'
     endif
-enddef
+endfunction
 
-export def Position(...args: list<any>): string
+function! crystalline_settings#components#Position(...) abort
     return printf('%4d:%-3d', line('.'), charcol('.'))
-enddef
+endfunction
 
-export def Ruler(...args: list<any>): string
-    return printf('%4d:%-3d %3s', line('.'), charcol('.'), Progress())
-enddef
+function! crystalline_settings#components#Ruler(...) abort
+    return printf('%4d:%-3d %3s', line('.'), charcol('.'), crystalline_settings#components#Progress())
+endfunction
 
-export def FileEncodingAndFormat(): string
-    # Skip encoding check if it's utf-8 and format is unix (common case)
+function! crystalline_settings#components#FileEncodingAndFormat() abort
+    " Skip encoding check if it's utf-8 and format is unix (common case)
     if &fileencoding ==# 'utf-8' && &fileformat ==# 'unix' && !&bomb && &eol
         return ''
     endif
 
-    var parts: list<string> = []
+    let l:parts = []
 
-    const encoding = !empty(&fileencoding) ? &fileencoding : &encoding
-    if !empty(encoding) && encoding !=# 'utf-8'
-        add(parts, encoding)
+    let l:encoding = !empty(&fileencoding) ? &fileencoding : &encoding
+    if !empty(l:encoding) && l:encoding !=# 'utf-8'
+        call add(l:parts, l:encoding)
     endif
 
-    if &bomb | add(parts, g:crystalline_symbols.bomb) | endif
-    if !&eol | add(parts, g:crystalline_symbols.noeol) | endif
+    if &bomb | call add(l:parts, g:crystalline_symbols.bomb) | endif
+    if !&eol | call add(l:parts, g:crystalline_symbols.noeol) | endif
 
     if !empty(&fileformat) && &fileformat !=# 'unix'
-        add(parts, get(g:crystalline_symbols, &fileformat, &fileformat))
+        call add(l:parts, get(g:crystalline_symbols, &fileformat, &fileformat))
     endif
 
-    return join(parts, ' ')
-enddef
+    return join(l:parts, ' ')
+endfunction
 
-export def FileType(...args: list<any>): string
-    return BufferType() .. crystalline_settings#devicons#FileType(expand('%'))
-enddef
+function! crystalline_settings#components#FileType(...) abort
+    return s:BufferType() .. crystalline_settings#devicons#FileType(expand('%'))
+endfunction
 
-export def FileName(...args: list<any>): string
-    const winwidth = crystalline_settings#GetWinWidth(get(args, 0, 0))
-    return ReadonlyStatus() .. crystalline_settings#FormatFileName(GetFileName(), winwidth, 50) .. ZoomedStatus() .. ModifiedStatus()
-enddef
+function! crystalline_settings#components#FileName(...) abort
+    let l:winwidth = crystalline_settings#GetWinWidth(get(a:, 1, 0))
+    return s:ReadonlyStatus() .. crystalline_settings#FormatFileName(s:FileName(), l:winwidth, 50) .. s:ZoomedStatus() .. s:ModifiedStatus()
+endfunction
 
-export def InactiveFileName(...args: list<any>): string
-    return ReadonlyStatus() .. GetFileName() .. ModifiedStatus()
-enddef
+function! crystalline_settings#components#InactiveFileName(...) abort
+    return s:ReadonlyStatus() .. s:FileName() .. s:ModifiedStatus()
+endfunction
 
-export def Integration(): dict<any>
-    const ft = BufferType()
+function! crystalline_settings#components#Integration() abort
+    let l:ft = s:BufferType()
 
-    if has_key(crystalline_filetype_integrations, ft)
-        return function(crystalline_filetype_integrations[ft])()
+    if has_key(s:crystalline_filetype_integrations, l:ft)
+        return function(s:crystalline_filetype_integrations[l:ft])()
     endif
 
-    const fname = expand('%:t')
+    let l:fname = expand('%:t')
 
-    if has_key(crystalline_filename_integrations, fname)
-        return function(crystalline_filename_integrations[fname])()
-    elseif fname =~# '^NrrwRgn_\zs.*\ze_\d\+$'
-        # Fallback to filename check if NrrwRgn buffer's filetype is not set
+    if has_key(s:crystalline_filename_integrations, l:fname)
+        return function(s:crystalline_filename_integrations[l:fname])()
+    elseif l:fname =~# '^NrrwRgn_\zs.*\ze_\d\+$'
+        " Fallback to filename check if NrrwRgn buffer's filetype is not set
         return crystalline_settings#nrrwrgn#Statusline()
     endif
 
-    if has_key(crystalline_filetype_modes, ft)
-        return {section_a: crystalline_filetype_modes[ft]}
+    if has_key(s:crystalline_filetype_modes, l:ft)
+        return { 'section_a': s:crystalline_filetype_modes[l:ft] }
     endif
 
-    if has_key(crystalline_filename_modes, fname)
-        return {section_a: crystalline_filename_modes[fname]}
+    if has_key(s:crystalline_filename_modes, l:fname)
+        return { 'section_a': s:crystalline_filename_modes[l:fname] }
     endif
 
     return {}
-enddef
+endfunction
 
-export def Branch(...args: list<any>): string
+function! crystalline_settings#components#Branch(...) abort
     return crystalline_settings#gitbranch#Component()
-enddef
+endfunction

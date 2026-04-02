@@ -1,60 +1,58 @@
-vim9script
+" https://github.com/ctrlpvim/ctrlp.vim
+let s:crystalline_ctrlp = {}
 
-# https://github.com/ctrlpvim/ctrlp.vim
-var crystalline_ctrlp: dict<any> = {}
+function! s:GetCurrentDir() abort
+    let l:cwd = getcwd()
+    let l:dir = fnamemodify(l:cwd, ':~:.')
+    let l:dir = empty(l:dir) ? l:cwd : l:dir
+    return strlen(l:dir) > 30 ? crystalline_settings#ShortenPath(l:dir) : l:dir
+endfunction
 
-def GetCurrentDir(): string
-    const cwd = getcwd()
-    var dir = fnamemodify(cwd, ':~:.')
-    dir = empty(dir) ? cwd : dir
-    return strlen(dir) > 30 ? pathshorten(dir) : dir
-enddef
-
-export def MainStatus(focus: string, byfname: string, regex: number, prev: string, item: string, next: string, marked: string): string
-    crystalline_ctrlp.main    = true
-    crystalline_ctrlp.focus   = focus
-    crystalline_ctrlp.byfname = byfname
-    crystalline_ctrlp.regex   = regex
-    crystalline_ctrlp.prev    = prev
-    crystalline_ctrlp.item    = item
-    crystalline_ctrlp.next    = next
-    crystalline_ctrlp.marked  = marked
-    crystalline_ctrlp.dir     = GetCurrentDir()
+function! crystalline_settings#ctrlp#MainStatus(focus, byfname, regex, prev, item, next, marked) abort
+    let s:crystalline_ctrlp.main    = 1
+    let s:crystalline_ctrlp.focus   = a:focus
+    let s:crystalline_ctrlp.byfname = a:byfname
+    let s:crystalline_ctrlp.regex   = a:regex
+    let s:crystalline_ctrlp.prev    = a:prev
+    let s:crystalline_ctrlp.item    = a:item
+    let s:crystalline_ctrlp.next    = a:next
+    let s:crystalline_ctrlp.marked  = a:marked
+    let s:crystalline_ctrlp.dir     = s:GetCurrentDir()
 
     return g:CrystallineStatuslineFn(winnr())
-enddef
+endfunction
 
-export def ProgressStatus(len: string): string
-    crystalline_ctrlp.main = false
-    crystalline_ctrlp.len  = len
-    crystalline_ctrlp.dir  = GetCurrentDir()
+function! crystalline_settings#ctrlp#ProgressStatus(len) abort
+    let s:crystalline_ctrlp.main = 0
+    let s:crystalline_ctrlp.len  = a:len
+    let s:crystalline_ctrlp.dir  = s:GetCurrentDir()
 
     return g:CrystallineStatuslineFn(winnr())
-enddef
+endfunction
 
-export def Statusline(...args: list<any>): dict<any>
-    var result = {
-        section_a: 'CtrlP',
-        section_z: crystalline_ctrlp.dir,
-    }
+function! crystalline_settings#ctrlp#Statusline() abort
+    let l:result = {
+                \ 'section_a': 'CtrlP',
+                \ 'section_z': s:crystalline_ctrlp.dir,
+                \ }
 
-    if crystalline_ctrlp.main
-        extend(result, {
-            section_b: crystalline_settings#Concatenate([
-                crystalline_ctrlp.prev,
-                '« ' .. crystalline_ctrlp.item .. ' »',
-                crystalline_ctrlp.next,
-            ], 0),
-            section_y: crystalline_settings#Concatenate([
-                crystalline_ctrlp.focus,
-                crystalline_ctrlp.byfname,
-            ], 1)
-        })
+    if s:crystalline_ctrlp.main
+        call extend(l:result, {
+                    \ 'section_b': crystalline_settings#Concatenate([
+                    \   s:crystalline_ctrlp.prev,
+                    \   '« ' .. s:crystalline_ctrlp.item .. ' »',
+                    \   s:crystalline_ctrlp.next,
+                    \ ], 0),
+                    \ 'section_y': crystalline_settings#Concatenate([
+                    \   s:crystalline_ctrlp.focus,
+                    \   s:crystalline_ctrlp.byfname,
+                    \ ], 1)
+                    \ })
     else
-        extend(result, {
-            section_y: crystalline_ctrlp.len,
-        })
+        call extend(l:result, {
+                    \ 'section_y': s:crystalline_ctrlp.len,
+                    \ })
     endif
 
-    return result
-enddef
+    return l:result
+endfunction

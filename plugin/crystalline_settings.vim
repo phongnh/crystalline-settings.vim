@@ -1,115 +1,105 @@
-vim9script
-
-# crystalline_settings.vim
-# Maintainer: Phong Nguyen
-# Version:    1.0.0
+" crystalline_settings.vim
+" Maintainer: Phong Nguyen
+" Version:    1.0.0
 
 if exists('g:loaded_vim_crystalline_settings') || v:version < 700
     finish
 endif
 
-g:loaded_vim_crystalline_settings = 1
+let g:loaded_vim_crystalline_settings = 1
 
-# Crystalline Settings
-g:crystalline_powerline_fonts = get(g:, 'crystalline_powerline_fonts', 0)
-g:crystalline_shorten_path    = get(g:, 'crystalline_shorten_path', 0)
-g:crystalline_show_short_mode = get(g:, 'crystalline_show_short_mode', 0)
-g:crystalline_show_git_branch = get(g:, 'crystalline_show_git_branch', 0)
-g:crystalline_show_linenr     = get(g:, 'crystalline_show_linenr', 0)
-g:crystalline_show_devicons   = get(g:, 'crystalline_show_devicons', 0) && crystalline_settings#devicons#Detect()
+let s:save_cpo = &cpo
+set cpo&vim
 
-# Window width
-g:crystalline_winwidth_config = extend({
-    'compact': 80,
-    'default': 100,
-    'normal':  120,
-}, get(g:, 'crystalline_winwidth_config', {}))
+" Crystalline Settings
+let g:crystalline_powerline_fonts = get(g:, 'crystalline_powerline_fonts', 0)
+let g:crystalline_shorten_path    = get(g:, 'crystalline_shorten_path', 0)
+let g:crystalline_show_short_mode = get(g:, 'crystalline_show_short_mode', 0)
+let g:crystalline_show_git_branch = get(g:, 'crystalline_show_git_branch', 0)
+let g:crystalline_show_linenr     = get(g:, 'crystalline_show_linenr', 0)
+let g:crystalline_show_devicons   = get(g:, 'crystalline_show_devicons', 0) && crystalline_settings#devicons#Detect()
 
-# Improved Model Labels
-g:crystalline_mode_labels = {
-    'n':      ' NORMAL ',
-    'c':      ' COMMAND ',
-    'r':      ' NORMAL ',
-    '!':      ' NORMAL ',
-    'i':      ' INSERT ',
-    't':      ' TERMINAL ',
-    'v':      ' VISUAL ',
-    'V':      ' V-LINE ',
-    "\<C-v>": ' V-BLOCK ',
-    's':      ' SELECT ',
-    'S':      ' S-LINE ',
-    "\<C-s>": ' S-BLOCK ',
-    'R':      ' REPLACE ',
-    '':       '',
-}
+" Window width
+let g:crystalline_winwidth_config = extend({
+            \ 'compact': 80,
+            \ 'default': 100,
+            \ 'normal':  120,
+            \ }, get(g:, 'crystalline_winwidth_config', {}))
 
-# Short Modes
-g:crystalline_short_mode_labels = {
-    'n':      ' N ',
-    'c':      ' C ',
-    'r':      ' N ',
-    '!':      ' N ',
-    'i':      ' I ',
-    't':      ' T ',
-    'v':      ' V ',
-    'V':      ' L ',
-    "\<C-v>": ' B ',
-    's':      ' S ',
-    'S':      ' S-L ',
-    "\<C-s>": ' S-B ',
-    'R':      ' R ',
-    '':       '',
-}
+" Improved Model Labels
+let g:crystalline_mode_labels = {
+            \ 'n':  ' NORMAL ',
+            \ 'c':  ' COMMAND ',
+            \ 'r':  ' NORMAL ',
+            \ '!':  ' NORMAL ',
+            \ 'i':  ' INSERT ',
+            \ 't':  ' TERMINAL ',
+            \ 'v':  ' VISUAL ',
+            \ 'V':  ' V-LINE ',
+            \ '': ' V-BLOCK ',
+            \ 's':  ' SELECT ',
+            \ 'S':  ' S-LINE ',
+            \ '': ' S-BLOCK ',
+            \ 'R':  ' REPLACE ',
+            \ '':   '',
+            \ }
+
+" Short Modes
+let g:crystalline_short_mode_labels = {
+            \ 'n':  ' N ',
+            \ 'c':  ' C ',
+            \ 'r':  ' N ',
+            \ '!':  ' N ',
+            \ 'i':  ' I ',
+            \ 't':  ' T ',
+            \ 'v':  ' V ',
+            \ 'V':  ' L ',
+            \ '': ' B ',
+            \ 's':  ' S ',
+            \ 'S':  ' S-L ',
+            \ '': ' S-B ',
+            \ 'R':  ' R ',
+            \ '':   '',
+            \ }
 
 if g:crystalline_show_short_mode
-    g:crystalline_mode_labels = copy(g:crystalline_short_mode_labels)
+    let g:crystalline_mode_labels = copy(g:crystalline_short_mode_labels)
 endif
 
-# Symbols: https://en.wikipedia.org/wiki/Enclosed_Alphanumerics
-g:crystalline_symbols = {
-    'logo':      '',
-    'dos':       '[dos]',
-    'mac':       '[mac]',
-    'unix':      '[unix]',
-    'linenr':    '☰',
-    'branch':    '⎇ ',
-    'readonly':  '',
-    'bomb':      '🅑 ',
-    'noeol':     '∉ ',
-    'clipboard': '🅒 ',
-    'paste':     '🅟 ',
-    'ellipsis':  '…',
-}
+" Symbols: https://en.wikipedia.org/wiki/Enclosed_Alphanumerics
+let g:crystalline_symbols = {
+            \ 'logo':      '',
+            \ 'dos':       '[dos]',
+            \ 'mac':       '[mac]',
+            \ 'unix':      '[unix]',
+            \ 'linenr':    '☰',
+            \ 'branch':    '⎇ ',
+            \ 'readonly':  '',
+            \ 'bomb':      '🅑 ',
+            \ 'noeol':     '∉ ',
+            \ 'clipboard': '🅒 ',
+            \ 'paste':     '🅟 ',
+            \ 'ellipsis':  '…',
+            \ }
 
 if g:crystalline_powerline_fonts || g:crystalline_show_devicons
-    extend(g:crystalline_symbols, {
-        'linenr':   "\ue0a1",
-        'branch':   "\ue0a0",
-        'readonly': "\ue0a2",
-    })
-    crystalline_settings#powerline#SetSeparators(get(g:, 'crystalline_powerline_style', 'default'))
+    call extend(g:crystalline_symbols, {
+                \ 'linenr':   "\ue0a1",
+                \ 'branch':   "\ue0a0",
+                \ 'readonly': "\ue0a2",
+                \ })
+    call crystalline_settings#powerline#SetSeparators(get(g:, 'crystalline_powerline_style', 'default'))
 else
-    g:crystalline_separators = [
-        { 'ch': '', 'alt_ch': '|', 'dir': '>' },
-        { 'ch': '', 'alt_ch': '|', 'dir': '<' },
-    ]
-    g:crystalline_symbols = extend(g:crystalline_symbols, {
-        'left':      '',
-        'right':     '',
-        'left_sep':  '|',
-        'right_sep': '|',
-    })
-endif
-
-if g:crystalline_show_devicons
-    extend(g:crystalline_symbols, {
-        'logo':  " \ue7c5  ",
-        'bomb':  "\ue287 ",
-        'noeol': "\ue293 ",
-        'dos':   "\ue70f",
-        'mac':   "\ue711",
-        'unix':  "\ue712",
-    })
+    let g:crystalline_separators = [
+                \ { 'ch': '', 'alt_ch': '|', 'dir': '>' },
+                \ { 'ch': '', 'alt_ch': '|', 'dir': '<' },
+                \ ]
+    let g:crystalline_symbols = extend(g:crystalline_symbols, {
+                \ 'left':      '',
+                \ 'right':     '',
+                \ 'left_sep':  '|',
+                \ 'right_sep': '|',
+                \ })
 endif
 
 if g:crystalline_show_devicons
@@ -123,36 +113,36 @@ if g:crystalline_show_devicons
                 \ })
 endif
 
-def g:CrystallineStatuslineFn(winnr: number): string
-    g:crystalline_group_suffix = g:GroupSuffix()
-    var current = winnr == winnr()
-    if current
+function! g:CrystallineStatuslineFn(winnr) abort
+    let g:crystalline_group_suffix = g:GroupSuffix()
+    let l:current = a:winnr == winnr()
+    if l:current
         return join([
-            '%<',
-            crystalline#ModeHiItem('A'),
-            crystalline_settings#Group('crystalline_settings#sections#SectionA(' .. winnr .. ')'),
-            crystalline#Sep(0, crystalline#ModeSepGroup('A'), 'B'),
-            crystalline_settings#Group('crystalline_settings#sections#SectionB(' .. winnr .. ')'),
-            crystalline#Sep(0, 'B', 'Fill'),
-            crystalline_settings#Group('crystalline_settings#sections#SectionC(' .. winnr .. ')'),
-            '%=',
-            '%<',
-            crystalline_settings#Group('crystalline_settings#sections#SectionX(' .. winnr .. ')'),
-            crystalline#Sep(1, 'Fill', 'B'),
-            crystalline_settings#Group('crystalline_settings#sections#SectionY(' .. winnr .. ')'),
-            crystalline#Sep(1, 'B', 'A'),
-            crystalline_settings#Group('crystalline_settings#sections#SectionZ(' .. winnr .. ')'),
-        ], '')
+                    \ '%<',
+                    \ crystalline#ModeHiItem('A'),
+                    \ crystalline_settings#Group('crystalline_settings#sections#SectionA(' .. a:winnr .. ')'),
+                    \ crystalline#Sep(0, crystalline#ModeSepGroup('A'), 'B'),
+                    \ crystalline_settings#Group('crystalline_settings#sections#SectionB(' .. a:winnr .. ')'),
+                    \ crystalline#Sep(0, 'B', 'Fill1'),
+                    \ crystalline_settings#Group('crystalline_settings#sections#SectionC(' .. a:winnr .. ')'),
+                    \ '%=',
+                    \ '%<',
+                    \ crystalline_settings#Group('crystalline_settings#sections#SectionX(' .. a:winnr .. ')'),
+                    \ crystalline#Sep(1, 'Fill1', 'B'),
+                    \ crystalline_settings#Group('crystalline_settings#sections#SectionY(' .. a:winnr .. ')'),
+                    \ crystalline#Sep(1, 'B', 'A'),
+                    \ crystalline_settings#Group('crystalline_settings#sections#SectionZ(' .. a:winnr .. ')'),
+                    \ ], '')
     else
         return join([
-            '%<',
-            crystalline#HiItem('Fill'),
-            crystalline_settings#Group('crystalline_settings#sections#InactiveSectionA(' .. winnr .. ')'),
-        ], '')
+                    \ '%<',
+                    \ crystalline#HiItem('Fill'),
+                    \ crystalline_settings#Group('crystalline_settings#sections#InactiveSectionA(' .. a:winnr .. ')'),
+                    \ ], '')
     endif
-enddef
+endfunction
 
-def g:GroupSuffix(): string
+function! g:GroupSuffix()
     if mode() ==# 'i' && &paste
         return '2'
     endif
@@ -160,77 +150,72 @@ def g:GroupSuffix(): string
         return '1'
     endif
     return ''
-enddef
+endfunction
 
-def g:CrystallineTabFn(tab: number, buf: number, max_width: number, is_sel: bool): list<any>
-    # Return early
-    if max_width <= 0
+function! g:CrystallineTabFn(tab, buf, max_width, is_sel) abort
+    " Return early
+    if a:max_width <= 0
         return ['', 0]
     endif
 
-    # Get left/right components
-    var left = g:crystalline_tab_left
-    var right = getbufvar(buf, '&mod') ? g:crystalline_tab_mod : g:crystalline_tab_nomod
-    var lr_width = strchars(left) + strchars(right)
-    var max_name_width = max_width - lr_width
+    " Get left/right components
+    let l:left = g:crystalline_tab_left
+    let l:right = getbufvar(a:buf, '&mod') ? g:crystalline_tab_mod : g:crystalline_tab_nomod
+    let l:lr_width = strchars(l:left) + strchars(l:right)
+    let l:max_name_width = a:max_width - l:lr_width
 
-    var nr = crystalline#DefaultTablineIsBuffers() ? buf : tab
+    let l:nr = crystalline#DefaultTablineIsBuffers() ? a:buf : a:tab
 
-    # Get name
-    var name = bufname(buf)
-    name = nr .. ' ' .. (!empty(name) ? fnamemodify(name, ':t') : g:crystalline_tab_empty)
-    var name_width = strchars(name)
+    " Get name
+    let l:name = bufname(a:buf)
+    let l:name = l:nr .. ' ' .. (!empty(l:name) ? fnamemodify(l:name, ':t') : g:crystalline_tab_empty)
+    let l:name_width = strchars(l:name)
 
-    # Shorten tab
-    var tab_str: string
-    var tabwidth: number
-    if max_name_width <= 0
-        tab_str = strcharpart(name, name_width - max_width)
-        tabwidth = min([name_width, max_width])
+    " Shorten tab
+    if l:max_name_width <= 0
+        let l:tab = strcharpart(l:name, l:name_width - a:max_width)
+        let l:tabwidth = min([l:name_width, a:max_width])
     else
-        tab_str = left .. strcharpart(name, name_width - max_name_width) .. right
-        tabwidth = lr_width + min([name_width, max_name_width])
+        let l:tab = l:left .. strcharpart(l:name, l:name_width - l:max_name_width) .. l:right
+        let l:tabwidth = l:lr_width + min([l:name_width, l:max_name_width])
     endif
 
-    return [crystalline#EscapeStatuslineString(tab_str), tabwidth]
-enddef
+    return [crystalline#EscapeStatuslineString(l:tab), l:tabwidth]
+endfunction
 
-def g:CrystallineTablineFn(): string
-    g:crystalline_group_suffix = g:GroupSuffix()
-    var max_width = &columns
 
-    var right = '%='
+function! g:CrystallineTablineFn()
+    let g:crystalline_group_suffix = g:GroupSuffix()
+    let l:max_width = &columns
 
-    right ..= crystalline#Sep(1, 'TabFill', 'TabType')
-    max_width -= 1
+    let l:right = '%='
 
-    var vimlabel = g:crystalline_symbols.logo
-    right ..= vimlabel
-    max_width -= strchars(vimlabel)
+    let l:right ..= crystalline#Sep(1, 'TabFill', 'TabType')
+    let l:max_width -= 1
 
-    var max_tabs = 10
+    let l:vimlabel = g:crystalline_symbols.logo
+    let l:right ..= l:vimlabel
+    let l:max_width -= strchars(l:vimlabel)
+
+    let l:max_tabs = 10
 
     return crystalline#DefaultTabline({
-        'enable_sep': 1,
-        'max_tabs': max_tabs,
-        'max_width': max_width
-    }) .. right
-enddef
+                \ 'enable_sep': 1,
+                \ 'max_tabs': l:max_tabs,
+                \ 'max_width': l:max_width
+                \ }) .. l:right
+endfunction
 
-command! -nargs=1 -complete=custom,crystalline_settings#theme#List CrystallineTheme crystalline#SetTheme(<f-args>)
-
-import autoload 'crystalline_settings/theme.vim'
+command! -nargs=1 -complete=custom,crystalline_settings#theme#List CrystallineTheme call crystalline#SetTheme(<f-args>)
 
 augroup CrystallineSettings
     autocmd!
+    autocmd User GoyoEnter ++nested call crystalline_settings#goyo#OnEnter()
+    autocmd User GoyoLeave ++nested call crystalline_settings#goyo#OnLeave()
+    autocmd User CrystallineSetTheme ++once call crystalline_settings#theme#Detect()
+    autocmd ColorScheme * call crystalline_settings#theme#Find()
     autocmd CmdwinEnter * set filetype=cmdline syntax=vim
-    autocmd User GoyoEnter ++nested crystalline_settings#goyo#OnEnter()
-    autocmd User GoyoLeave ++nested crystalline_settings#goyo#OnLeave()
-    autocmd User CrystallineSetTheme ++once theme.Detect()
-    autocmd ColorScheme * theme.Find()
-    if v:vim_did_enter
-        theme.Detect()
-    else
-        autocmd VimEnter * ++once theme.Detect()
-    endif
 augroup END
+
+let &cpo = s:save_cpo
+unlet s:save_cpo

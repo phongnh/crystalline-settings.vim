@@ -1,50 +1,48 @@
-vim9script
-
-export def SectionA(...args: list<any>): string
-    const integration = crystalline_settings#components#Integration()
-    if !empty(integration)
-        return integration['section_a']
+function! crystalline_settings#sections#SectionA(...) abort
+    let l:integration = crystalline_settings#components#Integration()
+    if len(l:integration)
+        return l:integration['section_a']
     endif
 
     return crystalline_settings#Concatenate([
-        crystalline_settings#components#Mode(),
-        crystalline_settings#components#Clipboard(),
-        crystalline_settings#components#Paste(),
-    ], 0)
-enddef
+                \   crystalline_settings#components#Mode(),
+                \   crystalline_settings#components#Clipboard(),
+                \   crystalline_settings#components#Paste(),
+                \ ], 0)
+endfunction
 
-export def SectionB(...args: list<any>): string
-    const integration = crystalline_settings#components#Integration()
-    if !empty(integration)
-        return get(integration, 'section_b', '')
+function! crystalline_settings#sections#SectionB(...) abort
+    let l:integration = crystalline_settings#components#Integration()
+    if len(l:integration)
+        return get(l:integration, 'section_b', '')
     endif
 
-    const winwidth = crystalline_settings#GetWinWidth(get(args, 0, 0))
-    if g:crystalline_show_git_branch > 0 && winwidth >= g:crystalline_winwidth_config.default
+    let l:winwidth = crystalline_settings#GetWinWidth(get(a:, 1, 0))
+    if g:crystalline_show_git_branch > 0 && l:winwidth >= g:crystalline_winwidth_config.default
         return crystalline_settings#components#Branch()
     endif
 
     return ''
-enddef
+endfunction
 
-export def SectionC(...args: list<any>): string
-    const integration = crystalline_settings#components#Integration()
-    if !empty(integration)
-        return get(integration, 'section_c', '')
+function! crystalline_settings#sections#SectionC(...) abort
+    let l:integration = crystalline_settings#components#Integration()
+    if len(l:integration)
+        return get(l:integration, 'section_c', '')
     endif
 
-    const winwidth = crystalline_settings#GetWinWidth(get(args, 0, 0))
-    return crystalline_settings#components#FileName(winwidth - 2)
-enddef
+    let l:winwidth = crystalline_settings#GetWinWidth(get(a:, 1, 0))
+    return crystalline_settings#components#FileName(l:winwidth - 2)
+endfunction
 
-export def SectionX(...args: list<any>): string
-    const integration = crystalline_settings#components#Integration()
-    if !empty(integration)
-        return get(integration, 'section_x', '')
+function! crystalline_settings#sections#SectionX(...) abort
+    let l:integration = crystalline_settings#components#Integration()
+    if len(l:integration)
+        return get(l:integration, 'section_x', '')
     endif
 
-    const winnr = get(args, 0, 0)
-    if crystalline_settings#GetWinWidth(winnr) <= g:crystalline_winwidth_config.compact
+    let l:winnr = get(a:, 1, 0)
+    if crystalline_settings#GetWinWidth(l:winnr) <= g:crystalline_winwidth_config.compact
         return ''
     endif
 
@@ -53,42 +51,43 @@ export def SectionX(...args: list<any>): string
     elseif g:crystalline_show_linenr > 0
         return crystalline_settings#components#Position()
     endif
-    return ''
-enddef
 
-export def SectionY(...args: list<any>): string
-    const integration = crystalline_settings#components#Integration()
-    if !empty(integration)
-        return get(integration, 'section_y', '')
+    return ''
+endfunction
+
+function! crystalline_settings#sections#SectionY(...) abort
+    let l:integration = crystalline_settings#components#Integration()
+    if len(l:integration)
+        return get(l:integration, 'section_y', '')
     endif
 
     return crystalline_settings#Concatenate([
-        crystalline_settings#components#Spell(),
-        crystalline_settings#components#Indentation(),
-        crystalline_settings#components#FileEncodingAndFormat(),
-    ], 1)
-enddef
+                \   crystalline_settings#components#Spell(),
+                \   crystalline_settings#components#Indentation(),
+                \   crystalline_settings#components#FileEncodingAndFormat(),
+                \ ], 1)
+endfunction
 
-export def SectionZ(...args: list<any>): string
-    const integration = crystalline_settings#components#Integration()
-    if !empty(integration)
-        return get(integration, 'section_z', '')
+function! crystalline_settings#sections#SectionZ(...) abort
+    let l:integration = crystalline_settings#components#Integration()
+    if len(l:integration)
+        return get(l:integration, 'section_z', '')
     endif
 
     return crystalline_settings#components#FileType()
-enddef
+endfunction
 
-export def InactiveSectionA(...args: list<any>): string
-    # Show only custom mode in inactive buffer
-    const integration = crystalline_settings#components#Integration()
-    if !empty(integration)
+function! crystalline_settings#sections#InactiveSectionA(...) abort
+    " Show only custom mode in inactive buffer
+    let l:integration = crystalline_settings#components#Integration()
+    if len(l:integration)
         return crystalline_settings#Concatenate([
-            integration['section_a'],
-            get(integration, 'section_b', ''),
-            get(integration, 'section_c', ''),
-        ], 0)
+                    \   l:integration['section_a'],
+                    \   get(l:integration, 'section_b', ''),
+                    \   get(l:integration, 'section_c', ''),
+                    \ ], 0)
     endif
 
-    # plugin/statusline.vim[+]
+    " plugin/statusline.vim[+]
     return crystalline_settings#components#InactiveFileName()
-enddef
+endfunction
