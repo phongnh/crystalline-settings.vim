@@ -2,8 +2,8 @@ let s:git_branch_expiry = 5.0 " 5 seconds
 let s:git_branch_time = []
 
 function! s:GetGitBranch() abort
-    if has_key(b:, 'lightline_git_branch') && reltimefloat(reltime(s:git_branch_time)) < s:git_branch_expiry
-        return b:lightline_git_branch
+    if has_key(b:, 'crystalline_git_branch') && reltimefloat(reltime(s:git_branch_time)) < s:git_branch_expiry
+        return b:crystalline_git_branch
     endif
 
     if exists('*FugitiveHead')
@@ -24,10 +24,10 @@ function! s:GetGitBranch() abort
     endif
 
     " Caching
-    let b:lightline_git_branch = l:branch
+    let b:crystalline_git_branch = l:branch
     let s:git_branch_time = reltime()
 
-    return b:lightline_git_branch
+    return b:crystalline_git_branch
 endfunction
 
 " Extract JIRA / YouTrack ticket number
