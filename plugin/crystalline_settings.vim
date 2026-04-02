@@ -250,7 +250,7 @@ augroup CrystallineSettings
     autocmd User CrystallineSetTheme ++once call crystalline_settings#theme#Detect()
     autocmd ColorScheme * call crystalline_settings#theme#Find()
     if v:vim_did_enter
-        call s:Init()
+        call s:init()
     else
         autocmd VimEnter * ++once call s:init()
     endif
