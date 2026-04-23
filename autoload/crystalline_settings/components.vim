@@ -195,7 +195,7 @@ function! crystalline_settings#components#Position(...) abort
 endfunction
 
 function! crystalline_settings#components#Ruler(...) abort
-    return printf('%4d:%-3d %3s', line('.'), charcol('.'), crystalline_settings#components#Progress())
+    return crystalline_settings#components#Position() .. ' ' .. crystalline_settings#components#Progress())
 endfunction
 
 function! crystalline_settings#components#FileEncodingAndFormat() abort
