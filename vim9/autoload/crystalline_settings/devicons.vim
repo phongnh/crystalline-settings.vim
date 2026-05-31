@@ -16,14 +16,7 @@ enddef
 var IconFindFunc: any = DefaultFind
 
 export def FileType(filename: string): string
-    if icon_type == 1
-        return ' ' .. call('nerdfont#find', [filename]) .. ' '
-    elseif icon_type == 2
-        return ' ' .. call('WebDevIconsGetFileTypeSymbol', [filename]) .. ' '
-    elseif icon_type == 3
-        return ' ' .. call(g:CrystallineWebDevIconsFind, [filename]) .. ' '
-    endif
-    return ''
+    return call(IconFindFunc, [filename])
 enddef
 
 export def Detect(): bool
