@@ -6,19 +6,6 @@ if exists('g:loaded_vim_crystalline_settings') || v:version < 700
     finish
 endif
 
-" Use Vim9script implementation if available, otherwise fall back to legacy
-if has('vim9script')
-    let s:vimdir = fnamemodify(resolve(expand('<sfile>:p')), ':h:h')
-    let s:vim9dir = s:vimdir . '/vim9'
-    if &runtimepath !~# s:vim9dir
-        execute 'set runtimepath-=' . fnameescape(s:vimdir)
-        execute 'set runtimepath+=' . fnameescape(s:vim9dir)
-    endif
-    unlet! s:vimdir s:vim9dir
-    source <sfile>:p:h:h/vim9/plugin/crystalline_settings.vim
-    finish
-endif
-
 let g:loaded_vim_crystalline_settings = 1
 
 let s:save_cpo = &cpo
