@@ -27,5 +27,6 @@ function! crystalline_settings#fugitive#FugitiveChanged() abort
     if l:bufnr > 0
         let l:cmd = join(extendnew(g:_fugitive_last_job.git, g:_fugitive_last_job.args), ' ')
         call setbufvar(l:bufnr, 'fugitive_git_command', l:cmd)
+        call crystalline#UpdateStatusline(bufwinid(l:bufnr))
     endif
 endfunction
