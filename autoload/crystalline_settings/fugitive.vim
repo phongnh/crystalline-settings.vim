@@ -17,3 +17,15 @@ function! crystalline_settings#fugitive#Statusline(...) abort
                 \ 'section_c': crystalline_settings#Concatenate(s:FugitiveStatus(), 0),
                 \ }
 endfunction
+
+function! crystalline_settings#fugitive#FugitiveChanged() abort
+    if !exists('g:_fugitive_last_job')
+        return
+    endif
+
+    let l:bufnr = get(g:_fugitive_last_job, 'capture_bufnr', -1)
+    if l:bufnr > 0
+        let l:cmd = join(extendnew(g:_fugitive_last_job.git, g:_fugitive_last_job.args), ' ')
+        call setbufvar(l:bufnr, 'fugitive_git_command', l:cmd)
+    endif
+endfunction

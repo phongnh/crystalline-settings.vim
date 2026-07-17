@@ -211,6 +211,7 @@ command! -nargs=1 -complete=custom,crystalline_settings#theme#List CrystallineTh
 augroup CrystallineSettings
     autocmd!
     autocmd CmdwinEnter * set filetype=cmdline syntax=vim
+    autocmd User FugitiveChanged call crystalline_settings#fugitive#FugitiveChanged()
     autocmd User GoyoEnter ++nested call crystalline_settings#goyo#OnEnter()
     autocmd User GoyoLeave ++nested call crystalline_settings#goyo#OnLeave()
     autocmd User CrystallineSetTheme ++once call crystalline_settings#theme#Detect()
