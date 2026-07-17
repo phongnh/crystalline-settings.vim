@@ -2,7 +2,7 @@
 " Maintainer: Phong Nguyen
 " Version:    1.0.0
 
-if exists('g:loaded_vim_crystalline_settings') || v:version < 700
+if exists('g:loaded_vim_crystalline_settings') || v:version < 800
     finish
 endif
 
@@ -208,40 +208,6 @@ endfunction
 
 command! -nargs=1 -complete=custom,crystalline_settings#theme#List CrystallineTheme call crystalline#SetTheme(<f-args>)
 
-function! s:init() abort
-    setglobal noshowmode laststatus=2
-
-    " Disable NERDTree statusline
-    let g:NERDTreeStatusline = -1
-
-    " CtrlP Integration
-    if exists(':CtrlP') == 2
-        let g:ctrlp_status_func = {
-                    \ 'main': 'crystalline_settings#ctrlp#MainStatus',
-                    \ 'prog': 'crystalline_settings#ctrlp#ProgressStatus',
-                    \ }
-    endif
-
-    " Tagbar Integration
-    if exists(':Tagbar') == 2
-        let g:tagbar_status_func = 'crystalline_settings#tagbar#Status'
-    endif
-
-    if exists(':ZoomWin') == 2
-        let g:crystalline_zoomwin_funcref = []
-
-        if exists('g:ZoomWin_funcref')
-            if type(g:ZoomWin_funcref) == v:t_func
-                let g:crystalline_zoomwin_funcref = [g:ZoomWin_funcref]
-            elseif type(g:ZoomWin_funcref) == v:t_list
-                let g:crystalline_zoomwin_funcref = g:ZoomWin_funcref
-            endif
-        endif
-
-        let g:ZoomWin_funcref = function('crystalline_settings#zoomwin#Status')
-    endif
-endfunction
-
 augroup CrystallineSettings
     autocmd!
     autocmd CmdwinEnter * set filetype=cmdline syntax=vim
@@ -250,9 +216,9 @@ augroup CrystallineSettings
     autocmd User CrystallineSetTheme ++once call crystalline_settings#theme#Detect()
     autocmd ColorScheme * call crystalline_settings#theme#Find()
     if v:vim_did_enter
-        call s:init()
+        call crystalline_settings#Init()
     else
-        autocmd VimEnter * ++once call s:init()
+        autocmd VimEnter * ++once call crystalline_settings#Init()
     endif
 augroup END
 
